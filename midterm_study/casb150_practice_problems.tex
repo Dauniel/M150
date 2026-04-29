@@ -1,0 +1,1476 @@
+\documentclass[10pt]{article}
+\usepackage[margin=0.75in]{geometry}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{tcolorbox}
+\usepackage{hyperref}
+
+\hypersetup{colorlinks=true, linkcolor=blue!60!black, urlcolor=blue!60!black}
+
+\titleformat{\section}{\large\bfseries\color{blue!70!black}}{\thesection.}{0.5em}{}
+\titleformat{\subsection}{\normalsize\bfseries\color{red!60!black}}{\thesubsection}{0.5em}{}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small CaSB 150 Practice Problems}
+\fancyhead[R]{\small Spring 2026 Midterm Prep}
+\fancyfoot[C]{\thepage}
+
+\newtcolorbox{problem}{colback=blue!5,colframe=blue!50!black,title=Problem}
+\newtcolorbox{solution}{colback=green!3,colframe=green!50!black,title=Solution}
+\newtcolorbox{keyidea}{colback=yellow!10,colframe=orange!70!black,title=Key Insight}
+
+\setlist{topsep=2pt,itemsep=1pt}
+
+\begin{document}
+
+\begin{center}
+{\LARGE \textbf{CaSB 150 Midterm: Practice Problem Bank}}\\[4pt]
+{\large with Complete Worked Solutions}\\[2pt]
+{\small Lectures 1--9 \textbullet\ Based on 2017--2024 Past Exams}
+\end{center}
+
+\hrule
+\vspace{6pt}
+
+\tableofcontents
+
+\newpage
+
+%==================================================================
+\section{Growth Equations \& Taylor Series}
+%==================================================================
+
+\subsection{Problem 1.1: Modified Exponential Growth (2023-style)}
+
+\begin{problem}
+Consider growth governed by
+\[
+\frac{dN(t)}{dt} = r N(t)\left(1 - e^{-N(t)/N(\tau)}\right)
+\]
+where $\tau$ is a time constant and $N(\tau)$ is a reference size.
+
+\begin{enumerate}[label=(\alph*)]
+\item At early times when $N(t) \ll N(\tau)$, simplify and solve.
+\item At long times when $N(t) \gg N(\tau)$, simplify and solve.
+\item What are the units of $r$? Is it a per-capita growth rate?
+\item Sketch $dN/dt$ vs $t$.
+\item Find the linear space (if it exists) for part (a).
+\item Does this equation have a maximum population $K$?
+\end{enumerate}
+\end{problem}
+
+\begin{solution}
+\textbf{(a) Early times, $N \ll N(\tau)$:}\\
+Use Taylor expansion of $e^{-x}$ around $x = 0$:
+\[
+e^{-N/N(\tau)} \approx 1 - \frac{N}{N(\tau)} + \frac{N^2}{2 N(\tau)^2} - \cdots
+\]
+So $1 - e^{-N/N(\tau)} \approx N/N(\tau)$ to leading order. The equation becomes:
+\[
+\frac{dN}{dt} \approx rN \cdot \frac{N}{N(\tau)} = \frac{r}{N(\tau)} N^2
+\]
+This is \textbf{super-exponential (power-law) growth} with $p=2$. Separate variables:
+\[
+\int N^{-2} dN = \int \frac{r}{N(\tau)} dt \implies -\frac{1}{N} = \frac{rt}{N(\tau)} + C
+\]
+With $N(0) = N_0$: $C = -1/N_0$, giving:
+\[
+N(t) = \frac{N_0}{1 - \frac{rN_0 t}{N(\tau)}}
+\]
+This blows up in finite time at $t^* = N(\tau)/(rN_0)$.
+
+\textbf{(b) Long times, $N \gg N(\tau)$:}\\
+$e^{-N/N(\tau)} \to 0$, so $1 - e^{-N/N(\tau)} \to 1$. Equation becomes:
+\[
+\frac{dN}{dt} \approx rN \implies N(t) = N_0 e^{rt}
+\]
+Standard \textbf{exponential growth}.
+
+\textbf{(c) Units of $r$:} The full equation has $1 - e^{-N/N(\tau)}$ as dimensionless, so $rN$ must have units of $N$/time, meaning $r$ has units of \textbf{time$^{-1}$}. It IS a per-capita growth rate (in the long-time limit, $r = (1/N)dN/dt$).
+
+\textbf{(d) Sketch:} Early on, $dN/dt$ grows like $N^2 \sim 1/(t^*-t)^2$ (super-exponential, blows up). Later, $dN/dt = rN \sim re^{rt}$ (regular exponential).
+
+\textbf{(e) Linear space for (a):} Since $\frac{dN}{dt} \propto N^2$, take:
+\[
+\frac{d(1/N)}{dt} = -\frac{1}{N^2}\frac{dN}{dt} = -\frac{r}{N(\tau)}
+\]
+So $1/N$ is \textbf{linear in $t$}. In the space of $1/N$ vs $t$, Euler's method is exact.
+
+\textbf{(f) Maximum $K$:} No, this equation has no upper bound. To add one, multiply by a logistic factor:
+\[
+\frac{dN}{dt} = rN(1-e^{-N/N(\tau)})\left(1-\frac{N}{K}\right)
+\]
+\end{solution}
+
+\subsection{Problem 1.2: Power-of-Time Growth (2019/2021-style)}
+
+\begin{problem}
+Consider $\frac{dN(t)}{dt} = r\frac{N(t)}{t}$.
+
+\begin{enumerate}[label=(\alph*)]
+\item Solve for $N(t)$.
+\item Interpret $r$ and find its units.
+\item Will growth ever stop?
+\item For $r = 10$, compute the 4th-order Taylor term about $t_0 = 1$.
+\item Find a mathematical space where Euler's method is exact.
+\end{enumerate}
+\end{problem}
+
+\begin{solution}
+\textbf{(a)} Separate variables:
+\[
+\frac{dN}{N} = r\frac{dt}{t} \implies \ln N = r\ln t + C \implies N(t) = N(1)\, t^r
+\]
+
+\textbf{(b)} $r$ is \textbf{dimensionless}. The equation says proportional changes in $t$ produce proportional changes in $N$: if $t$ doubles, $N$ scales by $2^r$. So $r$ is an elasticity, not a rate.
+
+\textbf{(c)} For $r > 0$, $N(t) \to \infty$ as $t \to \infty$. Setting $dN/dt = 0$ requires $N = 0$ or $t = \infty$. \textbf{No finite-time fixed point}; growth never stops.
+
+\textbf{(d)} 4th derivative of $N(t) = N(1)t^r$:
+\[
+N^{(4)}(t) = r(r-1)(r-2)(r-3)\,N(1)\,t^{r-4}
+\]
+At $r = 10$: $N^{(4)} = 10\cdot 9\cdot 8\cdot 7 \cdot N(1) \cdot t^{6} = 5040\, N(1)\, t^6$. The 4th-order term is:
+\[
+\frac{1}{4!} N^{(4)}(t)(\Delta t)^4 = \frac{5040}{24} N(1)\, t^6 (\Delta t)^4 = 210\, N(1)\, t^6 (\Delta t)^4
+\]
+All four derivatives exist and are non-zero, so RK4 will improve over Euler.
+
+\textbf{(e) Linear space:} Take $\ln N$ vs $\ln t$:
+\[
+\frac{d\ln N}{d\ln t} = \frac{t}{N}\frac{dN}{dt} = \frac{t}{N} \cdot \frac{rN}{t} = r
+\]
+This is constant! So in $\ln N$ vs $\ln t$ \textbf{(log-log space)}, the relation is perfectly linear and Euler is exact for any $\Delta t$.
+\end{solution}
+
+\begin{keyidea}
+\textbf{Finding the ``perfect space''}: ask what variable transformation makes $d(\text{thing})/d(\text{other thing}) = \text{constant}$. Common transformations:
+\begin{itemize}
+\item Exponential growth $\dot N = rN$: $\ln N$ vs $t$ (semi-log)
+\item Power-law in time $\dot N = rN/t$: $\ln N$ vs $\ln t$ (log-log)
+\item Inverse-time $\dot N = r/t$: $N$ vs $\ln t$ (semi-log on $t$)
+\item Power $\dot N = rN^2$: $1/N$ vs $t$
+\end{itemize}
+\end{keyidea}
+
+\subsection{Problem 1.3: Discrete vs.\ Continuous Conversion}
+
+\begin{problem}
+A bacterial colony starts at $N(0) = 100$. Each generation produces an average of $r_d = 4$ offspring per parent (so the next generation is $5\times$ the current). Generation time is 30 minutes.
+
+\begin{enumerate}[label=(\alph*)]
+\item Write discrete and continuous growth equations.
+\item Find the continuous per-capita rate $r_c$.
+\item How many bacteria after 5 hours, using each method?
+\item For mixed-rate growth: $r_1 = 0.05$/min for first 60 min, $r_2 = 0.15$/min for next 60 min, find $N$ at $t = 120$ min and effective rate.
+\end{enumerate}
+\end{problem}
+
+\begin{solution}
+\textbf{(a)} Discrete: $N(t+1) = (1+r_d)N(t) = 5N(t)$, so $N(g) = 100 \cdot 5^g$ where $g$ = generations.
+Continuous: $\frac{dN}{dt} = r_c N$.
+
+\textbf{(b)} Convert: $1 + r_d = e^{r_c \cdot \tau_{\text{gen}}}$. Per generation:
+\[
+e^{r_c \cdot 30} = 5 \implies r_c = \frac{\ln 5}{30} \approx 0.0536 \text{ min}^{-1}
+\]
+
+\textbf{(c)} 5 hours = 300 min = 10 generations. Discrete: $N = 100 \cdot 5^{10} = 100 \cdot 9{,}765{,}625 = 9.77 \times 10^8$. Continuous: $N(300) = 100\, e^{0.0536 \cdot 300} = 100 \, e^{16.09} \approx 9.77 \times 10^8$. Same answer (as it should).
+
+\textbf{(d)} 
+\[
+N(t_1) = 100\, e^{0.05 \cdot 60} = 100\, e^{3} \approx 2009
+\]
+\[
+N(t_1 + t_2) = N(t_1)\, e^{0.15 \cdot 60} = 2009 \cdot e^{9} \approx 1.63 \times 10^7
+\]
+Effective rate:
+\[
+r_{\text{eff}} = \frac{r_1 t_1 + r_2 t_2}{t_1 + t_2} = \frac{0.05 \cdot 60 + 0.15 \cdot 60}{120} = 0.10 \text{ min}^{-1}
+\]
+Check: $100\, e^{0.10 \cdot 120} = 100 e^{12} \approx 1.63 \times 10^7$. \checkmark
+\end{solution}
+
+\subsection{Problem 1.4: Super-Exponential Growth (2018-style)}
+
+\begin{problem}
+$\frac{dN}{dt} = rN^3$ with $N(0) = 2$, $r = 0.01$.
+
+\begin{enumerate}[label=(\alph*)]
+\item Write the discrete version.
+\item Solve the continuous equation.
+\item At what time does $N$ go to infinity?
+\end{enumerate}
+\end{problem}
+
+\begin{solution}
+\textbf{(a)} $N(t+1) = N(t) + rN(t)^3$ (forward Euler with $\Delta t = 1$).
+
+\textbf{(b)} Separate variables:
+\[
+\int N^{-3} dN = \int r\, dt \implies -\frac{1}{2N^2} = rt + C
+\]
+With $N(0) = N_0$: $C = -1/(2N_0^2)$. Solving:
+\[
+\frac{1}{N^2} = \frac{1}{N_0^2} - 2rt \implies N(t) = \frac{N_0}{\sqrt{1 - 2rN_0^2\, t}}
+\]
+
+\textbf{(c)} $N \to \infty$ when denominator $\to 0$:
+\[
+1 - 2r N_0^2 t^* = 0 \implies t^* = \frac{1}{2rN_0^2} = \frac{1}{2 \cdot 0.01 \cdot 4} = 12.5
+\]
+\end{solution}
+
+\subsection{Problem 1.5: Logistic Growth Full Treatment}
+
+\begin{problem}
+$\frac{dN}{dt} = rN(1 - N/K)$.
+
+\begin{enumerate}[label=(\alph*)]
+\item Find fixed points and check stability.
+\item Solve exactly.
+\item Sketch $N(t)$ vs $t$ for $N_0 < K/2$, $N_0 = K/2$, $N_0 > K$.
+\end{enumerate}
+\end{problem}
+
+\begin{solution}
+\textbf{(a)} Set $\dot N = 0$: $N^* = 0$ or $N^* = K$. Linearize: $f'(N) = r - 2rN/K$.
+\begin{itemize}
+\item At $N^* = 0$: $f'(0) = r > 0$ $\Rightarrow$ \textbf{unstable}.
+\item At $N^* = K$: $f'(K) = -r < 0$ $\Rightarrow$ \textbf{stable}.
+\end{itemize}
+
+\textbf{(b)} Partial fractions:
+\[
+\frac{dN}{N(1-N/K)} = r\, dt \implies \left(\frac{1}{N} + \frac{1/K}{1-N/K}\right)dN = r\, dt
+\]
+Integrate: $\ln N - \ln(1-N/K) = rt + C$, giving:
+\[
+\boxed{N(t) = \frac{K}{1 + \left(\frac{K-N_0}{N_0}\right)e^{-rt}}}
+\]
+
+\textbf{(c)} S-shaped (sigmoidal) approach to $K$ from below; exponential decay to $K$ from above; $K/2$ is the inflection point where growth rate is maximum.
+\end{solution}
+
+\newpage
+%==================================================================
+\section{Predator-Prey Systems}
+%==================================================================
+
+\subsection{Problem 2.1: Standard Lotka-Volterra (Foundation)}
+
+\begin{problem}
+Standard equations:
+\[
+\frac{dN}{dt} = rN - \bar{\beta} NP, \qquad \frac{dP}{dt} = \varepsilon\bar{\beta}NP - ZP
+\]
+
+\begin{enumerate}[label=(\alph*)]
+\item Find all fixed points.
+\item Compute the interaction matrix $A$.
+\item Compute the standard Jacobian $J^*$ at the non-trivial fixed point.
+\item Find eigenvalues both ways.
+\item Interpret stability.
+\end{enumerate}
+\end{problem}
+
+\begin{solution}
+\textbf{(a) Fixed points:} Setting both derivatives to zero:
+\[
+N(r - \bar\beta P) = 0 \implies N=0 \text{ or } P = r/\bar\beta
+\]
+\[
+P(\varepsilon\bar\beta N - Z) = 0 \implies P=0 \text{ or } N = Z/(\varepsilon\bar\beta)
+\]
+Two fixed points: $(0,0)$ trivial; $(N^*, P^*) = \left(\frac{Z}{\varepsilon\bar\beta}, \frac{r}{\bar\beta}\right)$ coexistence.
+
+\textbf{(b) Interaction matrix:} Write $\dot N/N = r - \bar\beta P$ and $\dot P/P = \varepsilon\bar\beta N - Z$. The matrix $A$ has entry $A_{ij}$ = coefficient of $X_j$ in $\dot X_i / X_i$:
+\[
+A = \begin{pmatrix} 0 & -\bar\beta \\ \varepsilon\bar\beta & 0 \end{pmatrix}
+\]
+$\text{Tr}(A) = 0$, $\text{Det}(A) = \varepsilon\bar\beta^2$.
+
+\textbf{(c) Standard Jacobian:}
+\[
+J = \begin{pmatrix} \partial f/\partial N & \partial f/\partial P \\ \partial g/\partial N & \partial g/\partial P \end{pmatrix} = \begin{pmatrix} r - \bar\beta P & -\bar\beta N \\ \varepsilon\bar\beta P & \varepsilon\bar\beta N - Z \end{pmatrix}
+\]
+At $(N^*, P^*) = (Z/(\varepsilon\bar\beta), r/\bar\beta)$:
+\[
+J^* = \begin{pmatrix} r - r & -\bar\beta \cdot Z/(\varepsilon\bar\beta) \\ \varepsilon\bar\beta \cdot r/\bar\beta & Z - Z \end{pmatrix} = \begin{pmatrix} 0 & -Z/\varepsilon \\ \varepsilon r & 0 \end{pmatrix}
+\]
+
+\textbf{(d) Eigenvalues:}\\
+From $A$: $\lambda^2 - 0 \cdot \lambda + \varepsilon\bar\beta^2 = 0 \implies \lambda_\pm = \pm i\bar\beta\sqrt{\varepsilon}$.\\
+From $J^*$: $\text{Tr} = 0$, $\text{Det} = -(-Z/\varepsilon)(\varepsilon r) = Zr$, so $\lambda_\pm = \pm i\sqrt{Zr}$.
+
+\textbf{(e) Interpretation:} Pure imaginary eigenvalues $\Rightarrow$ \textbf{neutral oscillations / closed limit cycles}. Not strictly stable (no decay back to fixed point) and not unstable (doesn't blow up). Real Lotka-Volterra populations oscillate forever about the coexistence point.
+
+\textbf{Why two different formulas?} $A$-matrix uses scaled coordinates $\dot X_i/X_i$, while $J^*$ uses unscaled. Both give same \emph{stability conclusion} at non-trivial fixed points but different numerical values for $|\lambda|$.
+\end{solution}
+
+\subsection{Problem 2.2: Type II Functional Response (2024 Q2)}
+
+\begin{problem}
+Replace constant $\bar\beta$ with Type II:
+\[
+\bar\beta \to \bar\beta(N) = \frac{\alpha N}{1 + \alpha h_T N}
+\]
+where $\alpha$ = attack rate, $h_T$ = handling time.
+
+\begin{enumerate}[label=(\alph*)]
+\item Compute the Jacobian (express in terms of $\bar\beta$ where possible).
+\item Evaluate at the unmodified LV fixed point $(N^*, P^*) = (Z/(\varepsilon\bar\beta), r/\bar\beta)$.
+\item Find eigenvalues; compare to LV result.
+\item Why does the system become \emph{less} stable with Type II?
+\item Can we write an interaction matrix $A$? Why or why not?
+\end{enumerate}
+\end{problem}
+
+\begin{solution}
+\textbf{(a) Equations now read:}
+\[
+\frac{dN}{dt} = rN - \frac{\alpha N}{1+\alpha h_T N}P, \quad \frac{dP}{dt} = \varepsilon \frac{\alpha N}{1+\alpha h_T N}P - ZP
+\]
+Define $\bar\beta(N) = \alpha/(1+\alpha h_T N)$ so consumption term is $\bar\beta(N) NP$.
+
+Compute partial derivatives. For $f = rN - \bar\beta(N)NP$:
+\[
+\frac{\partial f}{\partial N} = r - P\frac{d[\bar\beta(N) N]}{dN}
+\]
+\[
+\frac{d}{dN}\left[\frac{\alpha N}{1+\alpha h_T N}\right] = \frac{\alpha(1+\alpha h_T N) - \alpha N \cdot \alpha h_T}{(1+\alpha h_T N)^2} = \frac{\alpha}{(1+\alpha h_T N)^2}
+\]
+So $\partial f/\partial N = r - \alpha P/(1+\alpha h_T N)^2 = r - \bar\beta P/(1+\alpha h_T N)$.\\
+$\partial f/\partial P = -\bar\beta(N) N$.\\
+For $g = \varepsilon \bar\beta(N) NP - ZP$:\\
+$\partial g/\partial N = \varepsilon P \alpha/(1+\alpha h_T N)^2 = \varepsilon \bar\beta P/(1+\alpha h_T N)$\\
+$\partial g/\partial P = \varepsilon \bar\beta(N) N - Z$.
+
+\textbf{(b) Evaluate at $N^* = Z/(\varepsilon\bar\beta)$, $P^* = r/\bar\beta$:}
+\[
+J^* = \begin{pmatrix} r - \frac{\bar\beta}{1+\alpha h_T N^*} \cdot \frac{r}{\bar\beta} & -\bar\beta \cdot \frac{Z}{\varepsilon\bar\beta} \\ \varepsilon \cdot \frac{\bar\beta}{1+\alpha h_T N^*}\cdot\frac{r}{\bar\beta} & 0 \end{pmatrix}
+\]
+Let $C = 1+\alpha h_T N^* > 1$. Then:
+\[
+J^* = \begin{pmatrix} r(1 - 1/C) & -Z/\varepsilon \\ \varepsilon r/C & 0 \end{pmatrix} = \begin{pmatrix} r(C-1)/C & -Z/\varepsilon \\ \varepsilon r/C & 0 \end{pmatrix}
+\]
+
+\textbf{(c) Eigenvalues:} 
+\[
+\text{Tr} = r(C-1)/C > 0, \qquad \text{Det} = (Z/\varepsilon)(\varepsilon r/C) = Zr/C
+\]
+\[
+\lambda_\pm = \frac{r(C-1)}{2C}\left(1 \pm \sqrt{1 - \frac{4Zr/C}{r^2(C-1)^2/C^2}}\right) = \frac{r(C-1)}{2C}\left(1 \pm \sqrt{1 - \frac{4ZC}{r(C-1)^2}}\right)
+\]
+The leading factor is \textbf{positive} (since $C > 1$), so at least one eigenvalue has a positive real part.
+
+\textbf{Compared to LV} ($\lambda_\pm = \pm i\sqrt{rZ}$, pure imaginary, neutral): now we have a positive real part $\Rightarrow$ \textbf{unstable spiral outward}.
+
+\textbf{(d) Biological interpretation:} Type II functional response saturates predator consumption at high prey density. When prey become abundant, predators can't eat them all, so prey escape control and grow more. This destabilizes the system into outward spirals (or limit cycles in the full nonlinear system).
+
+\textbf{(e) Interaction matrix $A$:} \textbf{Cannot} be written. The interaction term is $\frac{\alpha N}{1+\alpha h_T N} \cdot NP$, which is not of the form $A_{ij} X_i X_j$ (linear). The denominator depends on $N$, breaking the bilinear structure required for $A$.
+\end{solution}
+
+\subsection{Problem 2.3: Pack Hunting (2024 Q1)}
+
+\begin{problem}
+4 predators always hunt in packs to kill 1 prey at a time.
+\begin{enumerate}[label=(\alph*)]
+\item Choose appropriate compartments.
+\item Write the differential equations.
+\item Interpret parameters relative to standard LV.
+\item Write $A$, find $\text{Tr}$, $\text{Det}$, eigenvalues.
+\item Is this system more or less stable?
+\end{enumerate}
+\end{problem}
+
+\begin{solution}
+\textbf{(a) Compartments:} Let $N$ = prey density, $P_p$ = density of \textbf{packs} (not individual predators). One pack contains 4 predators.
+
+\textbf{(b) Equations:} A pack consumes prey at rate $\bar\beta_p N P_p$. Each kill feeds the pack:
+\[
+\frac{dN}{dt} = rN - \bar\beta_p N P_p
+\]
+\[
+\frac{dP_p}{dt} = \varepsilon \bar\beta_p N P_p - Z_p P_p
+\]
+Same structure as standard LV; only the units of $P_p$ and consumption rate change.
+
+\textbf{(c) Parameters:}
+\begin{itemize}
+\item $r$: same units (prey/time per prey).
+\item $\bar\beta_p$: consumption rate per pack. Since each pack eats as much as 4 individual predators in coordinated kills, $\bar\beta_p \approx 4\bar\beta$ when comparing to individual predators.
+\item $\varepsilon$: still dimensionless, prey-biomass-to-predator-biomass conversion. Same value.
+\item $Z_p$: pack mortality. Hard to define exactly — average pack persistence rate. Roughly same magnitude as $Z$.
+\end{itemize}
+
+\textbf{(d) Interaction matrix:}
+\[
+A = \begin{pmatrix} 0 & -\bar\beta_p \\ \varepsilon\bar\beta_p & 0 \end{pmatrix}
+\]
+$\text{Tr}(A) = 0$, $\text{Det}(A) = \varepsilon\bar\beta_p^2$. Eigenvalues:
+\[
+\lambda_\pm = \pm i\bar\beta_p \sqrt{\varepsilon}
+\]
+
+\textbf{(e) Stability:} Eigenvalues are pure imaginary $\Rightarrow$ neutral limit cycles (same conclusion as LV). However, since $\bar\beta_p \approx 4\bar\beta$, the magnitude $|\lambda|$ is 4$\times$ larger, meaning \textbf{larger-amplitude oscillations}. The pack system has bigger boom-bust cycles, getting closer to extinction in the troughs. Strictly: same stability class. Loosely: \textbf{less stable in practice} due to extinction risk.
+\end{solution}
+
+\subsection{Problem 2.4: Cannibalistic Predator (2021 Q2)}
+
+\begin{problem}
+Modify LV for cannibalistic predator:
+\[
+\frac{dN}{dt} = rN - \bar\beta NP, \quad \frac{dP}{dt} = \varepsilon\bar\beta NP - (1-\varepsilon)\bar\beta_c P^2 - ZP
+\]
+\begin{enumerate}[label=(\alph*)]
+\item Draw the interaction network.
+\item Write $A$. Find $\text{Tr}$ and $\text{Det}$.
+\item Find fixed points.
+\item Compute $J^*$ at non-trivial FP.
+\item Find eigenvalues. What happens when $\bar\beta_c \gg \bar\beta$?
+\end{enumerate}
+\end{problem}
+
+\begin{solution}
+\textbf{(a) Network:} Two nodes (prey $N$, predator $P$), arrow from $N \to P$ (predator consumes prey), \textbf{self-loop on $P$} (cannibalism).
+
+\textbf{(b) Interaction matrix:} Divide each equation by its variable:
+\[
+\frac{\dot N}{N} = r - \bar\beta P, \quad \frac{\dot P}{P} = \varepsilon\bar\beta N - (1-\varepsilon)\bar\beta_c P - Z
+\]
+\[
+A = \begin{pmatrix} 0 & -\bar\beta \\ \varepsilon\bar\beta & -(1-\varepsilon)\bar\beta_c \end{pmatrix}
+\]
+$\text{Tr}(A) = -(1-\varepsilon)\bar\beta_c < 0$ (\textbf{stabilizing!}). $\text{Det}(A) = \varepsilon\bar\beta^2 > 0$.
+
+\textbf{(c) Fixed points:} $\dot N = 0 \Rightarrow N=0$ or $P = r/\bar\beta$. $\dot P = 0 \Rightarrow P = 0$ or $\varepsilon\bar\beta N - (1-\varepsilon)\bar\beta_c P = Z$. Coexistence FP:
+\[
+P^* = \frac{r}{\bar\beta}, \quad N^* = \frac{Z + (1-\varepsilon)\bar\beta_c r/\bar\beta}{\varepsilon\bar\beta} = \frac{Z\bar\beta + (1-\varepsilon)\bar\beta_c r}{\varepsilon\bar\beta^2}
+\]
+
+\textbf{(d) Standard Jacobian:}
+\[
+J = \begin{pmatrix} r - \bar\beta P & -\bar\beta N \\ \varepsilon\bar\beta P & \varepsilon\bar\beta N - 2(1-\varepsilon)\bar\beta_c P - Z \end{pmatrix}
+\]
+At $(N^*, P^*)$: $r - \bar\beta P^* = 0$. $\varepsilon\bar\beta N^* - Z = (1-\varepsilon)\bar\beta_c r/\bar\beta$. So $\varepsilon\bar\beta N^* - 2(1-\varepsilon)\bar\beta_c P^* - Z = -(1-\varepsilon)\bar\beta_c r/\bar\beta$.
+\[
+J^* = \begin{pmatrix} 0 & -\bar\beta N^* \\ \varepsilon r & -(1-\varepsilon)\bar\beta_c r/\bar\beta \end{pmatrix}
+\]
+
+\textbf{(e) Eigenvalues:} 
+$\text{Tr}(J^*) = -(1-\varepsilon)\bar\beta_c r/\bar\beta < 0$, $\text{Det}(J^*) = \varepsilon r \bar\beta N^* > 0$.
+\[
+\lambda_\pm = \frac{\text{Tr}}{2}\left(1 \pm \sqrt{1 - \frac{4\text{Det}}{\text{Tr}^2}}\right)
+\]
+Real part is negative $\Rightarrow$ \textbf{stable}.
+
+When $\bar\beta_c \gg \bar\beta$: the discriminant $1 - 4\text{Det}/\text{Tr}^2$ becomes positive (Det grows like $\bar\beta_c$, Tr$^2$ grows like $\bar\beta_c^2$, so ratio $\to 0$). Eigenvalues become real and negative $\Rightarrow$ \textbf{no oscillations}. Biologically: when predators rely heavily on cannibalism, they buffer against prey scarcity, eliminating boom-bust cycles.
+\end{solution}
+
+\subsection{Problem 2.5: Three-Species System (2023 Q2)}
+
+\begin{problem}
+Pet ownership system: humans $H$, pets $D$, predators $P$.
+\[
+\frac{dH}{dt} = rH(1 - H/K) + \alpha_D HD
+\]
+\[
+\frac{dD}{dt} = rD(1-D/K) + \omega\alpha_D HD - \bar\beta DP
+\]
+\[
+\frac{dP}{dt} = \varepsilon\bar\beta DP - ZP
+\]
+\begin{enumerate}[label=(\alph*)]
+\item How does this differ from standard predator-prey?
+\item Write the interaction matrix $A$.
+\item Find fixed points.
+\item Compute Jacobian at coexistence FP.
+\end{enumerate}
+\end{problem}
+
+\begin{solution}
+\textbf{(a) Differences:}
+\begin{itemize}
+\item Three compartments instead of two.
+\item Mutualistic interaction between $H$ and $D$ (both benefit, $+\alpha_D HD$).
+\item Asymmetric mutualism via $\omega$.
+\item Logistic growth in both $H$ and $D$.
+\item Compartments are species (humans, pets, predators), not abstractions.
+\end{itemize}
+
+\textbf{(b) Interaction matrix:} Divide each equation by its variable:
+\[
+\frac{\dot H}{H} = r(1-H/K) + \alpha_D D = r - rH/K + \alpha_D D
+\]
+\[
+\frac{\dot D}{D} = r - rD/K + \omega\alpha_D H - \bar\beta P
+\]
+\[
+\frac{\dot P}{P} = \varepsilon\bar\beta D - Z
+\]
+\[
+A = \begin{pmatrix} -r/K & \alpha_D & 0 \\ \omega\alpha_D & -r/K & -\bar\beta \\ 0 & \varepsilon\bar\beta & 0 \end{pmatrix}
+\]
+$\text{Tr}(A) = -2r/K < 0$ (stabilizing from logistic terms).
+
+\textbf{(c) Fixed points:} Set numerators to zero (after dividing). System of 3 equations in 3 unknowns:
+\begin{align}
+r - rH/K + \alpha_D D &= 0 \quad (\text{equation 1})\\
+r - rD/K + \omega\alpha_D H - \bar\beta P &= 0 \quad (\text{equation 2})\\
+\varepsilon\bar\beta D - Z &= 0 \implies D^* = Z/(\varepsilon\bar\beta) \quad (\text{equation 3})
+\end{align}
+From (1): $H^* = K + K\alpha_D D^*/r = K(1 + \alpha_D Z/(r\varepsilon\bar\beta))$.\\
+From (2): $P^* = (r - rD^*/K + \omega\alpha_D H^*)/\bar\beta$.
+
+\textbf{(d) Standard Jacobian at $(H^*, D^*, P^*)$:}
+\[
+J = \begin{pmatrix} r - 2rH/K + \alpha_D D & \alpha_D H & 0 \\ \omega\alpha_D D & r - 2rD/K + \omega\alpha_D H - \bar\beta P & -\bar\beta D \\ 0 & \varepsilon\bar\beta P & \varepsilon\bar\beta D - Z \end{pmatrix}
+\]
+At the coexistence FP, use the FP equations to simplify. From eq (1): $r + \alpha_D D^* = rH^*/K$, so $r - 2rH^*/K + \alpha_D D^* = -rH^*/K$. Similarly the (2,2) element $= -rD^*/K$. The (3,3) element $= 0$.
+\[
+J^* = \begin{pmatrix} -rH^*/K & \alpha_D H^* & 0 \\ \omega\alpha_D D^* & -rD^*/K & -\bar\beta D^* \\ 0 & \varepsilon\bar\beta P^* & 0 \end{pmatrix}
+\]
+$\text{Tr}(J^*) = -r(H^* + D^*)/K < 0$. \textbf{Determinant} (3$\times$3 expansion):
+\begin{align*}
+\text{Det}(J^*) &= -\frac{rH^*}{K}\left[\frac{rD^*}{K} \cdot 0 - (-\bar\beta D^*)(\varepsilon\bar\beta P^*)\right] \\
+&\quad - \alpha_D H^*\left[\omega\alpha_D D^* \cdot 0 - (-\bar\beta D^*)(0)\right] + 0\\
+&= -\frac{rH^*}{K}\varepsilon\bar\beta^2 D^* P^* < 0
+\end{align*}
+For 3$\times$3 stability we need: $\text{Tr} < 0$, $\text{Det} < 0$ (alternating signs needed for all roots negative), and $-\text{Tr}\cdot M_2 + \text{Det} > 0$ where $M_2$ is sum of 2$\times$2 principal minors. Routh-Hurwitz analysis. Since $\text{Tr} < 0$ and $\text{Det} < 0$, signs are correct for stability if the middle condition also holds. Likely \textbf{stable} given the strong logistic damping.
+\end{solution}
+
+\newpage
+%==================================================================
+\section{Disease (SIR / SIRS) Models}
+%==================================================================
+
+\subsection{Problem 3.1: Standard SIR (Foundation)}
+
+\begin{problem}
+\[
+\frac{dS}{dt} = -\beta SI, \quad \frac{dI}{dt} = \beta SI - \gamma I, \quad \frac{dR}{dt} = \gamma I
+\]
+\begin{enumerate}[label=(\alph*)]
+\item Show $S+I+R$ is conserved.
+\item Find all fixed points.
+\item Compute $J^*$ at the disease-free state $(S^*=N, I^*=0, R^*=0)$.
+\item Find eigenvalues, define $R_0$.
+\item When does the disease spread?
+\end{enumerate}
+\end{problem}
+
+\begin{solution}
+\textbf{(a) Conservation:}
+\[
+\frac{d(S+I+R)}{dt} = -\beta SI + \beta SI - \gamma I + \gamma I = 0 \quad\checkmark
+\]
+So $N = S+I+R$ is constant. Eliminate $R$: only need $S$ and $I$ equations.
+
+\textbf{(b) Fixed points:} $\dot I = I(\beta S - \gamma) = 0 \Rightarrow I=0$ or $S = \gamma/\beta$. $\dot S = -\beta SI = 0 \Rightarrow S=0$ or $I=0$. So fixed points satisfy $I^* = 0$ with $S^*$ arbitrary in $[0, N]$ and $R^* = N - S^*$. \textbf{Continuous family of disease-free fixed points.}
+
+\textbf{(c) Jacobian at $(S=N, I=0)$:}
+\[
+J = \begin{pmatrix} -\beta I & -\beta S \\ \beta I & \beta S - \gamma \end{pmatrix} \implies J^* = \begin{pmatrix} 0 & -\beta N \\ 0 & \beta N - \gamma \end{pmatrix}
+\]
+
+\textbf{(d) Eigenvalues:} Triangular matrix, so $\lambda_1 = 0$, $\lambda_2 = \beta N - \gamma$. Define:
+\[
+\boxed{R_0 = \frac{\beta N}{\gamma}}
+\]
+Then $\lambda_2 = \gamma(R_0 - 1)$.
+
+\textbf{(e) Stability:}
+\begin{itemize}
+\item $R_0 > 1 \Rightarrow \lambda_2 > 0 \Rightarrow$ disease-free state \textbf{unstable}, disease spreads.
+\item $R_0 < 1 \Rightarrow \lambda_2 < 0 \Rightarrow$ disease dies out.
+\item $\lambda_1 = 0$: marginal direction (along the family of FPs).
+\end{itemize}
+
+\textbf{Why interaction matrix doesn't work here:} $I^* = 0$ is trivial, so the $A$-matrix approach (which divides by populations) fails. Must use standard Jacobian.
+\end{solution}
+
+\subsection{Problem 3.2: SIRS with Loss of Immunity (2024 Q3 style)}
+
+\begin{problem}
+\[
+\frac{dS}{dt} = -\beta SI + \nu R, \quad \frac{dI}{dt} = \beta SI - \gamma I, \quad \frac{dR}{dt} = \gamma I - \nu R
+\]
+\begin{enumerate}[label=(\alph*)]
+\item Apply QSSA-like reasoning: which compartment to set $\dot{}$ to zero?
+\item Set $dS/dt = 0$ and solve for $dI/dt$ as function of $S$.
+\item Try other QSSA choices and compare.
+\end{enumerate}
+\end{problem}
+
+\begin{solution}
+\textbf{(a) Which to zero?} In Michaelis-Menten, we set $d[SE]/dt = 0$ because $[SE]$ is the intermediate complex. By analogy, $I$ is the intermediate compartment between $S$ and $R$, so naively setting $dI/dt = 0$ might seem right. \textbf{But} $I$ is exactly what we want to predict (analogous to $P$ in MM, the product). For predicting infections, we should NOT set $dI/dt = 0$.
+
+Better choice: \textbf{set $dS/dt = 0$} (the ``upstream'' substrate), then derive $dI/dt$.
+
+\textbf{(b) Set $dS/dt = 0$:}
+\[
+-\beta SI + \nu R = 0 \implies R = \frac{\beta SI}{\nu}
+\]
+Use conservation $N = S + I + R$:
+\[
+N = S + I + \frac{\beta SI}{\nu} \implies I\left(1 + \frac{\beta S}{\nu}\right) = N - S \implies I = \frac{(N-S)\nu}{\nu + \beta S}
+\]
+Substitute into $dI/dt$:
+\[
+\frac{dI}{dt} = \beta SI - \gamma I = I(\beta S - \gamma) = \frac{(N-S)\nu(\beta S - \gamma)}{\nu + \beta S}
+\]
+
+\textbf{Behavior:}
+\begin{itemize}
+\item $S = N$: numerator $= 0$ (no infection at start, all susceptible).
+\item $S = \gamma/\beta$: numerator $= 0$ (threshold, $R_0 = 1$).
+\item $S \in (\gamma/\beta, N)$: positive $dI/dt$ (disease grows).
+\item $S < \gamma/\beta$: negative $dI/dt$ (disease declines).
+\end{itemize}
+
+\textbf{(c) Try $dR/dt = 0$:}
+\[
+\gamma I = \nu R \implies R = \gamma I/\nu
+\]
+Substitute into conservation: $N = S + I + \gamma I/\nu = S + I(1+\gamma/\nu)$, so $I = (N-S)\nu/(\nu + \gamma)$.
+\[
+\frac{dI}{dt} = I(\beta S - \gamma) = \frac{(N-S)\nu(\beta S - \gamma)}{\nu + \gamma}
+\]
+Same zeros (at $S=N$ and $S=\gamma/\beta$), but different functional shape (linear in $S$ here vs hyperbolic-ish before).
+
+\textbf{Conclusion:} Different QSSA choices give different functional forms but same threshold conditions. The shapes differ in how $dI/dt$ depends on $S$ between the zeros.
+\end{solution}
+
+\subsection{Problem 3.3: SIR with Asymptomatic and Symptomatic (2020 Q4)}
+
+\begin{problem}
+Compartments: $S$, $I_a$ (asymptomatic), $I_s$ (symptomatic), $R$. Fraction $f$ become asymptomatic.
+\[
+\frac{dS}{dt} = -\beta_a I_a S - \beta_s I_s S
+\]
+\[
+\frac{dI_a}{dt} = f\beta_a I_a S + f\beta_s I_s S - \gamma_a I_a
+\]
+\[
+\frac{dI_s}{dt} = (1-f)\beta_a I_a S + (1-f)\beta_s I_s S - \gamma_s I_s
+\]
+\[
+\frac{dR}{dt} = \gamma_a I_a + \gamma_s I_s
+\]
+\begin{enumerate}[label=(\alph*)]
+\item Show conservation. Reduce equations.
+\item Find fixed points.
+\item Compute Jacobian at disease-free FP.
+\item Find eigenvalues for special case $f = 1$ (all asymptomatic).
+\item Same for $\beta_a = \beta_s$, $\gamma_a = \gamma_s$.
+\end{enumerate}
+\end{problem}
+
+\begin{solution}
+\textbf{(a) Conservation:} Sum all four:
+\[
+\frac{d(S+I_a+I_s+R)}{dt} = 0 \implies N = S+I_a+I_s+R = \text{const}
+\]
+Eliminate $R$. 3 independent equations.
+
+\textbf{(b) Fixed points:} For the disease-free state: $I_a^* = I_s^* = 0$, $S^* = N$, $R^* = 0$.
+
+\textbf{(c) Jacobian} (3 variables: $S, I_a, I_s$):
+\[
+J = \begin{pmatrix} -\beta_a I_a - \beta_s I_s & -\beta_a S & -\beta_s S \\ f(\beta_a I_a + \beta_s I_s) & f\beta_a S - \gamma_a & f\beta_s S \\ (1-f)(\beta_a I_a + \beta_s I_s) & (1-f)\beta_a S & (1-f)\beta_s S - \gamma_s \end{pmatrix}
+\]
+At $(S=N, I_a=0, I_s=0)$:
+\[
+J^* = \begin{pmatrix} 0 & -\beta_a N & -\beta_s N \\ 0 & f\beta_a N - \gamma_a & f\beta_s N \\ 0 & (1-f)\beta_a N & (1-f)\beta_s N - \gamma_s \end{pmatrix}
+\]
+
+\textbf{Eigenvalues:} First column is all zeros $\Rightarrow \lambda_1 = 0$. Reduce to 2$\times$2 sub-matrix:
+\[
+M = \begin{pmatrix} f\beta_a N - \gamma_a & f\beta_s N \\ (1-f)\beta_a N & (1-f)\beta_s N - \gamma_s \end{pmatrix}
+\]
+$\text{Tr}(M) = f\beta_a N + (1-f)\beta_s N - \gamma_a - \gamma_s$.\\
+$\text{Det}(M) = (f\beta_a N - \gamma_a)((1-f)\beta_s N - \gamma_s) - f(1-f)\beta_a\beta_s N^2$.
+Expand:
+\begin{align*}
+\text{Det}(M) &= f(1-f)\beta_a\beta_s N^2 - f\beta_a N\gamma_s - (1-f)\beta_s N \gamma_a + \gamma_a\gamma_s - f(1-f)\beta_a\beta_s N^2\\
+&= -f\beta_a N\gamma_s - (1-f)\beta_s N \gamma_a + \gamma_a\gamma_s\\
+&= \gamma_a\gamma_s\left(1 - \frac{f\beta_a N}{\gamma_a} - \frac{(1-f)\beta_s N}{\gamma_s}\right)
+\end{align*}
+
+\textbf{(d) Case $f = 1$ (all asymptomatic):}
+\[
+J^* = \begin{pmatrix} 0 & -\beta_a N & -\beta_s N \\ 0 & \beta_a N - \gamma_a & \beta_s N \\ 0 & 0 & -\gamma_s \end{pmatrix}
+\]
+Triangular: $\lambda_1 = 0$, $\lambda_2 = \beta_a N - \gamma_a$, $\lambda_3 = -\gamma_s$. Disease spreads if $\lambda_2 > 0$, i.e.\ $R_0 = \beta_a N/\gamma_a > 1$.
+
+\textbf{Biological meaning:} Only the asymptomatic strain matters; the symptomatic compartment is uninfected.
+
+\textbf{(e) Case $\beta_a = \beta_s = \beta$, $\gamma_a = \gamma_s = \gamma$:}
+$J^*$ becomes:
+\[
+\begin{pmatrix} 0 & -\beta N & -\beta N \\ 0 & f\beta N - \gamma & f\beta N \\ 0 & (1-f)\beta N & (1-f)\beta N - \gamma \end{pmatrix}
+\]
+The 2$\times$2 sub-matrix has $\text{Tr} = \beta N - 2\gamma$, $\text{Det} = -\gamma(\beta N - \gamma) + 0 = \gamma(\gamma - \beta N) = -\gamma\cdot\gamma(R_0-1)$. Eigenvalues:
+\[
+\lambda_\pm = \frac{\beta N - 2\gamma}{2}\left(1 \pm \sqrt{1 + \frac{4\gamma(\beta N - \gamma)}{(\beta N - 2\gamma)^2}}\right)
+\]
+After simplification: $\lambda_+ = \beta N - \gamma$, $\lambda_- = -\gamma$. (Verify: $\lambda_+\lambda_- = -\gamma(\beta N -\gamma)$, $\lambda_+ + \lambda_- = \beta N - 2\gamma$.\checkmark) Disease spreads if $R_0 = \beta N/\gamma > 1$, identical to standard SIR.
+
+\textbf{Biological meaning:} When asymptomatic and symptomatic infections behave identically, the $f$ split doesn't matter.
+\end{solution}
+
+\subsection{Problem 3.4: Two-Variant Disease (2021 Q3-Q4)}
+
+\begin{problem}
+First virus then variant. Variant has half transmissibility for those who already had the first virus.
+\[
+\frac{dS}{dt} = -\beta SI - \beta_2 S I_2
+\]
+\[
+\frac{dI}{dt} = \beta SI - \gamma I
+\]
+\[
+\frac{dS_2}{dt} = \gamma I - \frac{\beta_2}{2} S_2 I_2
+\]
+\[
+\frac{dI_2}{dt} = \beta_2 I_2(S + S_2/2) - \gamma I_2
+\]
+\[
+\frac{dR}{dt} = \gamma I_2
+\]
+\begin{enumerate}[label=(\alph*)]
+\item Conservation? Reduce.
+\item Find fixed points.
+\item Which FP for stability analysis of variant?
+\item Compute Jacobian at that FP.
+\item Find eigenvalues. Express conditions in terms of $R_0$.
+\end{enumerate}
+\end{problem}
+
+\begin{solution}
+\textbf{(a) Sum all 5:} cancels to 0. So $N = S + I + S_2 + I_2 + R$ const. Eliminate $R$.
+
+\textbf{(b) Fixed points:} Need $\dot I = 0 \Rightarrow I^* = 0$ or $S^* = \gamma/\beta$. Need $\dot{I_2} = 0 \Rightarrow I_2^* = 0$ or $\beta_2(S^* + S_2^*/2) = \gamma$. The non-trivial coexistence with both viruses circulating doesn't have a clean fixed point in general — must explore special cases:
+\begin{itemize}
+\item All recovered: $S=I=S_2=I_2=0$, $R=N$.
+\item Pre-outbreak: $S=N$, all others 0.
+\item \textbf{First virus done, variant not yet}: $I^* = I_2^* = 0$, $S^* = N - S_2^*$ (anyone left over) or $S_2^*$ chosen freely. This is the relevant FP.
+\end{itemize}
+
+\textbf{(c)} To assess if variant takes off: perturb around the post-first-virus state, $I^* = I_2^* = R^* = 0$, $S_2^*$ = whatever fraction was infected by first virus, $S^* = N - S_2^*$. Use \textbf{standard Jacobian} (compartments are zero, so $A$-matrix approach fails).
+
+\textbf{(d) Jacobian at $(S, I, S_2, I_2) = (N - S_2^*, 0, S_2^*, 0)$:}
+$\partial(\dot S)/\partial S = -\beta I - \beta_2 I_2 \to 0$\\
+$\partial(\dot S)/\partial I = -\beta S \to -\beta(N - S_2^*)$\\
+$\partial(\dot S)/\partial S_2 = 0$\\
+$\partial(\dot S)/\partial I_2 = -\beta_2 S \to -\beta_2(N - S_2^*)$\\
+$\partial(\dot I)/\partial I = \beta S - \gamma \to \beta(N-S_2^*) - \gamma$\\
+$\partial(\dot{S_2})/\partial I = \gamma$, $\partial(\dot{S_2})/\partial I_2 = -\beta_2 S_2^*/2$\\
+$\partial(\dot{I_2})/\partial I_2 = \beta_2(S + S_2/2) - \gamma \to \beta_2(N - S_2^*/2) - \gamma$
+\[
+J^* = \begin{pmatrix} 0 & -\beta(N-S_2^*) & 0 & -\beta_2(N-S_2^*) \\ 0 & \beta(N-S_2^*)-\gamma & 0 & 0 \\ 0 & \gamma & 0 & -\beta_2 S_2^*/2 \\ 0 & 0 & 0 & \beta_2(N-S_2^*/2)-\gamma \end{pmatrix}
+\]
+
+\textbf{(e) Eigenvalues:} Block-triangular with two zero columns ($S$ and $S_2$).
+$\lambda_1 = \lambda_2 = 0$ (susceptible directions; these are redundant constraint directions).
+$\lambda_3 = \beta(N-S_2^*) - \gamma$ (first virus mode).
+$\lambda_4 = \beta_2(N-S_2^*/2) - \gamma$ (variant mode).
+
+\textbf{Conditions:}
+\begin{itemize}
+\item First virus spreads if $\lambda_3 > 0 \iff \beta(N-S_2^*)/\gamma > 1 \iff R_{0,1} > 1$.
+\item Variant spreads if $\lambda_4 > 0 \iff \beta_2(N-S_2^*/2)/\gamma > 1 \iff R_{0,2} > 1$ where $R_{0,2} = \beta_2(N - S_2^*/2)/\gamma$.
+\end{itemize}
+
+\textbf{Two separate $R_0$ values} make sense: each strain has its own reproductive number conditional on the susceptible pool (which differs since variant gets reduced spread from $S_2$ population).
+\end{solution}
+
+\subsection{Problem 3.5: Vaccination (2021 Q4d-e)}
+
+\begin{problem}
+Fraction $f$ vaccinated. Vaccine reduces infection rate $\beta_2 \to \beta_2(1-p_1)$ and increases recovery $\gamma \to \gamma(1+p_2)$ for the vaccinated. Find: how do infection terms change? What's condition for variant to spread when $f = 1$?
+\end{problem}
+
+\begin{solution}
+For each contact event, both partners might be vaccinated (probability $f^2$), one of two scenarios for one being vaccinated ($2f(1-f)$), or neither ($(1-f)^2$). Effective infection rate (averaged over pairings):
+\[
+\beta_2^{\text{eff}} = \beta_2[(1-f)^2 + 2f(1-f)(1-p_1) + f^2(1-p_1)^2] = \beta_2[1 - f(1-(1-p_1))]^2 = \beta_2(1-fp_1)^2
+\]
+Wait, more carefully — for a transmission to happen, only one direction matters typically. Common approximation: factor of $(1-fp_1)$ once for transmitter (reduced shedding) and once for receiver (immunity). So:
+\[
+\beta_2 \to \beta_2(1-fp_1)^2
+\]
+Similarly recovery for vaccinated: $\gamma \to \gamma(1 + fp_2)$.
+
+\textbf{When $f = 1$:}
+\[
+\beta_2^{\text{eff}} = \beta_2(1-p_1)^2, \quad \gamma^{\text{eff}} = \gamma(1+p_2)
+\]
+Variant spreads if:
+\[
+\beta_2(1-p_1)^2(N-S_2^*/2) > \gamma(1+p_2)
+\]
+$\iff (1-p_1)^2 R_{0,2} > 1 + p_2$\\
+$\iff R_{0,2}^{\text{vacc}} = \frac{(1-p_1)^2 R_{0,2}}{1+p_2} > 1$.
+
+Larger $p_1$ (better immunity) and larger $p_2$ (faster recovery) reduce variant spread. Vaccines help.
+\end{solution}
+
+\newpage
+%==================================================================
+\section{Michaelis-Menten Kinetics}
+%==================================================================
+
+\subsection{Problem 4.1: Standard QSSA Derivation}
+
+\begin{problem}
+\[
+S + E \xrightleftharpoons[k_{-1}]{k_1} [SE] \xrightarrow{k_2} P + E
+\]
+Total enzyme $E_0 = E + [SE]$ conserved.
+\begin{enumerate}[label=(\alph*)]
+\item Write all four equations.
+\item Apply QSSA. Solve for $[SE]$ in terms of $S$ and $E_0$.
+\item Find $V_\text{max}$, $K_M$.
+\item Show limits: $S \ll K_M$ and $S \gg K_M$.
+\end{enumerate}
+\end{problem}
+
+\begin{solution}
+\textbf{(a) Equations:}
+\[
+\dot S = -k_1 SE + k_{-1}[SE]
+\]
+\[
+\dot E = -k_1 SE + (k_{-1}+k_2)[SE]
+\]
+\[
+\dot{[SE]} = k_1 SE - (k_{-1}+k_2)[SE]
+\]
+\[
+\dot P = k_2 [SE]
+\]
+Note $\dot E + \dot{[SE]} = 0$, confirming $E_0 = E + [SE]$ const.
+
+\textbf{(b) QSSA: } $\dot{[SE]} = 0 \Rightarrow k_1 SE = (k_{-1}+k_2)[SE]$. Use $E = E_0 - [SE]$:
+\[
+k_1 S(E_0 - [SE]) = (k_{-1}+k_2)[SE]
+\]
+\[
+k_1 S E_0 = [SE](k_1 S + k_{-1} + k_2)
+\]
+\[
+[SE] = \frac{k_1 S E_0}{k_1 S + k_{-1} + k_2} = \frac{S E_0}{S + (k_{-1}+k_2)/k_1} = \frac{SE_0}{S + K_M}
+\]
+
+\textbf{(c) Production rate:}
+\[
+\boxed{\frac{dP}{dt} = k_2 [SE] = \frac{k_2 E_0 S}{K_M + S} = \frac{V_\text{max} S}{K_M + S}}
+\]
+where $V_\text{max} = k_2 E_0$, $K_M = (k_{-1}+k_2)/k_1$.
+
+\textbf{(d) Limits:}
+\begin{itemize}
+\item $S \ll K_M$: $\dot P \approx (V_\text{max}/K_M) S$ (linear in $S$, first-order kinetics).
+\item $S \gg K_M$: $\dot P \approx V_\text{max}$ (saturation, zero-order in $S$).
+\item $S = K_M$: $\dot P = V_\text{max}/2$ (defining property of $K_M$).
+\end{itemize}
+\end{solution}
+
+\subsection{Problem 4.2: Spike Protein Coupled Reaction (2023 Q4)}
+
+\begin{problem}
+\[
+S + E \rightleftharpoons [SE] \to P + E
+\]
+\[
+S + \tilde\sigma \rightleftharpoons [S\tilde\sigma] \to P_\text{new} + \tilde\sigma
+\]
+with rate constants $k_1, k_{-1}, k_2$ for the first reaction and $\tilde k_1, \tilde k_{-1}, \tilde k_2$ for the second. Spike protein $\tilde\sigma$ acts like a second enzyme.
+\begin{enumerate}[label=(\alph*)]
+\item Write all equations.
+\item How many independent equations after conservation?
+\item Apply QSSA. Find $\dot P$ and $\dot P_\text{new}$.
+\item How would degradation modify this?
+\end{enumerate}
+\end{problem}
+
+\begin{solution}
+\textbf{(a) Equations:}
+\[
+\dot S = -k_1 SE + k_{-1}[SE] - \tilde k_1 S\tilde\sigma + \tilde k_{-1}[S\tilde\sigma]
+\]
+\[
+\dot E = -k_1 SE + (k_{-1}+k_2)[SE]
+\]
+\[
+\dot{[SE]} = k_1 SE - (k_{-1}+k_2)[SE]
+\]
+\[
+\dot{\tilde\sigma} = -\tilde k_1 S\tilde\sigma + (\tilde k_{-1}+\tilde k_2)[S\tilde\sigma]
+\]
+\[
+\dot{[S\tilde\sigma]} = \tilde k_1 S\tilde\sigma - (\tilde k_{-1}+\tilde k_2)[S\tilde\sigma]
+\]
+\[
+\dot P = k_2[SE], \quad \dot P_\text{new} = \tilde k_2[S\tilde\sigma]
+\]
+That's 7 equations.
+
+\textbf{(b) Conservation:} $E_0 = E + [SE]$ and $\tilde\sigma_0 = \tilde\sigma + [S\tilde\sigma]$. So 2 conservation laws, eliminate $E$ and $\tilde\sigma$. Independent equations: 5.
+
+\textbf{(c) QSSA:} Set $\dot{[SE]} = 0$ and $\dot{[S\tilde\sigma]} = 0$.
+\[
+[SE] = \frac{SE_0}{S + K_M}, \quad K_M = \frac{k_{-1}+k_2}{k_1}
+\]
+\[
+[S\tilde\sigma] = \frac{S\tilde\sigma_0}{S + \tilde K_M}, \quad \tilde K_M = \frac{\tilde k_{-1}+\tilde k_2}{\tilde k_1}
+\]
+\textbf{Production rates:}
+\[
+\frac{dP}{dt} = \frac{k_2 E_0 S}{K_M + S}, \quad \frac{dP_\text{new}}{dt} = \frac{\tilde k_2 \tilde\sigma_0 S}{\tilde K_M + S}
+\]
+The two reactions \emph{compete} for substrate $S$, but in QSSA each runs independently (since $E_0$ and $\tilde\sigma_0$ are separately conserved).
+
+\textbf{(d) Degradation:} Add $-k_d P$ to $\dot P$ and $-k_d P_\text{new}$ to $\dot P_\text{new}$. Now $P$ and $P_\text{new}$ reach steady states. Set $\dot P = 0$:
+\[
+k_2 [SE] = k_d P \implies P^* = \frac{k_2 E_0 S}{k_d (K_M + S)}
+\]
+With production of new substrate $S$, the system can reach a true steady state for all compartments. Initially (short times), $P_\text{new}$ accumulates linearly with rate $\tilde k_2 \tilde\sigma_0 S/(\tilde K_M + S)$; long term, $P_\text{new}$ saturates.
+
+\textbf{Vaccine implications:} Short-term, problematic product accumulates. With degradation and substrate replenishment, problem could resolve unless certain feedbacks (e.g., autoimmune response) are introduced.
+\end{solution}
+
+\subsection{Problem 4.3: Hill Function and Cooperativity}
+
+\begin{problem}
+For a reaction with cooperativity $n$:
+\[
+\dot P = \frac{V_\text{max} S^n}{K^n + S^n}
+\]
+\begin{enumerate}[label=(\alph*)]
+\item At what $S$ is the rate half-maximum?
+\item Compute $\frac{d(\dot P)}{dS}$ at $S = K$. How does this depend on $n$?
+\item Plot the difference between $n = 1$ and $n = 4$.
+\end{enumerate}
+\end{problem}
+
+\begin{solution}
+\textbf{(a)} $\dot P = V_\text{max}/2 \iff S^n = K^n \iff S = K$. The half-max concentration is $K$ regardless of $n$.
+
+\textbf{(b)} 
+\[
+\frac{d(\dot P)}{dS} = V_\text{max}\frac{nS^{n-1}(K^n+S^n) - S^n \cdot nS^{n-1}}{(K^n+S^n)^2} = V_\text{max}\frac{nK^n S^{n-1}}{(K^n+S^n)^2}
+\]
+At $S = K$:
+\[
+\frac{d(\dot P)}{dS}\bigg|_{S=K} = V_\text{max}\frac{nK^n K^{n-1}}{(2K^n)^2} = \frac{nV_\text{max}}{4K}
+\]
+The slope at half-max scales linearly with $n$.
+
+\textbf{(c)} For $n=1$: smooth hyperbolic increase, no inflection. For $n=4$: switch-like sigmoidal, very flat at low $S$, sharp rise near $S = K$, flat at high $S$. Cooperative binding produces ``digital'' response.
+\end{solution}
+
+\newpage
+%==================================================================
+\section{Hodgkin-Huxley and Action Potentials}
+%==================================================================
+
+\subsection{Problem 5.1: Conceptual Questions on HH}
+
+\begin{problem}
+\begin{enumerate}[label=(\alph*)]
+\item Write the HH equation for membrane voltage.
+\item Explain each term physically.
+\item Why $m^3 h$ for sodium and $n^4$ for potassium?
+\item Sketch dynamics of $V$, $m$, $h$, $n$ during an action potential.
+\end{enumerate}
+\end{problem}
+
+\begin{solution}
+\textbf{(a)}
+\[
+C_m \frac{dV}{dt} = -g_\text{Na} m^3 h(V - V_\text{Na}) - g_K n^4(V - V_K) - g_L(V - V_L) + I_\text{ext}
+\]
+
+\textbf{(b) Terms:}
+\begin{itemize}
+\item $C_m \dot V$: capacitive current (charging/discharging the membrane).
+\item $g_\text{Na} m^3 h$: maximum Na conductance times fraction of channels open ($m^3 h$).
+\item $(V - V_\text{Na})$: driving force; current = conductance $\times$ driving force.
+\item $g_L (V - V_L)$: passive ``leak'' through always-open channels.
+\item $I_\text{ext}$: applied stimulus.
+\end{itemize}
+
+\textbf{(c) Powers:} 
+\begin{itemize}
+\item Sodium has 3 activation gates (each opens with prob $m$), and 1 inactivation gate (closes with prob $1-h$, so open with $h$). Net open: $m^3 h$.
+\item Potassium has 4 activation gates: $n^4$.
+\item These powers come from the structural biology of the channels (subunits).
+\end{itemize}
+
+\textbf{(d) Action potential phases:}
+\begin{enumerate}
+\item \textbf{Resting} ($V \approx -70$ mV): $m \approx 0$, $h \approx 1$, $n \approx 0$.
+\item \textbf{Depolarization}: stimulus $\to V \uparrow \to m \uparrow$ rapidly $\to$ Na current floods in $\to V \uparrow$ further (positive feedback).
+\item \textbf{Peak} ($V \approx +30$ mV): $m$ saturates at 1.
+\item \textbf{Repolarization}: $h \downarrow$ slowly (Na inactivates) and $n \uparrow$ slowly (K opens). Na current shuts off; K current flows out.
+\item \textbf{Hyperpolarization (afterpolarization)}: K current overshoots; $V$ briefly below resting.
+\item \textbf{Recovery}: $h$ slowly returns to 1; $n$ to 0; refractory period.
+\end{enumerate}
+\end{solution}
+
+\subsection{Problem 5.2: Gating Variable Dynamics}
+
+\begin{problem}
+A gating variable $x$ obeys:
+\[
+\frac{dx}{dt} = \alpha_x(V)(1-x) - \beta_x(V) x
+\]
+\begin{enumerate}[label=(\alph*)]
+\item Find steady-state $x_\infty(V)$ and time constant $\tau_x(V)$.
+\item Rewrite the ODE in standard relaxation form.
+\item Solve for $x(t)$ if $V$ is held constant after $t=0$.
+\end{enumerate}
+\end{problem}
+
+\begin{solution}
+\textbf{(a)} Set $\dot x = 0$:
+\[
+\alpha_x(1-x_\infty) = \beta_x x_\infty \implies x_\infty = \frac{\alpha_x}{\alpha_x + \beta_x}
+\]
+Time constant from rewriting: $\dot x = \alpha_x - (\alpha_x + \beta_x)x$, so:
+\[
+\tau_x = \frac{1}{\alpha_x + \beta_x}
+\]
+
+\textbf{(b)} 
+\[
+\dot x = \frac{x_\infty - x}{\tau_x}
+\]
+
+\textbf{(c)} First-order linear ODE; solution:
+\[
+x(t) = x_\infty + (x(0) - x_\infty)e^{-t/\tau_x}
+\]
+Exponential approach to $x_\infty$ with time constant $\tau_x$.
+\end{solution}
+
+\newpage
+%==================================================================
+\section{Stability \& Eigenvalue Analysis (General)}
+%==================================================================
+
+\subsection{Problem 6.1: 2$\times$2 Matrix Eigenvalue Practice}
+
+\begin{problem}
+For $M = \begin{pmatrix} 2 & -1 \\ 4 & -3 \end{pmatrix}$, compute Tr, Det, and eigenvalues. Classify the fixed point.
+\end{problem}
+
+\begin{solution}
+$\text{Tr}(M) = 2 - 3 = -1$. $\text{Det}(M) = 2(-3) - (-1)(4) = -6 + 4 = -2$.\\
+Characteristic equation: $\lambda^2 - \text{Tr}\lambda + \text{Det} = 0 \Rightarrow \lambda^2 + \lambda - 2 = 0$. Factor: $(\lambda+2)(\lambda-1) = 0$.\\
+$\lambda_1 = 1$, $\lambda_2 = -2$. \textbf{Saddle point} (one positive, one negative).
+\end{solution}
+
+\subsection{Problem 6.2: Asymptotic Analysis of a Perturbation (2024 Q4)}
+
+\begin{problem}
+A perturbation $\delta x(t)$ obeys:
+\[
+\delta x(t) = \frac{1}{1 - \frac{1}{\lambda\tau}e^{\lambda t}/\lambda} \cdot \frac{1}{\tau}
+\]
+\begin{enumerate}[label=(\alph*)]
+\item Behavior at early times $t \ll \tau$.
+\item Behavior at long times $t \gg \tau$.
+\item Sketch in phase space.
+\item If this is only a leading-order Taylor expansion, what's the conclusion?
+\item For a different system: $\delta x(t) = (1 + e^{-\lambda t})e^{-\lambda t}$. Long-time behavior?
+\end{enumerate}
+\end{problem}
+
+\begin{solution}
+\textbf{(a) Early times:} $e^{\lambda t}$ near 1, so denominator $\approx 1 - 1/(\lambda^2 \tau) \approx 1$ if $\lambda^2 \tau \gg 1$. Leading behavior $\delta x \approx 1/\tau \cdot e^{\lambda t}/\text{stuff}$. More carefully: at small $t$, expand exponential, $\delta x \approx \frac{1}{\tau} \cdot e^{\lambda t}$ (exponential growth).
+
+\textbf{(b) Long times:} $e^{\lambda t} \to \infty$ (since $\lambda > 0$), denominator $\to -\infty$ in magnitude, so $\delta x \to 0$. Perturbation \textbf{decays back to FP eventually}.
+
+\textbf{(c) Phase space:} Trajectory first moves away from FP, then turns around and comes back. Looks like a loop or excursion.
+
+\textbf{Conclusion:} Since the perturbation eventually decays to zero, the system is \textbf{stable} (this is the exact solution).
+
+\textbf{(d) If only leading-order Taylor:} Cannot conclude. Higher-order terms might dominate when the perturbation grows large; the linear theory only valid near FP. The trajectory might escape before higher orders bring it back, leading to true instability.
+
+\textbf{(e) Other system:} $\delta x(t) = (1 + e^{-\lambda t})e^{-\lambda t} = e^{-\lambda t} + e^{-2\lambda t} \to 0$ as $t \to \infty$. Stable, with no oscillations (real exponentials).
+
+If $\lambda$ is complex, say $\lambda = a + i\omega$, then $e^{-\lambda t}$ oscillates with envelope $e^{-at}$. If $a > 0$, decays $\Rightarrow$ \textbf{spiral into FP}. Stable spiral (limit-cycle-like decay).
+\end{solution}
+
+\subsection{Problem 6.3: 3$\times$3 Stability via Routh-Hurwitz}
+
+\begin{problem}
+For 3$\times$3 matrix $J^*$, when is the FP stable?
+\end{problem}
+
+\begin{solution}
+Characteristic polynomial: $\lambda^3 + a_2\lambda^2 + a_1 \lambda + a_0 = 0$ where:
+\begin{itemize}
+\item $a_2 = -\text{Tr}(J^*)$
+\item $a_1 = $ sum of 2$\times$2 principal minors
+\item $a_0 = -\text{Det}(J^*)$
+\end{itemize}
+\textbf{Routh-Hurwitz conditions for all roots to have negative real parts:}
+\begin{enumerate}
+\item $a_2 > 0$ (i.e.\ $\text{Tr}(J^*) < 0$).
+\item $a_0 > 0$ (i.e.\ $\text{Det}(J^*) < 0$).
+\item $a_2 a_1 > a_0$.
+\end{enumerate}
+
+\textbf{Number of invariants for $n \times n$:} For $n \times n$, you need $n$ independent equations (Tr, Det, and $n-2$ intermediate invariants for $n > 2$). Always $n-2$ more than 2$\times$2 case.
+\end{solution}
+
+\subsection{Problem 6.4: Trace and Determinant Biological Meaning (2019 Q2)}
+
+\begin{problem}
+For each matrix below, describe the biological meaning of Tr, Det, and predict stability.
+\[
+A_1 = \begin{pmatrix} -r/K & -\bar\beta \\ \varepsilon\bar\beta & 0 \end{pmatrix}, \quad
+A_2 = \begin{pmatrix} 0 & -\beta \\ \beta & 0 \end{pmatrix}
+\]
+\end{problem}
+
+\begin{solution}
+\textbf{$A_1$ (logistic-prey LV):}
+\begin{itemize}
+\item $\text{Tr}(A_1) = -r/K$ (sum of self-interactions). Only prey self-regulates (logistic). Negative $\Rightarrow$ stabilizing.
+\item $\text{Det}(A_1) = \varepsilon\bar\beta^2$ (product of cross-species interactions). Positive $\Rightarrow$ stabilizing form (no saddle).
+\item Eigenvalues: $\lambda_\pm = -\frac{r}{2K}\left(1 \pm \sqrt{1 - \frac{4\varepsilon\bar\beta^2 K^2}{r^2}}\right)$. Real part negative $\Rightarrow$ \textbf{stable}.
+\end{itemize}
+
+\textbf{$A_2$ (basic SIR):}
+\begin{itemize}
+\item $\text{Tr}(A_2) = 0$: no self-interactions among compartments.
+\item $\text{Det}(A_2) = \beta^2 > 0$: positive cross-interactions $\Rightarrow$ oscillatory.
+\item $\lambda_\pm = \pm i\beta$: pure imaginary, neutral oscillations.
+\end{itemize}
+\end{solution}
+
+\newpage
+%==================================================================
+\section{Conservation Equations \& Constraint Surfaces}
+%==================================================================
+
+\subsection{Problem 7.1: Identifying Conservation}
+
+\begin{problem}
+For each system, determine whether $N = \sum X_i$ is conserved:
+\begin{enumerate}[label=(\alph*)]
+\item SIR with deaths: $\dot S = -\beta SI$, $\dot I = \beta SI - \gamma I - \mu I$, $\dot R = \gamma I$.
+\item SIRS: $\dot S = -\beta SI + \nu R$, $\dot I = \beta SI - \gamma I$, $\dot R = \gamma I - \nu R$.
+\item Logistic predator-prey.
+\end{enumerate}
+\end{problem}
+
+\begin{solution}
+\textbf{(a)} Sum: $\dot S + \dot I + \dot R = -\mu I \neq 0$. \textbf{Not conserved}; total population decreases due to disease deaths. Cannot eliminate any equation.
+
+\textbf{(b)} Sum: $\dot S + \dot I + \dot R = 0$ \checkmark. \textbf{Conserved}. Eliminate one equation.
+
+\textbf{(c)} $\dot N + \dot P$ has terms like $rN(1 - N/K) - \bar\beta NP + \varepsilon\bar\beta NP - ZP$. Doesn't simplify to zero. \textbf{Not conserved} (no conservation law for biomass here since predator gains $\varepsilon$ fraction of prey biomass).
+\end{solution}
+
+\subsection{Problem 7.2: Reducing a 5-Variable System}
+
+\begin{problem}
+For the two-variant disease in Problem 3.4, show that conservation reduces 5 variables to 4 and explain why we can't reduce further despite there being multiple constraints.
+\end{problem}
+
+\begin{solution}
+Sum all 5 equations: total $= 0$ (one conservation law), reduces to 4 variables.
+
+In some specific systems with no births/deaths, additional fictitious conservation laws (like total infections ever) can apply, but they don't help reduce the dynamical system. The structural conservation $S + I + S_2 + I_2 + R = N$ is the only \emph{instantaneous} conservation. Other quantities (e.g., total ever infected) are not constants of motion.
+\end{solution}
+
+\newpage
+%==================================================================
+\section{Mixed / Compound Problems}
+%==================================================================
+
+\subsection{Problem 8.1: COVID-19 Real-World Application (2020 Q1-3)}
+
+\begin{problem}
+A pathogen doubles cases every 5 days (factor of $e \approx 2.72$).
+\begin{enumerate}[label=(\alph*)]
+\item Find continuous growth rate $r$.
+\item If 0.5\% of cases are fatal with 3-week delay, find deaths $D(t)$ on day $t$.
+\item Tests are processed with a 3-day delay; reported cases $R(t)$?
+\item Evaluate at $t = 100$ days starting from $N(0) = 1$.
+\end{enumerate}
+\end{problem}
+
+\begin{solution}
+\textbf{(a)} $N(t) = e^{rt}$ with $N(5) = e$ requires $5r = 1 \Rightarrow r = 0.2$ /day.
+
+\textbf{(b)} Cases at time $t - 21$ days (3 weeks earlier) become deaths today, with 0.5\% probability:
+\[
+D(t) = 0.005 \cdot N(t-21) = 0.005 \cdot e^{0.2(t-21)} = 0.005\,e^{-4.2}\,e^{0.2t} \approx 7.5 \times 10^{-5} e^{0.2t}
+\]
+
+\textbf{(c)} Reported cases lag by 3 days:
+\[
+R(t) = N(t-3) = e^{0.2(t-3)} = e^{-0.6} e^{0.2t} \approx 0.549 e^{0.2t}
+\]
+New reported cases per day: $\Delta R(t) = R(t) - R(t-1) \approx R(t)(1 - e^{-0.2}) \approx 0.181 R(t)$.
+
+\textbf{(d) At $t = 100$:}
+\begin{itemize}
+\item $N(100) = e^{20} \approx 4.85 \times 10^8$ (unrealistic; suggests population finite, model breakdown).
+\item $D(100) = 7.5 \times 10^{-5} \cdot e^{20} \approx 36{,}000$
+\item $R(100) \approx 0.549 \cdot e^{20} \approx 2.66 \times 10^8$
+\end{itemize}
+The numbers are unrealistic because exponential growth ignores the finite population — this is why we need SIR-type models with saturation.
+\end{solution}
+
+\subsection{Problem 8.2: Connecting SI Model to Exponential Growth (2020 Q2)}
+
+\begin{problem}
+For the SI model, $\dot I = \beta S I - \gamma I$ with $S + I = T$ (total constant). Show how, when $I \ll T$, this reduces to exponential growth. What is the effective $r$?
+\end{problem}
+
+\begin{solution}
+$S = T - I \approx T$ when $I \ll T$. Then:
+\[
+\dot I \approx \beta T I - \gamma I = (\beta T - \gamma)I = \gamma(R_0 - 1) I
+\]
+Exponential growth with $r = \beta T - \gamma = \gamma(R_0 - 1)$.
+
+\textbf{Without approximation}, the original equation $\dot I = \beta(T-I)I - \gamma I = (\beta T - \gamma)I - \beta I^2$ is a \textbf{logistic equation} (Bernoulli equation)! It has carrying capacity $K = (\beta T - \gamma)/\beta = T - \gamma/\beta = T(1 - 1/R_0)$.
+\end{solution}
+
+\subsection{Problem 8.3: Comparing Two Cities (2020 Q2b)}
+
+\begin{problem}
+City A: population $T_A$, infection rate $\beta_A$, $R_{0,A} = 1.1$. City B: $10\times$ population, $5\times$ infection rate. Compare long-time infected fraction.
+\end{problem}
+
+\begin{solution}
+$R_{0,A} = \beta_A T_A / \gamma = 1.1$.
+
+City B: $T_B = 10 T_A$, $\beta_B = 5\beta_A$. So:
+\[
+R_{0,B} = \frac{5\beta_A \cdot 10 T_A}{\gamma} = 50 \cdot R_{0,A} = 55
+\]
+Massive amplification.
+
+Long-time infected fraction in SIR (using final size equation $1 - x = e^{-R_0 x}$ where $x$ is fraction infected): for $R_{0,A} = 1.1$, $x_A \approx 0.18$ (18\%). For $R_{0,B} = 55$, $x_B \approx 1$ (essentially everyone). So the larger city has $\sim 5\times$ more cases per capita and many more total cases — \textbf{huge hospital overflow risk}.
+\end{solution}
+
+\newpage
+%==================================================================
+\section{Model Formulation From Words (Pattern Recognition)}
+%==================================================================
+
+\subsection{Problem 9.1: Translating Biology to Equations}
+
+\begin{problem}
+For each scenario, write down the differential equations.
+\begin{enumerate}[label=(\alph*)]
+\item Two species in symbiosis (mutualism): both grow logistically, plus each benefits proportionally from the other.
+\item A virus that mutates from strain 1 to strain 2 at rate $\mu$, with separate SIR dynamics for each.
+\item Enzyme inhibition: an inhibitor $I$ binds the enzyme $E$ to form $[EI]$, reducing the active enzyme pool.
+\end{enumerate}
+\end{problem}
+
+\begin{solution}
+\textbf{(a) Symbiosis:}
+\[
+\dot N_1 = r_1 N_1 (1 - N_1/K_1) + \alpha_{12} N_1 N_2
+\]
+\[
+\dot N_2 = r_2 N_2 (1 - N_2/K_2) + \alpha_{21} N_1 N_2
+\]
+
+\textbf{(b) Mutating virus (with conversion of strain 1 to 2 in infected hosts):}
+\[
+\dot S = -\beta_1 S I_1 - \beta_2 S I_2
+\]
+\[
+\dot I_1 = \beta_1 S I_1 - \gamma I_1 - \mu I_1
+\]
+\[
+\dot I_2 = \beta_2 S I_2 - \gamma I_2 + \mu I_1
+\]
+\[
+\dot R = \gamma(I_1 + I_2)
+\]
+
+\textbf{(c) Enzyme inhibition (competitive):}
+\[
+S + E \rightleftharpoons [SE] \to P + E
+\]
+\[
+I + E \rightleftharpoons [EI]
+\]
+Equations:
+\[
+\dot S = -k_1 SE + k_{-1}[SE]
+\]
+\[
+\dot I = -k_3 IE + k_{-3}[EI]
+\]
+\[
+\dot E = -k_1 SE + (k_{-1}+k_2)[SE] - k_3 IE + k_{-3}[EI]
+\]
+\[
+\dot{[SE]} = k_1 SE - (k_{-1}+k_2)[SE]
+\]
+\[
+\dot{[EI]} = k_3 IE - k_{-3}[EI]
+\]
+Conservation: $E_0 = E + [SE] + [EI]$. After QSSA on both complexes: $V_\text{max}^\text{eff} = V_\text{max}/(1 + I/K_I)$ where $K_I = k_{-3}/k_3$. Inhibitor reduces effective $V_\text{max}$.
+\end{solution}
+
+\subsection{Problem 9.2: Carrying Capacity Modification (2018 Q3)}
+
+\begin{problem}
+Standard LV without predator carrying capacity. What assumption underlies this?
+What if the assumption fails? Modify equations.
+\end{problem}
+
+\begin{solution}
+\textbf{Assumption:} Predator population is solely limited by prey availability (food). When prey are abundant, predators grow without saturation.
+
+\textbf{When this fails:} Territoriality, intraspecific competition, mate-finding limits, or alternative resources.
+
+\textbf{Modification:} Replace $\varepsilon\bar\beta N$ (per-capita predator growth) with $\varepsilon\bar\beta N(1 - P/K_P)$:
+\[
+\frac{dP}{dt} = \varepsilon\bar\beta NP(1 - P/K_P) - ZP
+\]
+Now $P$ has its own carrying capacity. Adds negative diagonal term to $A$:
+\[
+A = \begin{pmatrix} 0 & -\bar\beta \\ \varepsilon\bar\beta & -\varepsilon\bar\beta N^*/K_P \end{pmatrix}
+\]
+At fixed point, this becomes stabilizing.
+\end{solution}
+
+\subsection{Problem 9.3: Chronic Carriers (2018 Q4)}
+
+\begin{problem}
+SIR model with chronic carriers $C$:
+\[
+\dot S = -\beta SI - \alpha SC + \gamma I
+\]
+\[
+\dot I = \beta SI - \gamma I
+\]
+\[
+\dot C = \alpha SC
+\]
+\begin{enumerate}[label=(\alph*)]
+\item Conservation? Reduce.
+\item Find fixed points.
+\item Compute Jacobian at disease-free FP.
+\item Find eigenvalues. Define $R_0$ for each pathogen branch.
+\end{enumerate}
+\end{problem}
+
+\begin{solution}
+\textbf{(a)} Sum: $\dot S + \dot I + \dot C = 0$ \checkmark. Eliminate one variable, e.g.\ $S = N - I - C$.
+
+\textbf{(b)} Disease-free: $I^* = 0$, $C^* = 0$, $S^* = N$.
+
+Endemic states require $\dot I = I(\beta S - \gamma) = 0$ and $\dot C = \alpha S C = 0$. With $C^* = 0$ and $I^* > 0$: requires $\beta S^* = \gamma$, so $S^* = \gamma/\beta$. Plug into $\dot S = 0$: $0 = -\beta SI + \gamma I = 0$ \checkmark. Endemic FP with $C^* = 0$, $S^* = \gamma/\beta$, $I^* = N - \gamma/\beta$ (if $> 0$).
+
+\textbf{(c) Jacobian at disease-free $(N, 0, 0)$:}
+\[
+J = \begin{pmatrix} -\beta I - \alpha C & -\beta S + \gamma & -\alpha S \\ \beta I & \beta S - \gamma & 0 \\ \alpha C & 0 & \alpha S \end{pmatrix} \to \begin{pmatrix} 0 & -\beta N + \gamma & -\alpha N \\ 0 & \beta N - \gamma & 0 \\ 0 & 0 & \alpha N \end{pmatrix}
+\]
+
+\textbf{(d) Eigenvalues:} Triangular structure (first column zero):
+\[
+\lambda_1 = 0, \quad \lambda_2 = \beta N - \gamma, \quad \lambda_3 = \alpha N
+\]
+Define:
+\[
+R_0^{(I)} = \frac{\beta N}{\gamma}, \quad R_0^{(C)} = \alpha N \cdot \tau_\text{lifetime}
+\]
+For chronic carriers (no recovery), $R_0^{(C)}$ is just $\alpha N$ times an arbitrary lifetime — the chronic carrier branch is \textbf{always unstable for $\alpha N > 0$}, since $\lambda_3 > 0$. Once a chronic carrier exists, the system can never be stable.
+
+\textbf{Why you only need one $R_0$ for stability:} If $R_0^{(C)} > 1$ (or just $\alpha N > 0$), system is unstable regardless of $R_0^{(I)}$. So for stability we need both: chronic carriers can't exist OR don't transmit, AND $R_0^{(I)} < 1$.
+\end{solution}
+
+\newpage
+%==================================================================
+\section{Quick Reference: Common Tricks \& Patterns}
+%==================================================================
+
+\begin{tcolorbox}[colback=yellow!5,colframe=orange!70!black,title=\textbf{Stability Decision Tree}]
+\begin{enumerate}
+\item Find fixed point: set $d\vec X/dt = 0$.
+\item If FP has any zero components $\to$ \textbf{must use Jacobian} (not interaction matrix).
+\item If interactions are nonlinear (Type II, MM) $\to$ \textbf{must use Jacobian}.
+\item Otherwise either method works at non-trivial FPs.
+\item Compute eigenvalues from Tr and Det:
+$\lambda_\pm = \frac{\text{Tr}}{2}\left[1 \pm \sqrt{1 - 4\text{Det}/\text{Tr}^2}\right]$.
+\item Sign analysis:
+\begin{itemize}
+\item Tr $<0$, Det $>0$, Tr$^2 > 4\,$Det: stable node.
+\item Tr $<0$, Det $>0$, Tr$^2 < 4\,$Det: stable spiral.
+\item Det $<0$: saddle (unstable).
+\item Tr $>0$, Det $>0$: unstable.
+\item Tr $=0$, Det $>0$: neutral oscillations.
+\end{itemize}
+\end{enumerate}
+\end{tcolorbox}
+
+\begin{tcolorbox}[colback=blue!3,colframe=blue!70!black,title=\textbf{Common Modifications and Their Effects}]
+\begin{tabular}{lll}
+\textbf{Modification} & \textbf{Effect on Tr} & \textbf{Effect on stability}\\\hline
+Logistic growth term & Adds $-r/K$ to diagonal & Stabilizing\\
+Cannibalism & Adds $-\bar\beta_c$ to diagonal & Stabilizing\\
+Type II response & N/A (changes structure) & Destabilizing\\
+Predator carrying $K_P$ & Adds $-\varepsilon\bar\beta N^*/K_P$ & Stabilizing\\
+Symbiosis $+\alpha N_1 N_2$ & Off-diagonal positive & Variable\\
+Chronic carrier (no recovery) & Adds $+\alpha N^*$ & Destabilizing\\
+\end{tabular}
+\end{tcolorbox}
+
+\begin{tcolorbox}[colback=red!3,colframe=red!70!black,title=\textbf{Tricks for Computing $R_0$}]
+\begin{itemize}
+\item For SIR: $R_0 = \beta N/\gamma$.
+\item For SIR with deaths: $R_0 = \beta N/(\gamma + \mu)$.
+\item For SI (no recovery): $R_0 \to \infty$ trivially (always spreads).
+\item For multi-strain: each strain has its own $R_0$, computed as $(\text{transmission rate}\times \text{susceptible pool})/(\text{removal rate})$.
+\item Vaccination with fraction $f$ effective: $R_0^\text{eff} = R_0(1 - f)$ (herd immunity threshold $f^* = 1 - 1/R_0$).
+\end{itemize}
+\end{tcolorbox}
+
+\begin{tcolorbox}[colback=green!3,colframe=green!50!black,title=\textbf{Common Linear Spaces (Euler-Exact)}]
+\begin{tabular}{ll}
+\textbf{Equation} & \textbf{Linear-Euler Space}\\\hline
+$\dot N = rN$ (exponential) & $\ln N$ vs $t$\\
+$\dot N = rN/t$ (power) & $\ln N$ vs $\ln t$\\
+$\dot N = r/t$ (inverse-time) & $N$ vs $\ln t$\\
+$\dot N = rN^2$ (super-exp) & $1/N$ vs $t$\\
+$\dot N = rN^p$ ($p\neq 1$) & $N^{1-p}$ vs $t$\\
+$\dot N = rN(1-N/K)$ (logistic) & $\ln(N/(K-N))$ vs $t$\\
+\end{tabular}
+\end{tcolorbox}
+
+\begin{tcolorbox}[colback=purple!3,colframe=purple!70!black,title=\textbf{When in Doubt on Exam}]
+\begin{enumerate}
+\item Always start by checking conservation. Reduces equations.
+\item Always identify which fixed point matters (often disease-free for spread questions).
+\item Always state whether to use $A$ matrix or $J^*$ \textbf{before} computing.
+\item Compute Tr and Det \textbf{first}; they often answer the qualitative question.
+\item For Taylor series questions: check if derivatives exist. For ``perfect space'' questions: ask what makes higher derivatives = 0.
+\item For QSSA: identify the fast variable (intermediate complex) and set its derivative to 0.
+\item For new modifications: ask ``does this add a diagonal term?'' (changes Tr) or ``does this break linearity?'' (kills $A$ approach).
+\end{enumerate}
+\end{tcolorbox}
+
+\end{document}

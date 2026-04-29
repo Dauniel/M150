@@ -1,0 +1,956 @@
+\documentclass[10pt]{article}
+\usepackage[margin=0.75in, top=0.65in, bottom=0.65in]{geometry}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{titlesec}
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd{\ttlh@hang}{\parindent\z@}{\parindent\z@\leavevmode}{}{}
+\patchcmd{\ttlh@hang}{\noindent}{}{}{}
+\makeatother
+\usepackage{fancyhdr}
+\usepackage{tcolorbox}
+\usepackage{array}
+\usepackage{booktabs}
+\usepackage{cancel}
+\usepackage[T1]{fontenc}
+\usepackage{hyperref}
+\hypersetup{colorlinks=true, linkcolor=blue!60!black, urlcolor=blue!60!black}
+\DeclareUnicodeCharacter{26A0}{\textbf{(!)}}
+
+% ---- Colors ----
+\definecolor{stepblue}{RGB}{13,71,161}
+\definecolor{rulered}{RGB}{183,28,28}
+\definecolor{exgreen}{RGB}{27,94,32}
+\definecolor{warnorng}{RGB}{230,81,0}
+\definecolor{notegray}{RGB}{55,55,55}
+
+% ---- Section formatting ----
+\titleformat{\section}{\large\bfseries\color{stepblue}}{\thesection.}{0.5em}{}[\color{stepblue}\titlerule]
+\titleformat{\subsection}{\normalsize\bfseries\color{rulered}}{\thesubsection}{0.5em}{}
+\titleformat{\subsubsection}{\small\bfseries\color{exgreen}}{\thesubsubsection}{0.5em}{}
+\titlespacing{\section}{0pt}{10pt}{4pt}
+\titlespacing{\subsection}{0pt}{6pt}{2pt}
+\titlespacing{\subsubsection}{0pt}{4pt}{1pt}
+
+% ---- Header / Footer ----
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\textbf{CaSB 150 --- Complete Math Reference Sheet}}
+\fancyhead[R]{\small Spring 2026 Midterm}
+\fancyfoot[C]{\thepage}
+
+% ---- Boxes ----
+\tcbuselibrary{skins, breakable}
+
+\newtcolorbox{rulebox}[1]{
+  colback=stepblue!5, colframe=stepblue!70!black,
+  title={\textbf{#1}}, fonttitle=\bfseries\small,
+  breakable, before upper=\small
+}
+\newtcolorbox{exbox}[1]{
+  colback=exgreen!5, colframe=exgreen!60!black,
+  title={\textbf{Worked Example: #1}}, fonttitle=\bfseries\small,
+  breakable, before upper=\small
+}
+\newtcolorbox{warnbox}{
+  colback=warnorng!8, colframe=warnorng,
+  title={\textbf{⚠ Common Mistake}}, fonttitle=\bfseries\small,
+  breakable, before upper=\small
+}
+\newtcolorbox{stepbox}{
+  colback=gray!5, colframe=gray!50,
+  breakable, before upper=\small
+}
+
+% ---- Step counter ----
+\newcounter{stepnum}
+\newcommand{\Step}[1]{%
+  \stepcounter{stepnum}%
+  \noindent\textcolor{stepblue}{\textbf{Step \thestepnum: #1}}\\[2pt]%
+}
+\newcommand{\resetsteps}{\setcounter{stepnum}{0}}
+
+\setlist{topsep=2pt, itemsep=1pt, parsep=0pt}
+\newcommand{\thus}{\quad\Longrightarrow\quad}
+
+\begin{document}
+
+\begin{center}
+  {\LARGE\textbf{CaSB 150 --- Complete Mathematics Reference}}
+\end{center}
+\hrule\vspace{6pt}
+
+\tableofcontents
+\newpage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Logarithm \& Exponential Algebra}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+These identities are the foundation of everything. Memorize them and the steps to apply them.
+
+\begin{rulebox}{Core Log \& Exponential Identities}
+\begin{align}
+e^{\ln x} &= x \quad \text{(they undo each other)} \label{eq:eln}\\
+\ln(e^x) &= x \label{eq:lne}\\
+\ln(AB) &= \ln A + \ln B \label{eq:lnprod}\\
+\ln(A/B) &= \ln A - \ln B \label{eq:lnquot}\\
+\ln(A^r) &= r\ln A \label{eq:lnpow}\\
+e^{a+b} &= e^a \cdot e^b \label{eq:esum}\\
+e^{a-b} &= e^a / e^b \label{eq:ediff}\\
+(e^a)^b &= e^{ab} \label{eq:epow}
+\end{align}
+\end{rulebox}
+
+\subsection{Converting $\ln N = rt + C$ to $N(t)$}
+
+This exact manipulation happens in \textbf{every} growth equation solution.
+
+\resetsteps
+\begin{stepbox}
+\Step{Exponentiate both sides} (apply $e^{(\cdot)}$ to both sides):
+\[
+e^{\ln N} = e^{rt + C}
+\]
+\Step{Left side simplifies by identity \eqref{eq:eln}:}
+\[
+N = e^{rt + C}
+\]
+\Step{Right side: split exponent using identity \eqref{eq:esum}:}
+\[
+N = e^{rt} \cdot e^C
+\]
+\Step{Rename $e^C$ as a new constant $N_0$ (since $e^C > 0$ always):}
+\[
+\boxed{N(t) = N_0\, e^{rt}}
+\]
+\Step{Apply initial condition $N(0) = N_0$: plug in $t=0$:}
+\[
+N(0) = N_0 e^0 = N_0 \cdot 1 = N_0 \quad\checkmark
+\]
+\end{stepbox}
+
+\begin{exbox}{Finding $r$ from doubling time}
+If $N$ doubles every $T$ days (i.e.\ $N(T) = 2N_0$):
+\[
+N_0 e^{rT} = 2N_0 \thus e^{rT} = 2 \thus rT = \ln 2 \thus \boxed{r = \frac{\ln 2}{T}}
+\]
+If instead $N$ multiplies by $e$ every $T$ days ($N(T) = e \cdot N_0$):
+\[
+e^{rT} = e = e^1 \thus rT = 1 \thus \boxed{r = \frac{1}{T}}
+\]
+\end{exbox}
+
+\subsection{Converting Discrete to Continuous}
+
+\resetsteps
+\begin{stepbox}
+Given discrete growth $N(t+1) = \lambda N(t)$ with $\lambda = 1 + r_d$:
+\[
+\lambda = e^{r_c} \thus r_c = \ln(\lambda) = \ln(1 + r_d)
+\]
+\Step{For small $r_d$ (use $\ln(1+x) \approx x$ for $x \ll 1$):}
+\[
+r_c \approx r_d \quad \text{(discrete and continuous rates are approximately equal)}
+\]
+\Step{If you know $r_c$ and want $\lambda$:}
+\[
+\lambda = e^{r_c}
+\]
+\Step{Effective rate from piecewise growth (rate $r_1$ for time $t_1$, rate $r_2$ for time $t_2$):}
+\[
+N(t_1+t_2) = N_0\, e^{r_1 t_1}\cdot e^{r_2 t_2} = N_0\, e^{r_1 t_1 + r_2 t_2}
+\]
+\[
+r_{\text{eff}} = \frac{r_1 t_1 + r_2 t_2}{t_1 + t_2} \quad \text{(time-weighted average)}
+\]
+\end{stepbox}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Derivatives --- Complete Rules}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{rulebox}{Derivative Rules You Need}
+\renewcommand{\arraystretch}{1.4}
+\begin{tabular}{lll}
+\toprule
+\textbf{Rule} & \textbf{Formula} & \textbf{Example} \\
+\midrule
+Power rule & $\frac{d}{dx}[x^n] = nx^{n-1}$ & $\frac{d}{dx}[N^3] = 3N^2$ \\
+Exponential & $\frac{d}{dx}[e^{rx}] = re^{rx}$ & $\frac{d}{dt}[e^{5t}] = 5e^{5t}$ \\
+Natural log & $\frac{d}{dx}[\ln x] = \frac{1}{x}$ & $\frac{d}{dN}[\ln N] = \frac{1}{N}$ \\
+Constant mult. & $\frac{d}{dx}[cf(x)] = cf'(x)$ & $\frac{d}{dx}[3N^2] = 6N$ \\
+Sum/Difference & $(f \pm g)' = f' \pm g'$ & ---\\
+Product rule & $(fg)' = f'g + fg'$ & see below \\
+Quotient rule & $\left(\frac{f}{g}\right)' = \frac{f'g - fg'}{g^2}$ & see below \\
+Chain rule & $(f(g(x)))' = f'(g(x))\cdot g'(x)$ & see below \\
+\bottomrule
+\end{tabular}
+\end{rulebox}
+
+\subsection{Product Rule --- Full Steps}
+
+\begin{exbox}{$\frac{d}{dt}[N(t) \cdot P(t)]$}
+\resetsteps
+\Step{Label $f = N(t)$, $g = P(t)$.}
+\Step{Apply formula $(fg)' = f'g + fg'$:}
+\[
+\frac{d}{dt}[NP] = \frac{dN}{dt}\cdot P + N\cdot\frac{dP}{dt} = \dot N P + N \dot P
+\]
+\textit{This appears when differentiating $NP$ terms in predator-prey models.}
+\end{exbox}
+
+\subsection{Quotient Rule --- Full Steps (Type II Functional Response)}
+
+\begin{exbox}{$\frac{d}{dN}\!\left[\dfrac{\alpha N}{1 + \alpha h N}\right]$}
+This is the derivative of the Type II functional response, needed for the 2024 Jacobian.
+
+\resetsteps
+\Step{Label numerator $f = \alpha N$, denominator $g = 1 + \alpha h N$.}
+\Step{Compute individual derivatives:}
+\[
+f' = \frac{d}{dN}[\alpha N] = \alpha, \qquad g' = \frac{d}{dN}[1 + \alpha h N] = \alpha h
+\]
+\Step{Apply quotient rule $\frac{f'g - fg'}{g^2}$:}
+\[
+= \frac{\alpha(1 + \alpha h N) - \alpha N \cdot \alpha h}{(1 + \alpha h N)^2}
+\]
+\Step{Expand the numerator:}
+\[
+= \frac{\alpha + \alpha^2 h N - \alpha^2 h N}{(1 + \alpha h N)^2} = \frac{\alpha}{(1 + \alpha h N)^2}
+\]
+\Step{Notice the original function was $\bar\beta(N) = \frac{\alpha N}{1+\alpha h N}$, so $\bar\beta/N = \frac{\alpha}{1+\alpha hN}$. Thus:}
+\[
+\boxed{\frac{d}{dN}\!\left[\frac{\alpha N}{1+\alpha h N}\right] = \frac{\alpha}{(1+\alpha h N)^2}}
+\]
+\end{exbox}
+
+\subsection{Chain Rule --- Full Steps}
+
+\begin{exbox}{$\frac{d}{dt}[\ln(N(t))]$}
+\resetsteps
+\Step{Outer function: $f(u) = \ln(u)$, so $f'(u) = 1/u$.}
+\Step{Inner function: $u = N(t)$, so $u' = dN/dt = \dot N$.}
+\Step{Chain rule: $\frac{d}{dt}[\ln N] = \frac{1}{N}\cdot\dot N$:}
+\[
+\boxed{\frac{d}{dt}[\ln N(t)] = \frac{1}{N}\frac{dN}{dt}}
+\]
+This is the \textbf{per-capita growth rate}. If $\dot N = rN$, then $\frac{d}{dt}[\ln N] = r$.
+\end{exbox}
+
+\begin{exbox}{$\frac{d}{dt}[e^{-t/\tau}]$}
+\resetsteps
+\Step{Outer function: $f(u) = e^u$, inner function: $u = -t/\tau$.}
+\Step{$f'(u) = e^u$, $u' = -1/\tau$.}
+\Step{Chain rule:}
+\[
+\frac{d}{dt}[e^{-t/\tau}] = e^{-t/\tau} \cdot \left(-\frac{1}{\tau}\right) = -\frac{1}{\tau}e^{-t/\tau}
+\]
+\end{exbox}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Partial Derivatives (for Jacobian Matrices)}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{rulebox}{The Rule}
+A \textbf{partial derivative} $\frac{\partial f}{\partial x}$ means: differentiate $f$ with respect to $x$, \textbf{treating all other variables as constants}.
+\end{rulebox}
+
+\subsection{Step-by-Step Partial Derivative Process}
+
+\begin{exbox}{System: $f(N,P) = rN - \bar\beta NP$}
+\resetsteps
+\Step{Find $\partial f/\partial N$ --- treat $P$ as a constant number:}
+\[
+\frac{\partial}{\partial N}[rN - \bar\beta NP] = \frac{\partial}{\partial N}[rN] - \frac{\partial}{\partial N}[\bar\beta NP]
+\]
+For the second term, $\bar\beta P$ is just a constant times $N$:
+\[
+= r - \bar\beta P
+\]
+\Step{Find $\partial f/\partial P$ --- treat $N$ as a constant number:}
+\[
+\frac{\partial}{\partial P}[rN - \bar\beta NP] = \frac{\partial}{\partial P}[rN] - \frac{\partial}{\partial P}[\bar\beta NP]
+\]
+$rN$ has no $P$ in it, so its partial is 0. $\bar\beta N$ is a constant times $P$:
+\[
+= 0 - \bar\beta N = -\bar\beta N
+\]
+\end{exbox}
+
+\begin{exbox}{System: $g(N,P) = \varepsilon\bar\beta NP - ZP$}
+\Step{$\partial g/\partial N$: treat $P$ as constant.}
+\[
+\frac{\partial g}{\partial N} = \varepsilon\bar\beta P - 0 = \varepsilon\bar\beta P
+\]
+\Step{$\partial g/\partial P$: treat $N$ as constant.}
+\[
+\frac{\partial g}{\partial P} = \varepsilon\bar\beta N - Z
+\]
+\end{exbox}
+
+\begin{exbox}{Logistic term: $f(N,P) = rN(1-N/K) - \bar\beta NP$}
+\Step{Expand first: $f = rN - rN^2/K - \bar\beta NP$.}
+\Step{$\partial f/\partial N$: $N^2$ becomes $2N$ by power rule:}
+\[
+\frac{\partial f}{\partial N} = r - \frac{2rN}{K} - \bar\beta P
+\]
+At fixed point $N^* = K(1 - \bar\beta P^*/r)$, substitute to simplify.\\
+\Step{$\partial f/\partial P$: only $-\bar\beta NP$ depends on $P$:}
+\[
+\frac{\partial f}{\partial P} = -\bar\beta N
+\]
+\end{exbox}
+
+\subsection{Building the Full Jacobian Matrix}
+
+\begin{rulebox}{Standard Jacobian: 2-Variable System}
+For $\dot x = f(x,y)$ and $\dot y = g(x,y)$:
+\[
+J = \begin{pmatrix} \partial f/\partial x & \partial f/\partial y \\ \partial g/\partial x & \partial g/\partial y \end{pmatrix}
+\]
+\textbf{Then evaluate at the fixed point $(x^*, y^*)$.} The resulting matrix $J^*$ tells you stability.
+\end{rulebox}
+
+\begin{exbox}{Full Jacobian for Lotka-Volterra}
+$f = rN - \bar\beta NP$, $g = \varepsilon\bar\beta NP - ZP$. From above:
+\[
+J = \begin{pmatrix} r - \bar\beta P & -\bar\beta N \\ \varepsilon\bar\beta P & \varepsilon\bar\beta N - Z \end{pmatrix}
+\]
+Fixed point $(N^*, P^*) = (Z/\varepsilon\bar\beta,\; r/\bar\beta)$. At FP: $r - \bar\beta P^* = r - r = 0$ and $\varepsilon\bar\beta N^* - Z = Z - Z = 0$:
+\[
+J^* = \begin{pmatrix} 0 & -\bar\beta N^* \\ \varepsilon\bar\beta P^* & 0 \end{pmatrix} = \begin{pmatrix} 0 & -Z/\varepsilon \\ \varepsilon r & 0 \end{pmatrix}
+\]
+\end{exbox}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Separation of Variables (Solving ODEs)}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{rulebox}{The Method}
+To solve $\frac{dN}{dt} = f(N)\cdot g(t)$:
+\begin{enumerate}
+  \item Move all $N$'s to the left: $\frac{dN}{f(N)} = g(t)\,dt$
+  \item Integrate both sides: $\displaystyle\int \frac{dN}{f(N)} = \int g(t)\,dt + C$
+  \item Solve for $N(t)$
+  \item Apply initial condition to find $C$
+\end{enumerate}
+\end{rulebox}
+
+\subsection{Case 1: Exponential Growth $\dot N = rN$}
+\resetsteps
+\begin{stepbox}
+\Step{Move $N$ to left:} $\dfrac{dN}{N} = r\,dt$
+
+\Step{Integrate both sides:}
+\[
+\int \frac{1}{N}\,dN = \int r\,dt \thus \ln|N| = rt + C
+\]
+\Step{Exponentiate both sides:}
+\[
+|N| = e^{rt+C} = e^C e^{rt}
+\]
+\Step{Since $N > 0$, drop absolute value; rename $e^C \to N_0$:}
+\[
+\boxed{N(t) = N_0 e^{rt}}
+\]
+\Step{Apply initial condition: $N(0) = N_0 e^0 = N_0$. So $N_0 = N(0)$. $\checkmark$}
+\end{stepbox}
+
+\subsection{Case 2: Power-of-Time $\dot N = rN/t$}
+\resetsteps
+\begin{stepbox}
+\Step{Separate:} $\dfrac{dN}{N} = r\dfrac{dt}{t}$
+
+\Step{Integrate:}
+\[
+\int \frac{dN}{N} = r\int\frac{dt}{t} \thus \ln N = r\ln t + C
+\]
+\Step{Use log power rule \eqref{eq:lnpow} on right: $r\ln t = \ln(t^r)$:}
+\[
+\ln N = \ln(t^r) + C
+\]
+\Step{Exponentiate:}
+\[
+N = e^{\ln(t^r)} \cdot e^C = t^r \cdot e^C
+\]
+\Step{Apply IC at $t=1$: $N(1) = 1^r \cdot e^C = e^C$, so $e^C = N(1)$:}
+\[
+\boxed{N(t) = N(1)\,t^r}
+\]
+\end{stepbox}
+
+\subsection{Case 3: Inverse-Time $\dot N = r/t$}
+\resetsteps
+\begin{stepbox}
+\Step{Separate: $N$ doesn't appear on right, so just:}
+\[
+dN = \frac{r}{t}\,dt
+\]
+\Step{Integrate both sides:}
+\[
+\int dN = r\int\frac{dt}{t} \thus N = r\ln t + C
+\]
+\Step{Apply IC at $t=1$: $N(1) = r\ln 1 + C = r\cdot 0 + C = C$:}
+\[
+\boxed{N(t) = N(1) + r\ln t}
+\]
+\end{stepbox}
+
+\subsection{Case 4: Super-Exponential $\dot N = rN^p$ ($p \neq 1$)}
+\resetsteps
+\begin{stepbox}
+\Step{Separate:}
+\[
+\frac{dN}{N^p} = r\,dt \thus N^{-p}\,dN = r\,dt
+\]
+\Step{Integrate left using power rule ($\int N^{-p}dN = \frac{N^{-p+1}}{-p+1}$):}
+\[
+\frac{N^{1-p}}{1-p} = rt + C
+\]
+\Step{Solve for $N^{1-p}$:}
+\[
+N^{1-p} = (1-p)(rt + C)
+\]
+\Step{Raise both sides to power $\frac{1}{1-p}$:}
+\[
+N(t) = [(1-p)(rt + C)]^{\frac{1}{1-p}}
+\]
+\Step{For $p = 2$ specifically ($\dot N = rN^2$):}
+\[
+\int N^{-2}dN = -N^{-1} = -\frac{1}{N} = rt + C
+\thus N(t) = \frac{-1}{rt + C} = \frac{1}{C' - rt}
+\]
+where $C' = -C$. At $t=0$: $N(0) = 1/C'$, so $C' = 1/N_0$:
+\[
+\boxed{N(t) = \frac{N_0}{1 - rN_0 t}}
+\]
+Blows up at $t^* = 1/(rN_0)$.
+\end{stepbox}
+
+\subsection{Case 5: Logistic Growth $\dot N = rN(1-N/K)$}
+\resetsteps
+\begin{stepbox}
+\Step{Separate:}
+\[
+\frac{dN}{N(1-N/K)} = r\,dt
+\]
+\Step{Partial fractions on left. Write:}
+\[
+\frac{1}{N(1-N/K)} = \frac{A}{N} + \frac{B}{1-N/K}
+\]
+Multiply through by $N(1-N/K)$: $1 = A(1-N/K) + BN$.\\
+At $N=0$: $1 = A$. At $N = K$: $1 = BK$, so $B = 1/K$. Thus:
+\[
+\frac{1}{N(1-N/K)} = \frac{1}{N} + \frac{1/K}{1-N/K}
+\]
+\Step{Integrate both sides:}
+\[
+\int\left(\frac{1}{N} + \frac{1/K}{1-N/K}\right)dN = rt + C
+\]
+For the second integral, let $u = 1-N/K$, $du = -dN/K$, so $dN/K = -du$:
+\[
+\int \frac{1/K}{1-N/K}dN = -\int\frac{1}{u}du = -\ln|u| = -\ln(1-N/K)
+\]
+So:
+\[
+\ln N - \ln(1-N/K) = rt + C \thus \ln\frac{N}{1-N/K} = rt + C
+\]
+\Step{Exponentiate:}
+\[
+\frac{N}{1-N/K} = e^{rt+C} = e^C e^{rt}
+\]
+\Step{Solve for $N$: let $e^C = A$:}
+\[
+N = A e^{rt}(1 - N/K) = Ae^{rt} - \frac{Ae^{rt}}{K}N
+\]
+\[
+N\left(1 + \frac{Ae^{rt}}{K}\right) = Ae^{rt}
+\]
+\[
+N(t) = \frac{Ae^{rt}}{1 + Ae^{rt}/K} = \frac{K}{K/(Ae^{rt}) + 1} = \frac{K}{1 + (K/A)e^{-rt}}
+\]
+\Step{At $t=0$: $N_0 = K/(1 + K/A)$. Solving: $K/A = K/N_0 - 1 = (K-N_0)/N_0$. So:}
+\[
+\boxed{N(t) = \frac{K}{1 + \dfrac{K-N_0}{N_0}\,e^{-rt}}}
+\]
+As $t\to\infty$: $e^{-rt}\to 0$, so $N\to K$. \checkmark
+\end{stepbox}
+
+\begin{warnbox}
+When using partial fractions, always verify your result by substituting back. Check that both terms sum to $\frac{1}{N(1-N/K)}$ before integrating.
+\end{warnbox}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Taylor Expansion --- Complete Treatment}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{rulebox}{Taylor Series Formula}
+\[
+f(t + \Delta t) = f(t) + f'(t)\,\Delta t + \frac{f''(t)}{2!}(\Delta t)^2 + \frac{f'''(t)}{3!}(\Delta t)^3 + \frac{f^{(4)}(t)}{4!}(\Delta t)^4 + \cdots
+\]
+\textbf{Euler's method} = keep only the first two terms.\\
+\textbf{RK4} = conceptually equivalent to keeping four terms.\\
+\textbf{Perfect Euler} = all higher derivatives vanish $\Rightarrow$ infinite steps are exact.
+\end{rulebox}
+
+\subsection{How to Compute the 4th-Order Taylor Term}
+
+\begin{rulebox}{Recipe for the 4th-Order Term}
+Given $N(t)$:
+\begin{enumerate}
+  \item Differentiate $N(t)$ four times to get $N^{(4)}(t)$.
+  \item Plug in your expansion point $t_0$.
+  \item The 4th-order term is $\dfrac{N^{(4)}(t_0)}{4!}(\Delta t)^4 = \dfrac{N^{(4)}(t_0)}{24}(\Delta t)^4$.
+\end{enumerate}
+\end{rulebox}
+
+\begin{exbox}{$N(t) = N(1)t^r$ with $r = 10$}
+\resetsteps
+\Step{First derivative:}
+\[
+N'(t) = N(1)\cdot r\cdot t^{r-1} = 10\,N(1)\,t^9
+\]
+\Step{Second derivative:}
+\[
+N''(t) = 10 \cdot 9\,N(1)\,t^8 = 90\,N(1)\,t^8
+\]
+\Step{Third derivative:}
+\[
+N'''(t) = 90 \cdot 8\,N(1)\,t^7 = 720\,N(1)\,t^7
+\]
+\Step{Fourth derivative:}
+\[
+N^{(4)}(t) = 720\cdot 7\,N(1)\,t^6 = 5040\,N(1)\,t^6
+\]
+\Step{4th-order Taylor term (evaluated at $t_0 = 1$):}
+\[
+\frac{N^{(4)}(1)}{4!}(\Delta t)^4 = \frac{5040\,N(1)\cdot 1}{24}(\Delta t)^4 = \boxed{210\,N(1)\,(\Delta t)^4}
+\]
+\textit{Note: $r(r-1)(r-2)(r-3) = 10\cdot9\cdot8\cdot7 = 5040$ and $5040/24 = 210$.}
+\end{exbox}
+
+\begin{exbox}{$N(t) = N(1) + r\ln t$}
+\resetsteps
+\Step{First derivative: $N' = r/t = rt^{-1}$}
+\Step{Second derivative: $N'' = -rt^{-2} = -r/t^2$}
+\Step{Third derivative: $N''' = 2rt^{-3} = 2r/t^3$}
+\Step{Fourth derivative: $N^{(4)} = -6rt^{-4} = -6r/t^4$}\\
+At $t_0 = 1$:
+\[
+\text{4th-order term} = \frac{-6r}{4!}(\Delta t)^4 = \frac{-6r}{24}(\Delta t)^4 = -\frac{r}{4}(\Delta t)^4
+\]
+\end{exbox}
+
+\subsection{Key Taylor Expansions for Early/Late Time Limits}
+
+\begin{rulebox}{Expansions to Memorize}
+\textbf{For $x \ll 1$ (early times / small quantities):}
+\begin{align}
+e^x &\approx 1 + x + \frac{x^2}{2} + \frac{x^3}{6} + \cdots \label{eq:exptaylor}\\
+\ln(1+x) &\approx x - \frac{x^2}{2} + \cdots \approx x \quad (x\ll 1) \label{eq:lntaylor}\\
+(1+x)^n &\approx 1 + nx \quad (x\ll 1) \label{eq:binom}\\
+\frac{1}{1+x} &\approx 1 - x \quad (x\ll 1) \label{eq:geom}
+\end{align}
+\textbf{Leading-order simplification strategy (exam skill):}
+\begin{itemize}
+\item If $x(t) \ll 1$: replace $x^n$ by $x^{\text{lowest power}}$ everywhere.
+\item If $x(t) \gg 1$: drop the lower-power terms, keep the dominant one.
+\end{itemize}
+\end{rulebox}
+
+\begin{exbox}{2025 Exam-Style: Simplify at early times ($x \ll 1$, $t \ll \tau$)}
+Growth rate:
+\[
+\frac{dx}{dt} = r\frac{(c_7 x^7 t + c_5 x^5 t + c_3 x^3 t)}{(a_8 x^8 t + a_4 x^4 t + a_2 x^2 t)} + \cdots
+\]
+When $x \ll 1$, the lowest power dominates in each polynomial. Numerator: lowest power of $x$ is $x^3$ (from $c_3 x^3 t$). Denominator: lowest power is $x^2$ (from $a_2 x^2 t$). Keep only those terms:
+\[
+\frac{dx}{dt} \approx r\frac{c_3 x^3 t}{a_2 x^2 t} = \frac{r c_3}{a_2}\, x
+\]
+Define $r_{\text{eff}} = rc_3/a_2$. This is exponential: $\dot x = r_{\text{eff}} x$.
+
+\textbf{At late times ($x \gg 1$):} highest power dominates. Numerator: $c_7 x^7 t$. Denominator: $a_8 x^8 t$:
+\[
+\frac{dx}{dt} \approx r\frac{c_7 x^7 t}{a_8 x^8 t} = \frac{rc_7}{a_8}\cdot\frac{1}{x} \cdot \frac{1}{1} \thus \frac{dx}{dt} \approx \frac{rc_7}{a_8 x}
+\]
+This gives $x\,dx = \frac{rc_7}{a_8}dt \thus x^2 = \frac{2rc_7}{a_8}t + C \thus x(t) \propto \sqrt{t}$.
+\end{exbox}
+
+\subsection{Finding the ``Perfect Euler'' Space}
+
+\begin{rulebox}{The Strategy}
+Euler's method is \textbf{exact} when all higher derivatives of $N$ (or the transformed variable) vanish. This happens when $N$ (after transformation) is \textbf{linear} in time.
+
+\textbf{Procedure:}
+\begin{enumerate}
+  \item Guess a transformed variable $u = h(N)$ and new time $s = q(t)$.
+  \item Compute $du/ds$.
+  \item If $du/ds = $ constant, you found the linear (Euler-perfect) space.
+\end{enumerate}
+\end{rulebox}
+
+\begin{exbox}{Exponential growth $\dot N = rN$}
+Try $u = \ln N$, $s = t$:
+\[
+\frac{du}{ds} = \frac{d\ln N}{dt} = \frac{1}{N}\frac{dN}{dt} = \frac{1}{N}(rN) = r = \text{const}
+\]
+\textbf{Space: $\ln N$ vs $t$.} Euler is exact. All 2nd and higher derivatives of $u$ w.r.t.\ $s$ are zero.
+\end{exbox}
+
+\begin{exbox}{Power-of-time $\dot N = rN/t$}
+Try $u = \ln N$, $s = \ln t$:
+\[
+\frac{du}{ds} = \frac{d\ln N}{d\ln t} = \frac{d\ln N/dt}{d\ln t/dt} = \frac{\dot N/N}{1/t} = \frac{r/t}{1/t} = r = \text{const}
+\]
+\textbf{Space: $\ln N$ vs $\ln t$ (log-log).}
+\end{exbox}
+
+\begin{exbox}{Inverse-time $\dot N = r/t$}
+Try $u = N$, $s = \ln t$:
+\[
+\frac{du}{ds} = \frac{dN}{d\ln t} = \frac{dN/dt}{d\ln t/dt} = \frac{r/t}{1/t} = r = \text{const}
+\]
+\textbf{Space: $N$ vs $\ln t$ (semi-log in $t$).}
+\end{exbox}
+
+\begin{exbox}{Super-exponential $\dot N = rN^2$}
+Try $u = 1/N = N^{-1}$, $s = t$:
+\[
+\frac{du}{ds} = \frac{d(1/N)}{dt} = -\frac{1}{N^2}\frac{dN}{dt} = -\frac{1}{N^2}(rN^2) = -r = \text{const}
+\]
+\textbf{Space: $1/N$ vs $t$.}
+\end{exbox}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Eigenvalue Analysis --- Full Treatment}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Finding Fixed Points}
+
+\begin{rulebox}{Fixed Point Procedure}
+A fixed point $\vec X^*$ satisfies $d\vec X/dt = 0$ simultaneously for all equations.
+\begin{enumerate}
+  \item Set each equation equal to zero.
+  \item Factor --- \textbf{don't divide by a variable} (you'll lose the $X^* = 0$ solution).
+  \item Enumerate all combinations.
+\end{enumerate}
+\end{rulebox}
+
+\begin{exbox}{Lotka-Volterra fixed points}
+\[
+\dot N = N(r - \bar\beta P) = 0 \thus N = 0 \quad\text{or}\quad P = r/\bar\beta
+\]
+\[
+\dot P = P(\varepsilon\bar\beta N - Z) = 0 \thus P = 0 \quad\text{or}\quad N = Z/(\varepsilon\bar\beta)
+\]
+Combinations: $(N^*=0, P^*=0)$ trivial; $(N^*=Z/(\varepsilon\bar\beta),\; P^*=r/\bar\beta)$ coexistence.
+\end{exbox}
+
+\subsection{The 2$\times$2 Eigenvalue Formula --- Every Step}
+
+\begin{rulebox}{From Tr and Det to Eigenvalues}
+For any 2$\times$2 matrix $M$:
+\[
+\text{Tr}(M) = M_{11} + M_{22}, \qquad \text{Det}(M) = M_{11}M_{22} - M_{12}M_{21}
+\]
+The characteristic equation is:
+\[
+\lambda^2 - \text{Tr}\cdot\lambda + \text{Det} = 0
+\]
+Quadratic formula:
+\[
+\lambda_\pm = \frac{\text{Tr} \pm \sqrt{\text{Tr}^2 - 4\,\text{Det}}}{2}
+\]
+Equivalently:
+\[
+\lambda_\pm = \frac{\text{Tr}}{2}\left(1 \pm \sqrt{1 - \frac{4\,\text{Det}}{\text{Tr}^2}}\right)
+\]
+\end{rulebox}
+
+\begin{exbox}{Full eigenvalue calculation for logistic LV}
+\[
+A = \begin{pmatrix} -r/K & -\bar\beta \\ \varepsilon\bar\beta & 0 \end{pmatrix}
+\]
+\Step{Compute Tr and Det:}
+\[
+\text{Tr} = -r/K + 0 = -r/K
+\]
+\[
+\text{Det} = (-r/K)(0) - (-\bar\beta)(\varepsilon\bar\beta) = 0 + \varepsilon\bar\beta^2 = \varepsilon\bar\beta^2
+\]
+\Step{Discriminant $\Delta = \text{Tr}^2 - 4\,\text{Det}$:}
+\[
+\Delta = \frac{r^2}{K^2} - 4\varepsilon\bar\beta^2
+\]
+\Step{Eigenvalues:}
+\[
+\lambda_\pm = \frac{-r/K \pm \sqrt{r^2/K^2 - 4\varepsilon\bar\beta^2}}{2}
+\]
+\Step{Both have negative real part since $\text{Tr} = -r/K < 0$ and $\text{Det} = \varepsilon\bar\beta^2 > 0$. \textbf{Stable.}}
+
+If $\Delta < 0$ (i.e.\ $4\varepsilon\bar\beta^2 > r^2/K^2$): complex eigenvalues $\Rightarrow$ \textbf{stable spiral} (oscillates into equilibrium). If $\Delta > 0$: \textbf{stable node} (no oscillations).
+\end{exbox}
+
+\subsection{Stability Classification Table}
+
+\begin{rulebox}{Decision Table for 2$\times$2 Systems}
+\renewcommand{\arraystretch}{1.4}
+\begin{tabular}{llll}
+\toprule
+\textbf{Tr} & \textbf{Det} & \textbf{Discriminant} & \textbf{Classification}\\
+\midrule
+$< 0$ & $> 0$ & $> 0$ & Stable node (real $\lambda < 0$)\\
+$< 0$ & $> 0$ & $< 0$ & Stable spiral (complex $\lambda$, $\text{Re}<0$)\\
+$= 0$ & $> 0$ & $< 0$ & Neutral oscillations (pure imaginary $\lambda$)\\
+$> 0$ & $> 0$ & any & Unstable (node or spiral)\\
+any & $< 0$ & $> 0$ & Saddle point (always unstable)\\
+$> 0$ & $> 0$ & $< 0$ & Unstable spiral\\
+\bottomrule
+\end{tabular}
+\end{rulebox}
+
+\subsection{Interaction Matrix $A$ vs.\ Standard Jacobian $J^*$}
+
+\begin{rulebox}{When to Use Each}
+\textbf{Interaction matrix $A$:}
+\begin{itemize}
+  \item Write each ODE as: $\dot X_i / X_i = \sum_j A_{ij} X_j + \text{constants}$
+  \item $A_{ij}$ = coefficient of $X_j$ in $\dot X_i / X_i$
+  \item \textbf{Only valid at non-trivial fixed points} ($X_i^* \neq 0$ for all $i$)
+  \item \textbf{Cannot use} when interactions are nonlinear (Type II) or when any FP component is zero
+\end{itemize}
+
+\textbf{Standard Jacobian $J^*$:}
+\begin{itemize}
+  \item Always valid
+  \item Must compute 4 partial derivatives, evaluate at FP
+  \item Required when FP has zero components (disease-free state, trivial predator state)
+\end{itemize}
+\end{rulebox}
+
+\begin{exbox}{Building the $A$ matrix for LV}
+$\dot N/N = r - \bar\beta P$ $\Rightarrow$ coefficients: $A_{NN} = 0$ (no $N$ term), $A_{NP} = -\bar\beta$.\\
+$\dot P/P = \varepsilon\bar\beta N - Z$ $\Rightarrow$ coefficients: $A_{PN} = \varepsilon\bar\beta$, $A_{PP} = 0$.
+\[
+A = \begin{pmatrix} A_{NN} & A_{NP} \\ A_{PN} & A_{PP} \end{pmatrix} = \begin{pmatrix} 0 & -\bar\beta \\ \varepsilon\bar\beta & 0 \end{pmatrix}
+\]
+\textbf{Note:} $A$ is \textbf{not} the same as $J^*$ but gives same eigenvalue signs at non-trivial FP.
+\end{exbox}
+
+\subsection{Complex Eigenvalues --- What They Mean}
+
+\begin{rulebox}{Interpreting $\lambda = a \pm i\omega$}
+If the discriminant $\Delta < 0$:
+\[
+\lambda_\pm = \frac{\text{Tr}}{2} \pm i\frac{\sqrt{|{\Delta}|}}{2} = \underbrace{\frac{\text{Tr}}{2}}_{a} \pm i\underbrace{\frac{\sqrt{4\text{Det}-\text{Tr}^2}}{2}}_{\omega}
+\]
+The solution to $\dot{\delta x} = J^*\delta x$ is then:
+\[
+\delta x(t) \propto e^{at}\cos(\omega t + \phi)
+\]
+\begin{itemize}
+  \item $a = \text{Tr}/2$: controls amplitude. If $a < 0$: decays (stable spiral). If $a > 0$: grows (unstable spiral).
+  \item $\omega$: oscillation frequency. Larger $\omega$ = faster oscillations.
+  \item $a = 0$ (i.e.\ $\text{Tr} = 0$): \textbf{neutral limit cycles} (LV standard case).
+\end{itemize}
+\end{rulebox}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Basic Integrals Reference}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{rulebox}{Every Integral You Need}
+\renewcommand{\arraystretch}{1.5}
+\begin{tabular}{ll}
+\toprule
+\textbf{Integral} & \textbf{Result}\\
+\midrule
+$\displaystyle\int x^n\,dx$ & $\dfrac{x^{n+1}}{n+1} + C$ \quad ($n \neq -1$)\\
+$\displaystyle\int \frac{1}{x}\,dx$ & $\ln|x| + C$\\
+$\displaystyle\int e^{rx}\,dx$ & $\dfrac{1}{r}e^{rx} + C$\\
+$\displaystyle\int e^x\,dx$ & $e^x + C$\\
+$\displaystyle\int \frac{1}{a + bx}\,dx$ & $\dfrac{1}{b}\ln|a+bx| + C$\\
+$\displaystyle\int \frac{1}{1-u}\,du$ & $-\ln|1-u| + C$\\
+$\displaystyle\int c\,dx$ & $cx + C$\\
+$\displaystyle\int 0\,dx$ & $C$\\
+\bottomrule
+\end{tabular}
+
+\medskip
+\textbf{Substitution rule:} If the integral has the form $\int f(g(x))g'(x)\,dx$, let $u = g(x)$, $du = g'(x)dx$, and integrate $\int f(u)\,du$.
+\end{rulebox}
+
+\begin{exbox}{Substitution: $\int \frac{1/K}{1 - N/K}\,dN$}
+\resetsteps
+\Step{Let $u = 1 - N/K$. Then $du = -dN/K$, so $dN/K = -du$, meaning $dN = -K\,du$.}
+\Step{Rewrite integrand:}
+\[
+\int \frac{1/K}{u}\cdot(-K\,du) = -\int\frac{1}{u}\,du
+\]
+\Step{Integrate:}
+\[
+= -\ln|u| + C = -\ln\left|1 - \frac{N}{K}\right| + C
+\]
+\end{exbox}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{QSSA (Quasi-Steady-State Approximation) --- Steps}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{rulebox}{QSSA Procedure}
+Used for Michaelis-Menten and analogous systems.
+\begin{enumerate}
+  \item Write all ODEs.
+  \item Identify the fast/intermediate variable (usually the complex $[SE]$ or analogously $I$ in SIRS).
+  \item Set its derivative to zero: $d[\text{complex}]/dt = 0$.
+  \item Use the conservation law to eliminate one variable.
+  \item Solve for complex in terms of substrate and total enzyme.
+  \item Substitute to get the production rate.
+\end{enumerate}
+\end{rulebox}
+
+\begin{exbox}{Standard Michaelis-Menten: Full Steps}
+Reaction: $S + E \rightleftharpoons [SE] \to P + E$.\\
+Equations:
+\begin{align*}
+\dot S &= -k_1 SE + k_{-1}[SE]\\
+\dot{[SE]} &= k_1 SE - k_{-1}[SE] - k_2[SE]\\
+\dot P &= k_2[SE]\\
+\dot E &= -k_1 SE + (k_{-1}+k_2)[SE]
+\end{align*}
+\resetsteps
+\Step{Conservation: $\dot E + \dot{[SE]} = 0 \Rightarrow E_0 = E + [SE] = \text{const}$. So $E = E_0 - [SE]$.}
+
+\Step{Apply QSSA: set $\dot{[SE]} = 0$:}
+\[
+k_1 SE - (k_{-1}+k_2)[SE] = 0
+\]
+\Step{Substitute $E = E_0 - [SE]$:}
+\[
+k_1 S(E_0 - [SE]) - (k_{-1}+k_2)[SE] = 0
+\]
+\Step{Expand and collect $[SE]$ terms:}
+\[
+k_1 S E_0 = [SE]\left(k_1 S + k_{-1} + k_2\right)
+\]
+\Step{Solve for $[SE]$:}
+\[
+[SE] = \frac{k_1 S E_0}{k_1 S + k_{-1} + k_2}
+\]
+\Step{Divide numerator and denominator by $k_1$:}
+\[
+[SE] = \frac{S E_0}{S + \dfrac{k_{-1}+k_2}{k_1}} = \frac{S E_0}{S + K_M}, \quad K_M = \frac{k_{-1}+k_2}{k_1}
+\]
+\Step{Production rate:}
+\[
+\frac{dP}{dt} = k_2[SE] = \frac{k_2 E_0 S}{K_M + S} = \frac{V_{\max} S}{K_M + S}, \quad V_{\max} = k_2 E_0
+\]
+\Step{Limiting cases:}\\
+$S \ll K_M$: $\dot P \approx \frac{V_{\max}}{K_M} S$ (linear). \quad $S \gg K_M$: $\dot P \approx V_{\max}$ (constant).
+\end{exbox}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{$R_0$ and SIR Stability --- Complete Steps}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{exbox}{Standard SIR: Eigenvalue Calculation at Disease-Free FP}
+Equations: $\dot S = -\beta SI$, $\dot I = \beta SI - \gamma I$, $\dot R = \gamma I$.\\
+$N = S + I + R$ conserved. Work with $S$ and $I$ only ($R = N - S - I$).
+
+\resetsteps
+\Step{Disease-free FP: $I^* = 0$, $S^* = N$.}
+
+\Step{Build Jacobian (2$\times$2 for $S$ and $I$):}
+\[
+J = \begin{pmatrix} \partial(-\beta SI)/\partial S & \partial(-\beta SI)/\partial I\\ \partial(\beta SI - \gamma I)/\partial S & \partial(\beta SI - \gamma I)/\partial I \end{pmatrix} = \begin{pmatrix} -\beta I & -\beta S \\ \beta I & \beta S - \gamma \end{pmatrix}
+\]
+\Step{Evaluate at $(S^*=N, I^*=0)$:}
+\[
+J^* = \begin{pmatrix} 0 & -\beta N \\ 0 & \beta N - \gamma \end{pmatrix}
+\]
+\Step{This is \textbf{upper triangular}. Eigenvalues of triangular matrices are the diagonal entries:}
+\[
+\lambda_1 = 0, \quad \lambda_2 = \beta N - \gamma
+\]
+\Step{Disease spreads iff $\lambda_2 > 0$:}
+\[
+\beta N - \gamma > 0 \thus \frac{\beta N}{\gamma} > 1 \thus \boxed{R_0 = \frac{\beta N}{\gamma} > 1}
+\]
+\end{exbox}
+
+\begin{rulebox}{Reading Eigenvalues from Triangular Matrices}
+If $J^*$ is upper or lower triangular, the eigenvalues are just the diagonal entries. No quadratic needed.
+\[
+\begin{pmatrix} a & b \\ 0 & d \end{pmatrix} \Rightarrow \lambda_1 = a,\; \lambda_2 = d \qquad
+\begin{pmatrix} a & 0 \\ c & d \end{pmatrix} \Rightarrow \lambda_1 = a,\; \lambda_2 = d
+\]
+This is the most common shortcut on CaSB 150 disease-model eigenvalue problems.
+\end{rulebox}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Quick Reference: Algebra of Inequalities}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{rulebox}{Sign Rules for Inequalities}
+\begin{enumerate}
+  \item Adding/subtracting a number: $a > b \Rightarrow a + c > b + c$ (direction preserved)
+  \item Multiplying/dividing by a \textbf{positive} number: direction preserved.
+  \item Multiplying/dividing by a \textbf{negative} number: \textbf{direction flips}.
+  \item $a > b$ and $c > 0$: $ac > bc$.
+  \item $a > b$ and $c < 0$: $ac < bc$.
+\end{enumerate}
+\end{rulebox}
+
+\begin{exbox}{Solving $\lambda_2 = \varepsilon\bar\beta N - Z > 0$ for condition on $N$}
+\[
+\varepsilon\bar\beta N - Z > 0 \thus \varepsilon\bar\beta N > Z \thus N > \frac{Z}{\varepsilon\bar\beta}
+\]
+All divisions by $\varepsilon, \bar\beta > 0$, so direction preserved. Biological meaning: prey must exceed the threshold $N^* = Z/(\varepsilon\bar\beta)$ for predator to grow.
+\end{exbox}
+
+\begin{warnbox}
+When solving $-rN/K > 0$, dividing by $-r/K < 0$ \textbf{flips} the inequality:
+\[
+-\frac{r}{K}N > 0 \thus N < 0
+\]
+This correctly identifies that logistic self-interaction is only stabilizing for $N > 0$ (no biologically negative populations).
+\end{warnbox}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Putting It All Together: Exam Workflow}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{rulebox}{Workflow for Any Exam Problem}
+\textbf{Growth equation problem:}
+\begin{enumerate}
+  \item Simplify using early/late time limits (keep lowest/highest power of small/large quantity).
+  \item Separate variables and integrate to solve.
+  \item Find the linear space: compute $du/ds$ for candidate $u = h(N)$, $s = q(t)$; check if constant.
+  \item Compute 4th-order Taylor term: differentiate 4 times, divide by $4! = 24$.
+\end{enumerate}
+
+\textbf{Predator-prey / SIR problem:}
+\begin{enumerate}
+  \item Check conservation (sum all ODEs; if $= 0$, eliminate one variable).
+  \item Find fixed points by setting each ODE to zero and factoring.
+  \item Decide: Jacobian or $A$ matrix? (Any zero FP component $\Rightarrow$ Jacobian only.)
+  \item Compute Tr and Det.
+  \item Get eigenvalues; classify stability.
+  \item State biological conclusion.
+\end{enumerate}
+
+\textbf{Michaelis-Menten / QSSA problem:}
+\begin{enumerate}
+  \item Write all ODEs.
+  \item Find conservation laws (set $\dot E + \dot{[SE]} = 0$ etc.).
+  \item Set $\dot{[SE]} = 0$.
+  \item Substitute conservation to eliminate $E$.
+  \item Solve algebraically for $[SE]$.
+  \item Compute $\dot P = k_2[SE]$.
+\end{enumerate}
+\end{rulebox}
+
+\end{document}

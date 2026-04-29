@@ -1,0 +1,1009 @@
+\documentclass[11pt]{article}
+\usepackage[margin=0.85in, top=0.7in, bottom=0.8in]{geometry}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{mathtools}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{tcolorbox}
+\usepackage{array}
+\usepackage{booktabs}
+\usepackage[T1]{fontenc}
+\usepackage{hyperref}
+\DeclareUnicodeCharacter{26A0}{\textbf{(!)}}
+
+\hypersetup{colorlinks=true, linkcolor=blue!60!black, urlcolor=blue!60!black}
+
+% --- Colors ---
+\definecolor{topicblue}{RGB}{13,71,161}
+\definecolor{conceptred}{RGB}{183,28,28}
+\definecolor{intuitiongreen}{RGB}{27,94,32}
+\definecolor{warnorng}{RGB}{230,81,0}
+\definecolor{notegray}{RGB}{55,55,55}
+
+% --- Section formatting ---
+\titleformat{\section}{\Large\bfseries\color{topicblue}}{\textbf{Topic \thesection.}}{0.7em}{}[\color{topicblue}\titlerule]
+\titleformat{\subsection}{\large\bfseries\color{conceptred}}{\thesubsection}{0.5em}{}
+\titleformat{\subsubsection}{\normalsize\bfseries\color{intuitiongreen}}{\thesubsubsection}{0.5em}{}
+\titlespacing{\section}{0pt}{14pt}{6pt}
+\titlespacing{\subsection}{0pt}{8pt}{3pt}
+\titlespacing{\subsubsection}{0pt}{6pt}{2pt}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\textbf{CaSB 150 Comprehensive Notes}}
+\fancyhead[R]{\small Spring 2026 Midterm}
+\fancyfoot[C]{\thepage}
+
+\tcbuselibrary{skins, breakable}
+
+\newtcolorbox{conceptbox}[1]{
+  colback=topicblue!5, colframe=topicblue!70!black,
+  title={\textbf{Core Concept: #1}}, fonttitle=\bfseries,
+  breakable
+}
+\newtcolorbox{intuitionbox}[1]{
+  colback=intuitiongreen!5, colframe=intuitiongreen!60!black,
+  title={\textbf{Intuition: #1}}, fonttitle=\bfseries,
+  breakable
+}
+\newtcolorbox{warnbox}{
+  colback=warnorng!8, colframe=warnorng,
+  title={\textbf{(!) Common Trap}}, fonttitle=\bfseries,
+  breakable
+}
+\newtcolorbox{summarybox}[1]{
+  colback=gray!5, colframe=gray!50,
+  title={\textbf{Summary: #1}}, fonttitle=\bfseries,
+  breakable
+}
+\newtcolorbox{tipbox}{
+  colback=yellow!10, colframe=orange!60!black,
+  title={\textbf{Exam Tip}}, fonttitle=\bfseries,
+  breakable
+}
+
+\setlist{topsep=2pt, itemsep=2pt, parsep=0pt}
+
+\begin{document}
+
+\begin{center}
+  {\LARGE\textbf{CaSB 150 --- Comprehensive Study Notes}}\\[5pt]
+  {\large Built around the 10 Study Guide Points}\\[3pt]
+  {\small Lectures 1--9 $\bullet$ Spring 2026 Midterm Prep}
+\end{center}
+\hrule\vspace{8pt}
+
+\begin{conceptbox}{What This Document Is}
+This document maps the official Spring 2026 study guide point-by-point. Each section explains:
+\begin{itemize}
+\item \textbf{What the concept is} (the definition / framework)
+\item \textbf{Why it works the way it does} (the intuition)
+\item \textbf{What you need to be able to do} (exam-relevant skills)
+\item \textbf{Common traps and how to avoid them}
+\end{itemize}
+For mechanical procedures and formulas, use the math sheet and cheat sheet as companions. For practice, use the problem bank.
+\end{conceptbox}
+
+\tableofcontents
+\newpage
+
+%==========================================================
+\section{Growth Rate Equations \& Taylor Series}
+%==========================================================
+
+\textit{Study Guide Point 1: Understand growth rate equations and connect continuous and discrete forms; derive Taylor series; find mathematical spaces where solution is linear and the first-term Taylor series is a perfect approximation.}
+
+\subsection{Why We Use Differential Equations for Growth}
+
+Living systems change. Populations grow, decay, oscillate, or saturate. A differential equation $dN/dt = f(N, t)$ tells you the \textbf{rate of change} as a function of current state and time. The solution $N(t)$ tells you where the system goes.
+
+\begin{intuitionbox}{What is a per-capita growth rate?}
+The per-capita growth rate is $\frac{1}{N}\frac{dN}{dt}$ --- the fractional change in $N$ per unit time. For exponential growth $\dot N = rN$, this is constant: $r$. Every individual contributes equally and independently to growth. For logistic growth $\dot N = rN(1-N/K)$, the per-capita rate is $r(1-N/K)$, which decreases as the population approaches carrying capacity.
+\end{intuitionbox}
+
+\subsection{The Six Growth Models You Need to Know}
+
+\begin{summarybox}{Master Table of Growth Equations}
+\renewcommand{\arraystretch}{1.5}
+\begin{tabular}{p{2.4cm}p{3.2cm}p{3.5cm}p{4.2cm}}
+\toprule
+\textbf{Model} & \textbf{Equation} & \textbf{Solution} & \textbf{Behavior}\\
+\midrule
+Exponential & $\dot N = rN$ & $N(t) = N_0 e^{rt}$ & Constant doubling time\\
+Logistic & $\dot N = rN(1-N/K)$ & sigmoid to $K$ & Saturates at $K$\\
+Super-exp.\ & $\dot N = rN^p,\,p>1$ & $N \propto (t^*-t)^{-1/(p-1)}$ & Blows up in finite time\\
+Gompertz & $\dot N = rN\ln(K/N)$ & double-exp.\ to $K$ & Slow saturation\\
+Power-of-time & $\dot N = rN/t$ & $N = N(1)\,t^r$ & $r$ dimensionless\\
+Inverse-time & $\dot N = r/t$ & $N = N(1) + r\ln t$ & $r$ has units of $N$\\
+\bottomrule
+\end{tabular}
+\end{summarybox}
+
+\subsubsection{Exponential growth} The simplest model. Each individual replicates independently at rate $r$. \textbf{Real-world examples}: bacteria in unlimited media, tumor cells before competition, viral load in early infection, compound interest.
+
+\subsubsection{Logistic growth} Adds the carrying capacity $K$. As $N \to K$, growth slows to zero. \textbf{Why $(1 - N/K)$?} It's the simplest correction that vanishes at $N = K$ and equals 1 at $N = 0$. The factor represents the fraction of resources still available.
+
+\subsubsection{Super-exponential} For $p > 1$, growth accelerates faster than exponential. Reaches infinity in finite time. \textbf{Real example}: chain reactions, certain cancer models, epidemics with super-spreaders.
+
+\subsubsection{Gompertz} Used in tumor biology. Slower saturation than logistic because the slowdown begins earlier (logarithmically rather than linearly).
+
+\subsubsection{Power-of-time growth} The growth rate decreases with time \emph{but is also proportional to $N$}. The result: power-law growth $N \propto t^r$. \textbf{Critical observation}: $r$ is \textbf{dimensionless} here --- it's an elasticity (ratio of fractional changes), not a rate per unit time.
+
+\subsubsection{Inverse-time growth} Growth rate doesn't depend on $N$ at all, only decreases with time. The result is logarithmic growth. Here $r$ has units of \textbf{population} (not time$^{-1}$), because in $\dot N = r/t$, $r$ must have units to make the equation dimensionally consistent.
+
+\begin{warnbox}
+The interpretation of $r$ \textbf{depends on the equation}. For $\dot N = rN$, $r$ is a rate (1/time). For $\dot N = rN/t$, $r$ is dimensionless. For $\dot N = r/t$, $r$ has units of $N$. \textbf{Always derive units by plugging into the equation} --- left side has units of $N$/time, so right side must too.
+\end{warnbox}
+
+\subsection{Connecting Continuous and Discrete}
+
+\begin{conceptbox}{The Core Relationship}
+A discrete equation $N(t+1) = \lambda N(t)$ corresponds to the continuous equation $\dot N = r_c N$ via:
+\[
+\lambda = e^{r_c} \quad \text{or equivalently} \quad r_c = \ln \lambda
+\]
+With $\lambda = 1 + r_d$ (where $r_d$ is the discrete per-step rate):
+\[
+r_c = \ln(1 + r_d) \approx r_d \quad \text{(for small } r_d\text{)}
+\]
+\end{conceptbox}
+
+\begin{intuitionbox}{Why $\ln \lambda$?}
+After one time step, discrete growth multiplies by $\lambda$. Continuous growth multiplies by $e^{r_c}$. For these to match: $\lambda = e^{r_c}$. The natural log inverts the exponential.
+
+For very small step sizes, $\Delta t \to 0$, the difference vanishes: $\lim_{\Delta t \to 0}[N(t+\Delta t) - N(t)]/\Delta t = dN/dt$.
+\end{intuitionbox}
+
+\subsection{Taylor Series and Numerical Methods}
+
+\begin{conceptbox}{The Taylor Series}
+Any smooth function around a point can be expanded:
+\[
+f(t + \Delta t) = f(t) + f'(t)\Delta t + \frac{f''(t)}{2!}(\Delta t)^2 + \frac{f'''(t)}{3!}(\Delta t)^3 + \cdots
+\]
+
+\textbf{Numerical methods correspond to truncations:}
+\begin{itemize}
+\item \textbf{Euler's method}: keep first 2 terms. Error $\sim O(\Delta t^2)$ per step.
+\item \textbf{Runge-Kutta 4 (RK4)}: effectively keeps 4 terms (with cleverly chosen sample points). Error $\sim O(\Delta t^5)$ per step.
+\end{itemize}
+\end{conceptbox}
+
+\subsubsection{When does RK4 actually help?} RK4 only beats Euler if the higher derivatives \textbf{exist and are non-trivial}. If higher derivatives are zero, both methods are exact. If derivatives don't exist (cusps, kinks, $h$ chosen larger than oscillation period), neither converges.
+
+\subsubsection{Aliasing failure (from Lab 1)} If $\Delta t$ is larger than the period of oscillation, both Euler and RK4 give garbage --- they sample the function below the Nyquist rate. Example: $\cos(20t)$ has period $\pi/10 \approx 0.31$. Using $\Delta t = 1$ aliases the signal.
+
+\subsection{The ``Perfect Euler'' / Linear Space Concept}
+
+\begin{conceptbox}{What Makes Euler Exact?}
+Euler's method is \textbf{exact} when the function being integrated is \textbf{linear} in the chosen coordinates. ``Linear in $t$'' means $f''(t) = 0$ and all higher derivatives vanish, so the Taylor series terminates after the first-order term.
+\end{conceptbox}
+
+\begin{intuitionbox}{Why Linearity Means Exactness}
+Linear functions have constant slope. Following the slope for any time step $\Delta t$ gives the exact answer because the slope doesn't change. Curves require shorter steps because the slope keeps changing.
+
+For nonlinear ODEs, we can sometimes find a coordinate transformation that linearizes the relationship. Then Euler in the new coordinates is exact.
+\end{intuitionbox}
+
+\subsubsection{The recipe for finding linear space} Try transformations of $N$ and $t$ until $du/ds = $ constant. Common winners:
+
+\begin{summarybox}{Linear Spaces for Each Growth Model}
+\renewcommand{\arraystretch}{1.4}
+\begin{tabular}{p{4cm}p{4cm}p{5cm}}
+\toprule
+\textbf{Equation} & \textbf{Linear Space} & \textbf{Why}\\
+\midrule
+$\dot N = rN$ & $\ln N$ vs $t$ & $\frac{d\ln N}{dt} = r$ const\\
+$\dot N = rN/t$ & $\ln N$ vs $\ln t$ & $\frac{d\ln N}{d\ln t} = r$ const\\
+$\dot N = r/t$ & $N$ vs $\ln t$ & $\frac{dN}{d\ln t} = r$ const\\
+$\dot N = rN^2$ & $1/N$ vs $t$ & $\frac{d(1/N)}{dt} = -r$ const\\
+$\dot N = rN^p,\,p\neq 1$ & $N^{1-p}$ vs $t$ & $\frac{dN^{1-p}}{dt} = r(1-p)$ const\\
+\bottomrule
+\end{tabular}
+\end{summarybox}
+
+\begin{tipbox}
+On the exam, when asked about ``finding a different mathematical space where Euler's method is exact'': identify which transformation makes the per-step change in your transformed variable a constant. That's the linear space.
+\end{tipbox}
+
+%==========================================================
+\section{Translating Between Continuous and Discrete}
+%==========================================================
+
+\textit{Study Guide Point 2: Understand how to translate in general between continuous and discrete equations.}
+
+\subsection{The Conceptual Connection}
+
+\begin{conceptbox}{Discrete vs.\ Continuous}
+\textbf{Discrete equations} update state at fixed time steps:
+\[
+N(t+1) = N(t) + f(N(t))\cdot \Delta t \quad\text{or}\quad N(t+1) = \lambda N(t)
+\]
+
+\textbf{Continuous equations} describe the rate of change instantaneously:
+\[
+\frac{dN}{dt} = f(N)
+\]
+
+The two are connected by:
+\[
+\frac{dN}{dt} \approx \frac{N(t+\Delta t) - N(t)}{\Delta t}
+\]
+With equality only as $\Delta t \to 0$.
+\end{conceptbox}
+
+\subsection{When to Use Each}
+
+\begin{itemize}
+\item \textbf{Discrete}: when biology has natural time steps. Generations of insects, daily census, gene expression cycles, voting rounds.
+\item \textbf{Continuous}: when changes are smooth and time-step is small relative to other scales. Most molecular biology, fluid populations, electrical signals.
+\end{itemize}
+
+\subsection{Translation Procedure}
+
+\subsubsection{Continuous $\to$ Discrete (Euler discretization)}
+For $dN/dt = f(N)$:
+\[
+N(t+\Delta t) = N(t) + f(N(t))\,\Delta t
+\]
+For exponential $\dot N = rN$: $N(t+\Delta t) = (1 + r\Delta t)N(t)$.
+
+\subsubsection{Discrete $\to$ Continuous}
+For $N(t+1) = \lambda N(t)$, solution is $N(g) = N_0 \lambda^g$ where $g$ is generations. To express continuously:
+\[
+N(t) = N_0 e^{r_c t} \quad\text{with}\quad r_c = \ln \lambda / \tau_g
+\]
+where $\tau_g$ is the time per generation.
+
+\begin{warnbox}
+A common mistake: setting $r_c = r_d$ (i.e.\ assuming continuous and discrete rates are equal). This is only approximately true when $r_d$ is small. For $r_d = 4$ (population multiplies by 5 per step), $r_c = \ln 5 \approx 1.61$, very different from 4.
+\end{warnbox}
+
+\subsection{Effective Growth Rates}
+
+For piecewise growth (rate $r_1$ for time $t_1$, then rate $r_2$ for time $t_2$):
+\[
+N(t_1 + t_2) = N_0\, e^{r_1 t_1}\cdot e^{r_2 t_2} = N_0\, e^{r_1 t_1 + r_2 t_2}
+\]
+The \textbf{effective rate} is the time-weighted average:
+\[
+r_{\text{eff}} = \frac{r_1 t_1 + r_2 t_2}{t_1 + t_2}
+\]
+
+%==========================================================
+\section{Translating Words into Equations and Pictures}
+%==========================================================
+
+\textit{Study Guide Point 3: Be able to translate assumptions given in words into pictures and basic dynamical equations.}
+
+\subsection{The Conceptual Framework}
+
+\begin{conceptbox}{Compartment Models}
+Most biological models in this course are \textbf{compartment models}. The structure:
+\begin{itemize}
+\item \textbf{Compartments} = boxes representing groups of similar individuals or molecules (S, I, R; prey, predators; substrate, enzyme, complex, product).
+\item \textbf{Arrows} = flows between compartments (infections, deaths, conversions).
+\item \textbf{Self-loops} = changes within a compartment (growth, decay, cannibalism).
+\item Each compartment gets one ODE: $\frac{dC}{dt} = \text{(arrows in)} - \text{(arrows out)} + \text{(self-loops)}$
+\end{itemize}
+\end{conceptbox}
+
+\subsection{Translation Rules of Thumb}
+
+\begin{summarybox}{Word $\to$ Math Translation Table}
+\renewcommand{\arraystretch}{1.4}
+\begin{tabular}{p{6cm}p{8cm}}
+\toprule
+\textbf{Word phrase} & \textbf{Mathematical term}\\
+\midrule
+``X grows at rate $r$ per individual'' & $+rX$\\
+``X dies at rate $\mu$'' & $-\mu X$\\
+``X dies of disease at rate $Z$'' & $-ZX$\\
+``X turns into Y at rate $\gamma$'' & $-\gamma X$ in $\dot X$, $+\gamma X$ in $\dot Y$\\
+``X and Y meet, X consumes Y'' & $-\beta XY$ in $\dot Y$, $+\varepsilon\beta XY$ in $\dot X$\\
+``X and Y meet, both benefit'' & $+\alpha XY$ in both equations\\
+``X has carrying capacity $K$'' & $\cdot(1-X/K)$ multiplier on growth term\\
+``Half of new cases become asymptomatic'' & Split source term with factor $1/2$\\
+``Vaccinated individuals have rate reduced by $p$'' & Multiply transmission by $(1-p)$\\
+``Cannibalism --- predators eat each other'' & $-\bar\beta_c P^2$ in $\dot P$\\
+``Loss of immunity at rate $\nu$'' & $-\nu R$ in $\dot R$, $+\nu R$ in $\dot S$\\
+\bottomrule
+\end{tabular}
+\end{summarybox}
+
+\subsection{Drawing the Diagram First}
+
+\begin{intuitionbox}{Why Diagrams Help}
+A network diagram makes the structure visible before you commit to math. Drawing arrows with their rates lets you check:
+\begin{itemize}
+\item Are all flows accounted for?
+\item Does each arrow leaving one compartment enter another (mass conservation)?
+\item Are there double-counted terms?
+\end{itemize}
+For an SIR model: three boxes ($S, I, R$). Arrow $S \to I$ labeled $\beta SI$. Arrow $I \to R$ labeled $\gamma I$. Done.
+\end{intuitionbox}
+
+\subsection{Worked Translation Example}
+
+``A population of prey grows logistically. They are eaten by predators with effective consumption rate $\bar\beta$ per encounter. Predators convert prey into new predators with efficiency $\varepsilon$. Predators die at rate $Z$. Predators are also cannibalistic and consume each other at rate $\bar\beta_c$ per pairing.''
+
+\textbf{Translation:}
+\begin{align*}
+\dot N &= \underbrace{rN(1 - N/K)}_{\text{logistic growth}} - \underbrace{\bar\beta NP}_{\text{predation}}\\
+\dot P &= \underbrace{\varepsilon\bar\beta NP}_{\text{conversion}} - \underbrace{ZP}_{\text{death}} - \underbrace{(1-\varepsilon)\bar\beta_c P^2}_{\text{cannibalism}}
+\end{align*}
+The $(1-\varepsilon)$ in the cannibalism term reflects that some of the cannibalized predator's mass is also recycled into new predators.
+
+%==========================================================
+\section{Standard Jacobian \& Interaction Matrix Methods}
+%==========================================================
+
+\textit{Study Guide Point 4: Construct standard Jacobian matrix and interaction A matrix from a given set of differential equations.}
+
+\subsection{What These Matrices Are For}
+
+\begin{conceptbox}{Linearization Around Fixed Points}
+Near a fixed point $\vec X^*$, write $\vec X(t) = \vec X^* + \delta\vec X(t)$. Then to leading order:
+\[
+\frac{d\,\delta \vec X}{dt} \approx M \, \delta\vec X
+\]
+where $M$ is a matrix capturing how perturbations propagate. The eigenvalues of $M$ tell us if perturbations grow (unstable) or shrink (stable).
+
+The Jacobian $J^*$ and the interaction matrix $A$ are \textbf{two different ways of constructing this $M$}.
+\end{conceptbox}
+
+\subsection{Standard Jacobian: The General Method}
+
+\begin{conceptbox}{Building $J^*$}
+For ODEs $\dot X_i = f_i(\vec X)$, the Jacobian entry is:
+\[
+J_{ij} = \frac{\partial f_i}{\partial X_j}
+\]
+The $J^*$ is $J$ \textbf{evaluated at the fixed point} $\vec X^*$.
+\end{conceptbox}
+
+\subsubsection{Why this works} The multivariate Taylor expansion says
+$f_i(\vec X^* + \delta) = f_i(\vec X^*) + \sum_j (\partial f_i/\partial X_j)|_{\vec X^*} \delta_j + O(\delta^2)$. Since $f_i(\vec X^*) = 0$ at a fixed point, only the linear terms remain.
+
+\subsubsection{Always works} The Jacobian is the universal tool. It works for trivial fixed points (where some $X_i^* = 0$), nonlinear interactions (Type II response, Hill functions), and any structure of equations.
+
+\subsection{Interaction Matrix: A Shortcut for Special Cases}
+
+\begin{conceptbox}{Building $A$}
+Rewrite each ODE as:
+\[
+\frac{1}{X_i}\frac{dX_i}{dt} = (\text{some constant}) + \sum_j A_{ij} X_j
+\]
+The matrix entry $A_{ij}$ is the coefficient of $X_j$ in the per-capita growth rate of $X_i$.
+\end{conceptbox}
+
+\subsubsection{What $A_{ij}$ means biologically}
+\begin{itemize}
+\item $A_{ii}$ (diagonal): \textbf{intraspecific} effect. Negative $A_{ii}$ means species $i$ self-regulates (logistic carrying capacity, cannibalism).
+\item $A_{ij}$ (off-diagonal): effect of species $j$ on species $i$. Sign tells the relationship:
+  \begin{itemize}
+  \item $A_{ij} > 0$, $A_{ji} > 0$: mutualism (both benefit)
+  \item $A_{ij} < 0$, $A_{ji} < 0$: competition (both harm each other)
+  \item $A_{ij} < 0$, $A_{ji} > 0$: predation ($j$ kills $i$, benefits)
+  \item $A_{ij} = 0$, $A_{ji} \neq 0$: commensalism
+  \end{itemize}
+\end{itemize}
+
+\subsection{When Each Method Works}
+
+\begin{summarybox}{Decision Rule}
+\renewcommand{\arraystretch}{1.4}
+\begin{tabular}{p{6.5cm}p{4cm}p{3.5cm}}
+\toprule
+\textbf{Situation} & \textbf{Use} & \textbf{Why}\\
+\midrule
+All FP components nonzero, linear interactions & Either method & Both valid; $A$ is faster\\
+Some FP component is zero (trivial FP) & Jacobian only & $A$ requires dividing by $X_i^*$\\
+Type II / Hill / nonlinear functional response & Jacobian only & $A$ assumes form $A_{ij}X_iX_j$\\
+Need quick structural insight & $A$ matrix & Reveals interaction signs\\
+Need exact eigenvalues & Jacobian & More general\\
+\bottomrule
+\end{tabular}
+\end{summarybox}
+
+\begin{warnbox}
+The interaction matrix $A$ method \textbf{requires non-trivial fixed points}. If you try to apply it at the disease-free state ($I^*=0$) of an SIR model, the per-capita rate $\dot I/I$ blows up at $I=0$. The eigenvalues you'd compute would be invalid.
+\end{warnbox}
+
+\subsection{The Two Methods Give Different Numbers But Same Stability}
+
+\begin{intuitionbox}{Reconciling the Mismatch}
+At a non-trivial fixed point, $A$ and $J^*$ may have different numerical eigenvalues, but the \textbf{signs} of the real parts always agree. They live in different ``coordinate systems'':
+\begin{itemize}
+\item $A$ uses scaled variables ($\delta \ln X = \delta X / X$).
+\item $J^*$ uses unscaled variables ($\delta X$).
+\end{itemize}
+The signs of eigenvalues (which determine stability) are coordinate-independent.
+\end{intuitionbox}
+
+%==========================================================
+\section{Eigenvalues, Fixed Points, and Stability}
+%==========================================================
+
+\textit{Study Guide Point 5: Calculate eigenvalues; understand fixed points; choose biologically-motivated FP to perturb; understand assumptions of Jacobian and A methods.}
+
+\subsection{What Is a Fixed Point?}
+
+\begin{conceptbox}{Definition}
+A fixed point $\vec X^*$ satisfies $d\vec X/dt = 0$ for all components. This means: if the system is exactly at $\vec X^*$, it stays there forever.
+
+A fixed point can be:
+\begin{itemize}
+\item \textbf{Stable}: small perturbations decay back to $\vec X^*$. The system returns.
+\item \textbf{Unstable}: small perturbations grow. The system escapes.
+\item \textbf{Neutral}: perturbations neither grow nor decay; system orbits the FP.
+\end{itemize}
+\end{conceptbox}
+
+\subsection{Finding Fixed Points}
+
+\subsubsection{The procedure}
+\begin{enumerate}
+\item Set each $\dot X_i = 0$.
+\item \textbf{Factor each equation}; \textbf{do not divide}. Dividing by a variable loses the trivial solution.
+\item Enumerate all combinations of zeros.
+\end{enumerate}
+
+\subsubsection{Example: Lotka-Volterra}
+$\dot N = N(r - \bar\beta P) = 0 \Rightarrow N = 0$ \textit{or} $P = r/\bar\beta$.\\
+$\dot P = P(\varepsilon\bar\beta N - Z) = 0 \Rightarrow P = 0$ \textit{or} $N = Z/(\varepsilon\bar\beta)$.
+
+Combinations:
+\begin{itemize}
+\item $N=0, P=0$ (extinction, trivial)
+\item $N=Z/(\varepsilon\bar\beta), P=r/\bar\beta$ (coexistence)
+\end{itemize}
+
+\subsection{Choosing the Right Fixed Point: Biological Motivation}
+
+\begin{conceptbox}{The Question Determines the Fixed Point}
+The fixed point you analyze depends on \textbf{what biological question you're asking}:
+\begin{itemize}
+\item ``Will a new disease invade?'' $\to$ disease-free FP ($I^*=0$, $S^*=N$). If unstable, disease invades.
+\item ``Will the disease persist?'' $\to$ endemic FP ($I^*>0$). If stable, disease becomes endemic.
+\item ``Will species coexist?'' $\to$ coexistence FP (all $X_i^* > 0$).
+\item ``Can predator invade prey-only system?'' $\to$ prey-only FP ($P^*=0, N^*=K$).
+\end{itemize}
+\end{conceptbox}
+
+\subsubsection{Two-variant disease example} For a virus with a variant emerging \emph{after} the first wave: the relevant FP is post-first-wave ($I^*=0$, $S_2^*$ = those who recovered, $S^*=N-S_2^*$). Perturbing this state with the variant tells whether the variant takes off.
+
+\subsection{Eigenvalues and Their Meaning}
+
+\begin{conceptbox}{Eigenvalue Interpretation}
+For the linearized system $d\delta\vec X/dt = M\delta\vec X$, solutions are linear combinations of $e^{\lambda_i t} \vec v_i$ where $\lambda_i$ are eigenvalues and $\vec v_i$ are eigenvectors of $M$.
+\begin{itemize}
+\item $\text{Re}(\lambda_i) > 0$: that mode \textbf{grows} (instability).
+\item $\text{Re}(\lambda_i) < 0$: that mode \textbf{decays} (stability).
+\item $\text{Im}(\lambda_i) \neq 0$: \textbf{oscillation} at frequency $|\text{Im}(\lambda_i)|$.
+\end{itemize}
+
+\textbf{Stability requires ALL eigenvalues to have negative real part.} A single positive eigenvalue makes the FP unstable.
+\end{conceptbox}
+
+\subsection{The 2$\times$2 Eigenvalue Formula}
+
+For $M = \begin{pmatrix} a & b \\ c & d \end{pmatrix}$:
+\[
+\text{Tr}(M) = a + d, \quad \text{Det}(M) = ad - bc
+\]
+\[
+\lambda_\pm = \frac{\text{Tr}}{2} \pm \frac{\sqrt{\text{Tr}^2 - 4\text{Det}}}{2}
+\]
+
+\subsubsection{Interpretation table}
+\begin{summarybox}{Stability Classification}
+\renewcommand{\arraystretch}{1.4}
+\begin{tabular}{p{2.5cm}p{2.5cm}p{3cm}p{5cm}}
+\toprule
+\textbf{Tr} & \textbf{Det} & \textbf{Discriminant} & \textbf{Type}\\
+\midrule
+$<0$ & $>0$ & $>0$ & Stable node (smooth decay)\\
+$<0$ & $>0$ & $<0$ & Stable spiral (oscillates while decaying)\\
+$0$ & $>0$ & $<0$ & Center / neutral oscillation\\
+$>0$ & $>0$ & $<0$ & Unstable spiral (grows + oscillates)\\
+$>0$ & $>0$ & $>0$ & Unstable node\\
+any & $<0$ & --- & Saddle (always unstable)\\
+\bottomrule
+\end{tabular}
+\end{summarybox}
+
+\subsection{Eigenvalues $\to$ Fixed Point Type (Direct Mapping)}
+
+The Tr/Det table tells you the stability without computing eigenvalues directly. But sometimes you'll already have the eigenvalues (e.g., from a triangular Jacobian, or given in a problem). Here's how to read stability \textbf{straight from the eigenvalues themselves}.
+
+\begin{conceptbox}{The Master Rule}
+The eigenvalues $\lambda_1, \lambda_2$ (for 2$\times$2) determine fixed point type by:
+\begin{enumerate}
+\item \textbf{The sign of $\text{Re}(\lambda)$} for each eigenvalue $\to$ stable or unstable in that direction.
+\item \textbf{Whether $\text{Im}(\lambda) \neq 0$} $\to$ oscillatory or monotonic.
+\item \textbf{Whether eigenvalues are real \& distinct, real \& equal, or complex conjugates} $\to$ node, degenerate node, or spiral.
+\end{enumerate}
+\end{conceptbox}
+
+\subsubsection{The complete eigenvalue $\to$ stability table}
+
+\begin{summarybox}{Direct Eigenvalue Classification (2$\times$2)}
+\renewcommand{\arraystretch}{1.5}
+\begin{tabular}{p{4.5cm}p{3.5cm}p{6cm}}
+\toprule
+\textbf{Eigenvalues} & \textbf{Type} & \textbf{Behavior}\\
+\midrule
+$\lambda_1, \lambda_2$ both real, both $< 0$ & Stable node & Trajectories approach FP smoothly, no oscillation. Each eigenvector defines a decay direction.\\
+$\lambda_1, \lambda_2$ both real, both $> 0$ & Unstable node & Trajectories flee FP smoothly, no oscillation.\\
+$\lambda_1 > 0,\ \lambda_2 < 0$ (opposite signs) & Saddle point & Unstable. Trajectories approach along one eigenvector and flee along the other.\\
+$\lambda = a \pm i\omega$ with $a < 0$ & Stable spiral (focus) & Trajectories spiral inward to FP. Frequency $|\omega|$, decay $|a|$.\\
+$\lambda = a \pm i\omega$ with $a > 0$ & Unstable spiral & Trajectories spiral outward away from FP.\\
+$\lambda = \pm i\omega$ (pure imaginary, $a=0$) & Center / neutral & Closed orbits. Neither stable nor unstable strictly. \textbf{Standard LV behavior.}\\
+$\lambda_1 = \lambda_2 < 0$ (real, repeated) & Degenerate stable node & Stable but slower convergence than a regular node.\\
+$\lambda_1 = \lambda_2 > 0$ (real, repeated) & Degenerate unstable node & Unstable.\\
+$\lambda_1 = 0,\ \lambda_2 < 0$ & Marginal (one zero) & Neutral in one direction, stable in the other. \textbf{SIR disease-free has this.}\\
+$\lambda_1 = 0,\ \lambda_2 > 0$ & Marginal-unstable & Marginal in one direction, unstable in other.\\
+\bottomrule
+\end{tabular}
+\end{summarybox}
+
+\begin{intuitionbox}{Why This Mapping Works}
+The linearized system $d\delta\vec X/dt = M \delta\vec X$ has solutions $\delta\vec X(t) = c_1 e^{\lambda_1 t}\vec v_1 + c_2 e^{\lambda_2 t}\vec v_2$.
+
+\textbf{Real $\lambda$}: $e^{\lambda t}$ is a pure exponential. If $\lambda < 0$ it decays; if $\lambda > 0$ it grows.
+
+\textbf{Complex $\lambda = a \pm i\omega$}: $e^{(a+i\omega)t} = e^{at}[\cos(\omega t) + i\sin(\omega t)]$. The $e^{at}$ factor controls amplitude (decay vs.\ growth), and $\cos(\omega t)$ produces oscillations. Spirals \textbf{must} come in conjugate pairs because the matrix is real.
+
+\textbf{Zero eigenvalue}: $e^{0\cdot t} = 1$. The perturbation neither grows nor decays in that direction --- it's marginal. The system can drift along that direction without resistance.
+\end{intuitionbox}
+
+\subsubsection{Cross-checking with Tr and Det}
+
+The two tables (Tr/Det vs.\ direct eigenvalues) must agree. The bridge is:
+\[
+\text{Tr}(M) = \lambda_1 + \lambda_2, \qquad \text{Det}(M) = \lambda_1 \lambda_2
+\]
+For complex eigenvalues $\lambda = a \pm i\omega$:
+\[
+\text{Tr} = 2a, \qquad \text{Det} = a^2 + \omega^2
+\]
+This is why $\text{Tr} = 0$ with $\text{Det} > 0$ gives pure imaginary eigenvalues (centers): $a = 0$ and $\omega^2 = \text{Det} > 0$.
+
+\begin{tipbox}
+\textbf{When the Jacobian is triangular} (upper or lower), eigenvalues are just the diagonal entries. Read off stability directly from this table, no Tr/Det math needed. This is the SIR shortcut: $J^*$ at disease-free is upper triangular, so $\lambda_1 = 0$ and $\lambda_2 = \beta N - \gamma$.
+\end{tipbox}
+
+\subsubsection{The 3$\times$3 generalization}
+
+For three eigenvalues $\lambda_1, \lambda_2, \lambda_3$:
+\begin{itemize}
+\item All three $\text{Re}(\lambda_i) < 0$: \textbf{stable}.
+\item Any one $\text{Re}(\lambda_i) > 0$: \textbf{unstable}.
+\item One real $\lambda$ + complex conjugate pair: possible spiral-node hybrid (decays in one direction with oscillation in the perpendicular plane).
+\item One $\lambda = 0$, others negative: marginal (analog of the SIR susceptible direction).
+\end{itemize}
+
+\subsection{For 3$\times$3 and Larger Matrices}
+
+For $n\times n$ matrices, the characteristic polynomial has $n$ coefficients (the $n$ \textbf{invariants}). $\text{Tr}$ and $\text{Det}$ are only 2 of these. For 3$\times$3 you need 3 invariants. For 5$\times$5 you need 5.
+
+\subsubsection{Routh-Hurwitz criterion} For 3$\times$3 with characteristic polynomial $\lambda^3 + a_2\lambda^2 + a_1\lambda + a_0 = 0$, all roots have negative real parts iff:
+\begin{itemize}
+\item $a_2 > 0$ (i.e.\ $-\text{Tr}(J^*) > 0$)
+\item $a_0 > 0$ (i.e.\ $-\text{Det}(J^*) > 0$)
+\item $a_2 a_1 > a_0$
+\end{itemize}
+
+%==========================================================
+\section{Commenting on System Stability (Math \& Biology)}
+%==========================================================
+
+\textit{Study Guide Point 6: Comment on system stability in terms of both math and biology.}
+
+\subsection{The Two-Pronged Answer}
+
+Every stability question should answer both:
+
+\begin{enumerate}
+\item \textbf{Mathematical statement}: ``All eigenvalues have negative real part, so the system is stable in the linear regime.''
+
+\item \textbf{Biological interpretation}: ``This means after a small perturbation (e.g., a few infected individuals introduced), the system returns to the disease-free state --- the disease dies out.''
+\end{enumerate}
+
+\subsection{Biological Meaning of Trace and Determinant}
+
+\begin{conceptbox}{What Tr and Det Mean Biologically (for $A$ matrix)}
+\textbf{Trace = sum of diagonal entries = sum of self-interactions.}
+\begin{itemize}
+\item Negative Tr: species self-regulate (logistic terms, cannibalism). Stabilizing.
+\item Zero Tr: no self-interactions; pure oscillations possible.
+\item Positive Tr: species self-amplify; destabilizing.
+\end{itemize}
+
+\textbf{Determinant = product of cross-interactions ($A_{12}\cdot A_{21}$ minus diagonal product).}
+\begin{itemize}
+\item Negative Det: opposite-sign cross-interactions; saddle behavior.
+\item Positive Det with negative cross product: predation-style coupling; oscillatory.
+\end{itemize}
+\end{conceptbox}
+
+\subsection{Conclusions for Common Systems}
+
+\subsubsection{Standard Lotka-Volterra}
+$\text{Tr}(A) = 0$, $\text{Det}(A) > 0$. Eigenvalues pure imaginary. \textbf{Math}: neutral oscillations. \textbf{Biology}: predator and prey populations cycle indefinitely; closed orbits in phase space. The amplitude depends on initial conditions, not on a stable equilibrium.
+
+\subsubsection{LV with Logistic Prey}
+$\text{Tr}(A) = -r/K < 0$, $\text{Det}(A) > 0$. \textbf{Math}: stable spiral or stable node. \textbf{Biology}: predator-prey populations spiral into the equilibrium point; oscillations damp out over time.
+
+\subsubsection{LV with Type II Functional Response}
+$\text{Tr}(J^*) > 0$, $\text{Det}(J^*) > 0$. \textbf{Math}: unstable spiral. \textbf{Biology}: oscillations grow over time; in a real system, this becomes a limit cycle. Predator saturation destabilizes the equilibrium.
+
+\subsubsection{Standard SIR (disease-free)}
+Eigenvalues: $0$ and $\beta N - \gamma$. \textbf{Math}: marginally stable in one direction (the susceptible-direction, $\lambda_1 = 0$); other direction stable iff $R_0 < 1$.\textbf{ Biology}: disease either spreads ($R_0>1$) or dies out ($R_0<1$).
+
+%==========================================================
+\section{Predator-Prey \& SIR from Word Problems}
+%==========================================================
+
+\textit{Study Guide Point 7: Given assumptions about a biological system, write the corresponding predator-prey or SIR equations and find fixed points and dynamics using stability analysis.}
+
+\subsection{The Lotka-Volterra Template}
+
+\begin{conceptbox}{Standard LV Equations}
+\[
+\frac{dN}{dt} = rN - \bar\beta NP
+\]
+\[
+\frac{dP}{dt} = \varepsilon\bar\beta NP - ZP
+\]
+\textbf{Parameter meanings:}
+\begin{itemize}
+\item $r$: prey per-capita growth rate (1/time)
+\item $\bar\beta$: per-capita predator consumption rate (volume/time)
+\item $\varepsilon$: conversion efficiency (dimensionless, $0 < \varepsilon < 1$)
+\item $Z$: predator per-capita death rate (1/time)
+\end{itemize}
+\end{conceptbox}
+
+\subsubsection{Common modifications and their biological motivations}
+
+\begin{summarybox}{Predator-Prey Variants}
+\renewcommand{\arraystretch}{1.4}
+\begin{tabular}{p{4cm}p{5cm}p{6cm}}
+\toprule
+\textbf{Modification} & \textbf{Math} & \textbf{Biology}\\
+\midrule
+Logistic prey & Add $-rN^2/K$ & Resource competition among prey\\
+Type II response & $\bar\beta \to \alpha N/(1+\alpha h N)$ & Predator handling time\\
+Cannibalism & Add $-\bar\beta_c P^2$ to $\dot P$ & Predator self-consumption\\
+Pack hunting & Replace $P$ by $P_p$ (packs) & Coordinated predation\\
+Predator carrying $K_P$ & Multiply by $(1-P/K_P)$ & Territoriality, mate-finding\\
+Mutualism & $+\alpha NP$ in $\dot N$ as well & Both species benefit\\
+\bottomrule
+\end{tabular}
+\end{summarybox}
+
+\subsection{The SIR Template}
+
+\begin{conceptbox}{Standard SIR Equations}
+\[
+\frac{dS}{dt} = -\beta SI
+\]
+\[
+\frac{dI}{dt} = \beta SI - \gamma I
+\]
+\[
+\frac{dR}{dt} = \gamma I
+\]
+\textbf{Parameters:} $\beta$ = transmission rate per contact; $\gamma$ = recovery rate. Total $N = S+I+R$ conserved (no births/deaths).
+\end{conceptbox}
+
+\subsubsection{The basic reproductive number $R_0$}
+\[
+R_0 = \frac{\beta N}{\gamma} = \text{(transmission rate)}\times\text{(susceptible pool)}/\text{(removal rate)}
+\]
+This is the average number of new infections caused by one infected individual in a fully susceptible population. \textbf{Disease spreads iff $R_0 > 1$.}
+
+\subsubsection{SIR variants}
+
+\begin{summarybox}{SIR Modifications}
+\renewcommand{\arraystretch}{1.4}
+\begin{tabular}{p{4cm}p{5cm}p{6cm}}
+\toprule
+\textbf{Modification} & \textbf{Math} & \textbf{Biology}\\
+\midrule
+SIRS (waning immunity) & $\dot S\!=\!-\beta SI + \nu R$,\;$\dot R\!=\!\gamma I - \nu R$ & Lose immunity at rate $\nu$\\
+SIS (no recovery) & $\dot S\!=\!-\beta SI + \gamma I$,\;$\dot I\!=\!\beta SI - \gamma I$ & Diseases like gonorrhea\\
+Disease deaths & Add $-\mu I$ to $\dot I$ & Total $N$ decreases\\
+Vaccination & $\beta \to \beta(1-fp)$ & Fraction $f$ vaccinated, efficacy $p$\\
+Asymptomatic + symptomatic & Two infected compartments & COVID-style branching\\
+Multi-strain & Multiple $I_i$, $\beta_i$, $\gamma_i$ & Variants, multiple pathogens\\
+\bottomrule
+\end{tabular}
+\end{summarybox}
+
+\subsection{Standard Workflow}
+
+\begin{tipbox}
+For any predator-prey or SIR exam problem:
+\begin{enumerate}
+\item Read the words carefully; sketch a compartment diagram.
+\item Write differential equations from the diagram (one per box).
+\item Check conservation: sum all $\dot X_i$. If it equals zero, eliminate one variable.
+\item Find fixed points by factoring (don't divide).
+\item Pick the FP that matters for the biological question.
+\item Choose method: Jacobian (always works) or $A$ matrix (only if FP is non-trivial).
+\item Compute $\text{Tr}$ and $\text{Det}$.
+\item Find eigenvalues; classify stability.
+\item State biological conclusion in plain English.
+\end{enumerate}
+\end{tipbox}
+
+%==========================================================
+\section{Conservation \& Constraint Equations}
+%==========================================================
+
+\textit{Study Guide Point 8: Understand constraint/conservation equations and their impact on the system.}
+
+\subsection{What Conservation Means}
+
+\begin{conceptbox}{Conservation Law}
+A conservation law states some quantity (often total mass / number) doesn't change in time. If $\sum_i X_i = N = $ const, then $\sum_i \dot X_i = 0$.
+
+\textbf{Where conservation comes from:}
+\begin{itemize}
+\item No births / deaths in SIR $\to$ total people conserved.
+\item Total enzyme conserved $\to$ $E + [SE] = E_0$ in MM.
+\item Closed-system biochemistry $\to$ sum of substrate \& product conserved.
+\end{itemize}
+
+\textbf{Where conservation breaks:}
+\begin{itemize}
+\item Disease deaths in SIR ($-\mu I$ term) $\to$ total decreases over time.
+\item Open systems with influx/outflux.
+\item Predator-prey: prey biomass $\neq$ predator biomass; only $\varepsilon$ fraction converts.
+\end{itemize}
+\end{conceptbox}
+
+\subsection{Why Conservation Helps}
+
+Each independent conservation law lets you eliminate one differential equation. If you have $n$ compartments and $k$ conservation laws, you only need $n - k$ equations.
+
+\subsubsection{Example: SIR}
+3 compartments, 1 conservation law ($S+I+R=N$), so only 2 independent equations are needed. Use $R = N - S - I$ to substitute.
+
+\subsubsection{Example: Michaelis-Menten}
+4 species ($S, E, [SE], P$), but $E_0 = E + [SE]$ conserved, so substitute $E = E_0 - [SE]$. Reduces to 3 dynamical variables.
+
+\subsection{Verification}
+
+\begin{tipbox}
+\textbf{Always verify conservation by summing}: compute $\sum_i \dot X_i$. If it equals zero, conservation holds. If not, identify the source/sink terms and decide whether you can still simplify by other means.
+\end{tipbox}
+
+\subsection{Biological Importance}
+
+Conservation lets you make stronger predictions. For example:
+\begin{itemize}
+\item In SIR: you can predict the \textbf{final epidemic size} from $S(\infty)$ alone, since $I(\infty) = 0$ and $R(\infty) = N - S(\infty)$.
+\item In MM: knowing $E_0$ lets you bound the maximum reaction rate $V_{\max} = k_2 E_0$.
+\end{itemize}
+
+%==========================================================
+\section{Michaelis-Menten, QSSA, \& Hill Functions}
+%==========================================================
+
+\textit{Study Guide Point 9: Write Michaelis-Menten equations and solve for production rate using QSSA. Understand Hill functions.}
+
+\subsection{The Michaelis-Menten Reaction}
+
+\begin{conceptbox}{The Reaction Scheme}
+\[
+S + E \xrightleftharpoons[k_{-1}]{k_1} [SE] \xrightarrow{k_2} P + E
+\]
+
+\textbf{Steps:}
+\begin{enumerate}
+\item Substrate $S$ binds enzyme $E$ to form complex $[SE]$ (rate $k_1$).
+\item Complex either dissociates back ($k_{-1}$) or proceeds to product ($k_2$).
+\item Product $P$ released with enzyme $E$ free again.
+\end{enumerate}
+\end{conceptbox}
+
+\subsection{The Quasi-Steady-State Approximation (QSSA)}
+
+\begin{conceptbox}{Why QSSA Works}
+The complex $[SE]$ forms quickly (on the timescale of $k_1$) and reaches a quasi-steady state where its formation balances its breakdown. On the slower timescale of substrate consumption, we can approximate $\dot{[SE]} \approx 0$.
+\end{conceptbox}
+
+\subsubsection{The Result}
+After QSSA and using conservation $E_0 = E + [SE]$:
+\[
+[SE] = \frac{E_0 S}{K_M + S}, \quad K_M = \frac{k_{-1}+k_2}{k_1}
+\]
+Production rate:
+\[
+\frac{dP}{dt} = k_2[SE] = \frac{V_{\max} S}{K_M + S}, \quad V_{\max} = k_2 E_0
+\]
+
+\subsection{Properties of Michaelis-Menten Kinetics}
+
+\subsubsection{Limits}
+\begin{itemize}
+\item $S \ll K_M$: $\dot P \approx V_{\max} S/K_M$. Linear in substrate concentration.
+\item $S \gg K_M$: $\dot P \approx V_{\max}$. Saturated (zero-order in $S$).
+\item $S = K_M$: $\dot P = V_{\max}/2$. Half-maximum velocity (defining property).
+\end{itemize}
+
+\subsubsection{Biological meaning of $K_M$ and $V_{\max}$}
+\begin{itemize}
+\item $K_M$ small: enzyme has high affinity for substrate (binds easily).
+\item $V_{\max}$: maximum possible turnover rate, set by total enzyme and turnover number $k_2$.
+\end{itemize}
+
+\subsection{Multiple Substrates / Enzymes}
+
+If two enzymes compete for the same substrate, or two substrates use the same enzyme, you must:
+\begin{enumerate}
+\item Write all kinetic equations.
+\item Identify all conservation laws (one per enzyme typically).
+\item Apply QSSA to each complex.
+\item Solve coupled algebraic system for the steady-state complexes.
+\end{enumerate}
+
+\subsection{Hill Functions and Cooperativity}
+
+\begin{conceptbox}{The Hill Function}
+\[
+f(S) = \frac{V_{\max} S^n}{K^n + S^n}
+\]
+\textbf{Hill coefficient} $n$ measures cooperativity:
+\begin{itemize}
+\item $n=1$: standard Michaelis-Menten (no cooperativity).
+\item $n>1$: positive cooperativity; sigmoidal switch-like response.
+\item $n<1$: negative cooperativity; broader transition.
+\end{itemize}
+\end{conceptbox}
+
+\subsubsection{Where Hill arises} When binding of one substrate molecule to a multimeric enzyme increases the affinity of the others, the binding becomes cooperative. Classic example: hemoglobin binding O\textsubscript{2}, where $n \approx 2.8$ (4 binding sites, partial cooperativity).
+
+\subsubsection{Half-max remains at $S = K$} regardless of $n$. The slope at half-max scales as $n V_{\max}/(4K)$. Higher $n$ means more abrupt switching.
+
+%==========================================================
+\section{Hodgkin-Huxley Model and Neuron Dynamics}
+%==========================================================
+
+\textit{Study Guide Point 10: Understand each of the terms in the Hodgkin-Huxley equations and how they relate to assumptions and the types of dynamics typically produced.}
+
+\subsection{The Big Picture}
+
+\begin{conceptbox}{What HH Models}
+The Hodgkin-Huxley equations describe how voltage across a neuronal membrane changes due to ionic currents. The model captures the action potential --- the spike that travels down nerves.
+\end{conceptbox}
+
+\subsection{The Core Equation}
+
+\[
+C_m \frac{dV}{dt} = -g_{\text{Na}} m^3 h(V - V_{\text{Na}}) - g_K n^4 (V - V_K) - g_L (V - V_L) + I_{\text{ext}}
+\]
+
+\subsubsection{Term-by-term breakdown}
+\begin{itemize}
+\item $C_m \dot V$: capacitive current. The membrane is a capacitor; charging it changes voltage. $C_m \approx 1\,\mu F/cm^2$ typically.
+\item $g_{\text{Na}} m^3 h$: maximum sodium conductance times the fraction of channels open. Three activation gates ($m^3$, must all be open) and one inactivation gate ($h$, open by probability $h$).
+\item $(V - V_{\text{Na}})$: driving force for sodium. By Ohm's law, current $I = g\cdot \Delta V$. $V_{\text{Na}} \approx +50$ mV (Nernst equilibrium for Na$^+$).
+\item $g_K n^4$: potassium conductance with 4 activation gates ($n^4$).
+\item $(V - V_K)$: driving force for potassium. $V_K \approx -77$ mV.
+\item $g_L (V - V_L)$: leak current through always-open channels. Maintains resting potential.
+\item $I_{\text{ext}}$: experimentally injected current.
+\end{itemize}
+
+\subsection{Gating Variables}
+
+\begin{conceptbox}{Gating Dynamics}
+Each gate ($m$, $h$, $n$) follows:
+\[
+\frac{dx}{dt} = \alpha_x(V)(1-x) - \beta_x(V)\,x
+\]
+This can be rewritten as:
+\[
+\frac{dx}{dt} = \frac{x_\infty(V) - x}{\tau_x(V)}
+\]
+where $x_\infty = \alpha_x/(\alpha_x + \beta_x)$ is the steady-state value at voltage $V$ and $\tau_x = 1/(\alpha_x + \beta_x)$ is the time constant.
+\end{conceptbox}
+
+\subsubsection{What each gate does}
+\begin{itemize}
+\item \textbf{$m$ (Na activation)}: \emph{fast} response to depolarization. Opens quickly when voltage rises.
+\item \textbf{$h$ (Na inactivation)}: \emph{slower} response. Closes when voltage rises (with delay).
+\item \textbf{$n$ (K activation)}: \emph{slow} response. Opens with delay when voltage rises.
+\end{itemize}
+
+\subsubsection{Why $m^3 h$ and $n^4$?} Each ion channel has multiple structural subunits. All Na activation gates must open for Na current to flow, but only one inactivation gate is needed to close the channel. The exponents come from the channel architecture, not arbitrary.
+
+\subsection{The Action Potential}
+
+\begin{intuitionbox}{The Spike Mechanism}
+\begin{enumerate}
+\item \textbf{Resting state}: $V \approx -70$ mV. Mostly $K$ channels (small leak) maintain potential.
+\item \textbf{Threshold reached}: stimulus depolarizes membrane past threshold ($\sim -55$ mV).
+\item \textbf{Rising phase}: $m$ opens fast $\to$ Na floods in $\to$ $V$ rises further $\to$ more $m$ opens (positive feedback). Spike to $\sim +30$ mV.
+\item \textbf{Peak / inactivation}: $h$ slowly closes (Na inactivates). $n$ slowly opens (K activates).
+\item \textbf{Falling phase}: K efflux drives $V$ down rapidly toward $V_K$.
+\item \textbf{Hyperpolarization}: $V$ briefly below resting ($\sim -85$ mV) because K channels still open.
+\item \textbf{Recovery}: $h$ reopens, $n$ closes; back to resting state. \textbf{Refractory period} prevents immediate re-firing.
+\end{enumerate}
+\end{intuitionbox}
+
+\subsection{Dynamics Produced}
+
+The HH equations exhibit:
+\begin{itemize}
+\item \textbf{Resting equilibrium} (stable fixed point at low current).
+\item \textbf{Excitability}: small perturbations decay; large ones trigger a full spike before returning.
+\item \textbf{Limit cycles}: under sustained current, periodic spiking emerges from a Hopf bifurcation.
+\item \textbf{Refractory period}: imposed by the slow recovery of $h$ and $n$.
+\end{itemize}
+
+\subsubsection{Why this matters} HH is the prototype for excitable systems: cardiac cells, calcium signaling, even some chemical reactions. Same mathematical structure (fast activator, slow inhibitor) generates the same qualitative dynamics.
+
+%==========================================================
+\section{Cross-Cutting Themes \& Exam Strategy}
+%==========================================================
+
+\subsection{Patterns Across the Course}
+
+\begin{summarybox}{Recurring Mathematical Themes}
+\begin{itemize}
+\item \textbf{Compartment models with conservation}: SIR, MM, predator-prey all use this structure.
+\item \textbf{Linearization \& eigenvalues for stability}: Used everywhere with FPs.
+\item \textbf{Fast-slow separation}: QSSA in MM; gating dynamics in HH.
+\item \textbf{Functional response}: Type II in predation; Hill in enzyme kinetics; saturation everywhere.
+\item \textbf{Per-capita rates}: $\dot X/X$ structure underlies the $A$ matrix; same idea as half-life concepts.
+\item \textbf{Threshold conditions ($R_0$)}: When does growth happen vs.\ extinction? Common across disease models, predator-prey, ecology.
+\end{itemize}
+\end{summarybox}
+
+\subsection{What the Exam Will Probably Ask}
+
+Based on every past exam (2017--2024), expect one problem from each category:
+
+\begin{enumerate}
+\item \textbf{Growth equation problem}: novel ODE, simplify in limits, solve, find linear space, compute Taylor terms. \textbf{Always appears.}
+\item \textbf{Predator-prey or ecological variant}: pack hunting, cannibalism, mutualism, three-species. Write equations, find FPs, build $A$ or $J^*$, compute eigenvalues, interpret. \textbf{Always appears.}
+\item \textbf{SIR-type disease problem}: chronic carriers, two variants, asymptomatic+symptomatic, vaccination. Write equations, conservation, Jacobian at disease-free FP, compute $R_0$. \textbf{Always appears.}
+\item \textbf{QSSA / Michaelis-Menten or HH conceptual}: derive QSSA result with new substrates/enzymes; interpret HH terms. \textbf{Sometimes.}
+\item \textbf{Eigenvalue / matrix analysis question}: relate Tr/Det to biology; analyze given perturbation solution. \textbf{Sometimes.}
+\end{enumerate}
+
+\subsection{Time Management}
+
+\begin{tipbox}
+\textbf{Strategy for a 2-hour open-notes midterm:}
+\begin{itemize}
+\item First 5 min: skim every problem; identify which type each is.
+\item For each problem: \textbf{state the strategy} before computing. ``This is an SIR-type problem; I'll find conservation, then Jacobian at disease-free FP.''
+\item \textbf{Show all work}, even if you use notes. Partial credit lives in the steps.
+\item For each part, \textbf{interpret biologically} after the math. ``$\lambda_2 < 0$ means disease dies out.''
+\item Budget time: don't get stuck. Move on and return.
+\end{itemize}
+\end{tipbox}
+
+\subsection{Final Synthesis}
+
+\begin{conceptbox}{Why This Course Hangs Together}
+At its core, CaSB 150's first half is about asking: \textbf{when does a biological system stay where it is, and when does it change?} The mathematical answer always involves:
+\begin{itemize}
+\item \textbf{Setting up the dynamics} (ODEs from biology).
+\item \textbf{Finding equilibria} (where $\dot X = 0$).
+\item \textbf{Linearizing} around equilibria (Jacobian or $A$).
+\item \textbf{Computing eigenvalues} (the linear stability criterion).
+\item \textbf{Translating back to biology} (does the population persist? does the disease spread?).
+\end{itemize}
+Every question on the exam is a variation on this theme. Master the workflow once, and you can handle any specific scenario.
+\end{conceptbox}
+
+\end{document}

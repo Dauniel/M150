@@ -1,0 +1,472 @@
+\documentclass[8pt,landscape]{article}
+\usepackage[margin=0.4in, top=0.3in, bottom=0.3in]{geometry}
+\usepackage{multicol}
+\usepackage{amsmath, amssymb}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{titlesec}
+\usepackage{array}
+\usepackage{tabularx}
+
+% Compact section titles
+\titleformat{\section}{\normalfont\bfseries\small\color{blue!70!black}}{}{0em}{}[\titlerule]
+\titleformat{\subsection}{\normalfont\bfseries\footnotesize\color{red!70!black}}{}{0em}{}
+\titlespacing{\section}{0pt}{3pt}{1pt}
+\titlespacing{\subsection}{0pt}{2pt}{0pt}
+
+\setlength{\parindent}{0pt}
+\setlength{\columnseprule}{0.3pt}
+\setlength{\columnsep}{6pt}
+
+\setlist[itemize]{leftmargin=*,topsep=0pt,itemsep=0pt,parsep=0pt}
+\setlist[enumerate]{leftmargin=*,topsep=0pt,itemsep=0pt,parsep=0pt}
+
+\newcommand{\eq}[1]{\small$#1$}
+\newcommand{\important}[1]{\textbf{#1}}
+
+\begin{document}
+\footnotesize
+
+\begin{center}
+  {\small\textbf{CaSB 150 Midterm Cheat Sheet --- Spring 2026}}
+\end{center}
+\vspace{-4pt}
+
+\begin{multicols}{4}
+
+%=============================================================
+\section{1. GROWTH EQUATIONS}
+
+\subsection{Continuous Exponential Growth}
+\[
+\frac{dN}{dt} = rN \implies N(t) = N(0)e^{rt}
+\]
+\begin{itemize}
+  \item $r$: per-capita growth rate (units: $\text{time}^{-1}$)
+  \item Doubling time: $t_{1/2} = \ln 2 / r$
+  \item \textbf{Linear space}: $N$ vs $t$ is exponential curve
+  \item \textbf{Semi-log space}: $\ln N$ vs $t$ is linear (slope $= r$); Euler's method is \emph{exact} here
+\end{itemize}
+
+\subsection{Discrete Exponential Growth}
+\[
+N(t+1) = (1+r_d)\,N(t) \implies N(t) = N(0)(1+r_d)^t
+\]
+Convert discrete $\to$ continuous: $r_c = \ln(1 + r_d)$, or equivalently $1 + r_d = e^{r_c}$.
+
+\subsection{Logistic Growth}
+\[
+\frac{dN}{dt} = rN\!\left(1 - \frac{N}{K}\right)
+\]
+Fixed points: $N^* = 0$ (unstable) and $N^* = K$ (stable carrying capacity).
+
+\subsection{Power-Law / Super-Exponential}
+\[
+\frac{dN}{dt} = r N^p, \quad p > 1
+\]
+Blows up in finite time. Solve by separation: $\int N^{-p}\,dN = r\int dt$.
+
+\subsection{Gompertz Growth}
+\[
+\frac{dN}{dt} = r N \ln\!\left(\frac{K}{N}\right)
+\]
+Slower than logistic at large $N$.
+
+\subsection{Power-of-time Growth (Exam Favorite)}
+\[
+\frac{dN}{dt} = \frac{r\,N}{t} \implies N(t) = N(1)\,t^r
+\]
+\begin{itemize}
+  \item $r$ is dimensionless (not a rate)
+  \item Never reaches a fixed point if $r > 0$
+  \item \textbf{Log-log space}: $\ln N$ vs $\ln t$ is linear (slope $= r$); Euler's \emph{exact}
+\end{itemize}
+
+\subsection{Inverse-time Growth}
+\[
+\frac{dN}{dt} = \frac{r}{t} \implies N(t) = N(1) + r\ln(t)
+\]
+\begin{itemize}
+  \item $r$ has units of population (not time$^{-1}$)
+  \item \textbf{$N$ vs $\ln t$ space} is linear; Euler's exact
+  \item Grows forever for $r > 0$ (no fixed point in $t$)
+\end{itemize}
+
+\subsection{Taylor Series (Numerical Methods)}
+For $f(t+\Delta t)$:
+\[
+N(t+\Delta t) = N(t) + \frac{dN}{dt}\Delta t + \frac{1}{2!}\frac{d^2N}{dt^2}(\Delta t)^2 + \cdots
+\]
+\begin{itemize}
+  \item \textbf{Euler's method}: keep 1st term only
+  \item \textbf{RK4}: keep 4 terms (requires 4 derivatives to exist)
+  \item A ``perfect'' Euler space exists when $f$ is linear in transformed coordinates $\Rightarrow$ all higher derivatives $= 0$
+\end{itemize}
+
+%=============================================================
+\section{2. LINEARIZATION \& STABILITY}
+
+\subsection{Fixed Points}
+Set $\frac{d\vec{X}}{dt} = 0$, solve for $\vec{X}^*$.
+
+\subsection{Perturbation Dynamics}
+Near a fixed point $\vec{X}^*$, write $\vec{X} = \vec{X}^* + \delta\vec{X}$:
+\[
+\frac{d\,\delta\vec{X}}{dt} \approx J(\vec{X}^*)\,\delta\vec{X}
+\]
+Solution: $\delta\vec{X}(t) \propto e^{\lambda t}$ (eigenvalue $\lambda$ of $J$).
+
+\subsection{Stability Criteria (from eigenvalues)}
+\begin{itemize}
+  \item $\text{Re}(\lambda) < 0$ for ALL $\lambda$: \textbf{Stable}
+  \item Any $\text{Re}(\lambda) > 0$: \textbf{Unstable}
+  \item $\text{Re}(\lambda) = 0$, $\text{Im}(\lambda) \neq 0$: \textbf{Neutral oscillations / limit cycles}
+  \item $\text{Im}(\lambda) \neq 0$: oscillatory (spiral in or out)
+\end{itemize}
+
+%=============================================================
+\section{3. JACOBIAN vs. INTERACTION MATRIX}
+
+\subsection{Standard Jacobian $J^*$}
+For $\frac{dx}{dt} = f(x,y)$, $\frac{dy}{dt} = g(x,y)$:
+\[
+J^*(x^*,y^*) = \begin{pmatrix} \partial_x f & \partial_y f \\ \partial_x g & \partial_y g \end{pmatrix}\bigg|_{(x^*,y^*)}
+\]
+\textbf{Use when}: trivial fixed points (some components $= 0$) are involved, or when interaction terms are nonlinear (e.g.\ Type II functional response).
+
+\subsection{Interaction Matrix $A$}
+For equations of the form $\frac{dX_i}{dt} = X_i \sum_j A_{ij} X_j$:
+\begin{itemize}
+  \item $A_{ij}$ = effect of species $j$ on species $i$ per unit density
+  \item \textbf{Diagonal} $A_{ii}$: self-interaction (intraspecific)
+  \item \textbf{Off-diagonal} $A_{ij}$: cross-species interaction
+  \item \textbf{ONLY valid} at non-trivial fixed points (all $X_i^* \neq 0$)
+  \item \textbf{Cannot use} if functional response is nonlinear (Type II, etc.)
+\end{itemize}
+
+\subsection{When to Use Which}
+\begin{tabular}{lll}
+\toprule
+Situation & Use \\ \midrule
+Non-trivial FP, linear interactions & Either \\
+Trivial FP ($X^*=0$) & Jacobian only \\
+Nonlinear interaction (Type II) & Jacobian only \\
+Quick structural insight & $A$ matrix \\
+\bottomrule
+\end{tabular}
+
+%=============================================================
+\section{4. 2$\times$2 MATRIX ANALYSIS}
+
+For a matrix $M$ with eigenvalues $\lambda_\pm$:
+\[
+\text{Tr}(M) = \lambda_+ + \lambda_-, \quad \text{Det}(M) = \lambda_+ \lambda_-
+\]
+\[
+\lambda_\pm = \frac{\text{Tr}}{2}\left(1 \pm \sqrt{1 - \frac{4\,\text{Det}}{\text{Tr}^2}}\right)
+\]
+
+\subsection{Sign Rules}
+\begin{itemize}
+  \item $\text{Tr} < 0$, $\text{Det} > 0$ $\Rightarrow$ \textbf{stable} (both $\text{Re}(\lambda) < 0$)
+  \item $\text{Det} < 0$ $\Rightarrow$ \textbf{saddle} (one $\lambda > 0$, unstable)
+  \item $\text{Tr} > 0$ $\Rightarrow$ \textbf{unstable} (at least one $\text{Re}(\lambda) > 0$)
+  \item $\text{Det} > \frac{\text{Tr}^2}{4}$ $\Rightarrow$ \textbf{oscillatory} (complex eigenvalues)
+  \item $\text{Tr} = 0$, $\text{Det} > 0$ $\Rightarrow$ pure imaginary $\lambda$ (neutral limit cycles)
+\end{itemize}
+
+\subsection{Trace \& Det Biological Meaning}
+\begin{itemize}
+  \item $\text{Tr}(A) = $ sum of self-interactions (diagonal)
+  \item $\text{Det}(A) = $ product of cross-species interactions (off-diagonal$^2$)
+  \item Negative Tr $\to$ stabilizing; positive Det $\to$ possible oscillations
+\end{itemize}
+
+\subsection{$n\times n$ Matrices}
+For $3 \times 3$: need 3 invariants (Tr, Det, $+ $ one more).\\
+For $n\times n$: need $n$ invariants. Tr and Det alone insufficient for $n>2$.
+
+%=============================================================
+\section{5. PREDATOR-PREY (LOTKA-VOLTERRA)}
+
+\subsection{Standard Equations}
+\[
+\frac{dN}{dt} = rN - \bar{\beta}NP
+\]
+\[
+\frac{dP}{dt} = \varepsilon\bar{\beta}NP - ZP
+\]
+Parameters: $r$ = prey growth, $\bar{\beta}$ = consumption rate, $\varepsilon$ = conversion efficiency (dimensionless), $Z$ = predator mortality.
+
+\subsection{Fixed Points}
+\[
+N^* = \frac{Z}{\varepsilon\bar{\beta}}, \qquad P^* = \frac{r}{\bar{\beta}}
+\]
+
+\subsection{Interaction Matrix}
+\[
+A = \begin{pmatrix} 0 & -\bar{\beta} \\ \varepsilon\bar{\beta} & 0 \end{pmatrix}
+\]
+$\text{Tr}(A) = 0$, $\text{Det}(A) = \varepsilon\bar{\beta}^2 > 0$
+\[
+\lambda_\pm = \pm i\sqrt{\varepsilon\bar{\beta}^2} = \pm i\bar{\beta}\sqrt{\varepsilon}
+\]
+$\Rightarrow$ Pure imaginary eigenvalues: \textbf{neutral limit cycles} (not strictly stable).
+
+\subsection{Standard Jacobian at $(N^*, P^*)$}
+\[
+J^* = \begin{pmatrix} 0 & -\bar{\beta}N^* \\ \varepsilon\bar{\beta}P^* & 0 \end{pmatrix}
+= \begin{pmatrix} 0 & -Z/\varepsilon \\ \varepsilon r/\bar{\beta}\cdot\varepsilon\bar{\beta} & 0 \end{pmatrix}
+\]
+Gives same eigenvalues as $A$: $\lambda_\pm = \pm i\sqrt{rZ}$.
+
+\subsection{Logistic Prey Modification}
+Add $-rN^2/K$ to $dN/dt$. This adds a \textbf{negative diagonal} entry $-r/K$ to $A$ and $J^*$:
+\[
+A = \begin{pmatrix} -r/K & -\bar{\beta} \\ \varepsilon\bar{\beta} & 0 \end{pmatrix}
+\]
+Now $\text{Tr}(A) = -r/K < 0 \Rightarrow$ \textbf{truly stable} (eigenvalues have negative real parts). System more stable than without carrying capacity.
+
+\subsection{Type II Functional Response}
+\[
+\bar{\beta} \to \bar{\beta}(N) = \frac{\alpha N}{1 + \alpha h N}
+\]
+$\alpha$ = search/attack rate, $h$ = handling time. \textbf{Cannot write} interaction matrix $A$; must use Jacobian. Typically \textbf{destabilizes} system (positive real part in eigenvalue).
+
+\subsection{Cannibalism Modification}
+Add $-\bar{\beta}_c P^2$ to $dP/dt$ (self-consumption). Diagonal of $A$ becomes:
+\[
+A = \begin{pmatrix} 0 & -\bar{\beta} \\ \varepsilon\bar{\beta} & -\bar{\beta}_c(1-\varepsilon) \end{pmatrix}
+\]
+Negative diagonal $\Rightarrow$ \textbf{stabilizing}. Reduces oscillations; if $\bar{\beta}_c \gg \bar{\beta}$, eliminates oscillations entirely.
+
+%=============================================================
+\section{6. SIR / SIRS / DISEASE MODELS}
+
+\subsection{Basic SIR}
+\[
+\frac{dS}{dt} = -\beta SI, \quad \frac{dI}{dt} = \beta SI - \gamma I, \quad \frac{dR}{dt} = \gamma I
+\]
+Conservation: $S + I + R = N = \text{const}$ (no births/deaths). Eliminate $R$: 2 independent equations.
+
+\subsection{Basic Reproductive Number $R_0$}
+\[
+R_0 = \frac{\beta N}{\gamma} = \frac{\beta S^*}{\gamma}
+\]
+\begin{itemize}
+  \item $R_0 > 1$: disease spreads (unstable disease-free state)
+  \item $R_0 < 1$: disease dies out (stable disease-free state)
+\end{itemize}
+
+\subsection{Fixed Points for SIR}
+Disease-free: $I^* = 0$, $S^* = N$ (plus any $R^*$, $S^* + R^* = N$).\\
+\textbf{No non-trivial fixed point} with $I^* \neq 0$ in standard SIR.
+
+\subsection{Which Fixed Point to Perturb?}
+To determine if a new disease spreads: perturb off the state \textbf{just before the disease arrived}, i.e.\ $I^* = 0$, $S^* = N$ (or $S^* = N - S_2^*$ for a variant scenario).
+
+\subsection{When to Use Jacobian vs $A$ for Diseases}
+Use \textbf{standard Jacobian} when any compartment at fixed point $= 0$ (disease-free state). The interaction matrix requires non-trivial (non-zero) fixed points.
+
+\subsection{SIRS Model}
+\[
+\frac{dS}{dt} = -\beta SI + \nu R, \quad \frac{dI}{dt} = \beta SI - \gamma I, \quad \frac{dR}{dt} = \gamma I - \nu R
+\]
+Conservation still holds. QSSA analogy: set $dS/dt = 0$ or $dI/dt = 0$ (see Sec.~7).
+
+\subsection{Multi-strain / Multi-species SIR}
+For two interacting populations (humans + pets, two viruses):
+\begin{itemize}
+  \item Write SIR for each population with cross-infection terms
+  \item $N_{\text{humans}}$ and $N_{\text{pets}}$ separately conserved (if no deaths)
+  \item Can eliminate 1 equation per conserved population
+  \item $R_0$ may need to be defined separately for each strain
+\end{itemize}
+
+\subsection{Interaction Matrix for SIR (at non-trivial FP)}
+\[
+A = \begin{pmatrix} 0 & -\beta \\ \beta & 0 \end{pmatrix}
+\]
+$\text{Tr} = 0$, $\text{Det} = \beta^2 > 0 \Rightarrow$ neutral oscillations (analogous to Lotka-Volterra).
+
+%=============================================================
+\section{7. MICHAELIS-MENTEN \& QSSA}
+
+\subsection{Reaction Scheme}
+\[
+S + E \underset{k_{-1}}{\overset{k_1}{\rightleftharpoons}} [SE] \overset{k_2}{\longrightarrow} P + E
+\]
+Full equations:
+\[
+\frac{dS}{dt} = -k_1 SE + k_{-1}[SE]
+\]
+\[
+\frac{d[SE]}{dt} = k_1 SE - k_{-1}[SE] - k_2[SE]
+\]
+\[
+\frac{dP}{dt} = k_2[SE]
+\]
+\[
+\frac{dE}{dt} = -k_1 SE + (k_{-1}+k_2)[SE]
+\]
+Conservation: $E_0 = E + [SE] = \text{const}$, reduces by 1 equation.
+
+\subsection{Quasi-Steady State Approximation (QSSA)}
+Set $\frac{d[SE]}{dt} = 0$ (fast complex formation):
+\[
+[SE]^* = \frac{E_0 S}{K_M + S}, \quad K_M = \frac{k_{-1} + k_2}{k_1}
+\]
+Production rate:
+\[
+\frac{dP}{dt} = \frac{k_2 E_0 S}{K_M + S} \equiv \frac{V_{\max} S}{K_M + S}
+\]
+\begin{itemize}
+  \item $V_{\max} = k_2 E_0$: maximum reaction rate
+  \item $K_M$: Michaelis constant (substrate conc.\ at half-max rate)
+  \item At $S \ll K_M$: linear in $S$ (first-order kinetics)
+  \item At $S \gg K_M$: saturates at $V_{\max}$ (zero-order kinetics)
+\end{itemize}
+
+\subsection{Hill Function}
+\[
+f(S) = \frac{S^n}{K^n + S^n}
+\]
+$n$: Hill coefficient (cooperativity). $n=1$: Michaelis-Menten. $n>1$: sigmoidal/switch-like.
+
+\subsection{QSSA for SIRS (Exam 2024)}
+Analogous to QSSA: set $dS/dt = 0$ or $dI/dt = 0$ in SIRS to get reduced form for rate of infections. The compartment set to 0 should be the one ``in the middle'' (analogous to $[SE]$). For SIRS, $I$ is most analogous to $[SE]$.
+
+\subsection{Multiple Substrates/Enzymes}
+If two reactions compete for same substrate:
+\[
+S + E_1 \rightleftharpoons [SE_1] \to P_1 + E_1
+\]
+\[
+S + E_2 \rightleftharpoons [SE_2] \to P_2 + E_2
+\]
+Two conservation laws ($E_{1,\text{tot}}$, $E_{2,\text{tot}}$), each reduces number of independent equations.
+
+%=============================================================
+\section{8. HODGKIN-HUXLEY MODEL}
+
+\subsection{Core Equation}
+\[
+C_m \frac{dV}{dt} = -g_{\text{Na}}m^3h(V - V_{\text{Na}}) - g_K n^4(V-V_K) - g_L(V-V_L) + I_{\text{ext}}
+\]
+
+\subsection{Gating Variables}
+Each gate variable ($m$, $h$, $n$) follows:
+\[
+\frac{dx}{dt} = \alpha_x(V)(1-x) - \beta_x(V)\,x
+\]
+\begin{itemize}
+  \item $x_\infty(V) = \frac{\alpha_x}{\alpha_x + \beta_x}$ (steady-state activation)
+  \item $\tau_x(V) = \frac{1}{\alpha_x + \beta_x}$ (time constant)
+  \item $m$, $n$: activation (open with depolarization)
+  \item $h$: inactivation (closes with depolarization)
+\end{itemize}
+
+\subsection{Biological Meaning of Terms}
+\begin{itemize}
+  \item $g_{\text{Na}}m^3h$: Na$^+$ conductance (fast activation $m^3$, slow inactivation $h$)
+  \item $g_K n^4$: K$^+$ conductance (slower activation)
+  \item $g_L$: leak conductance (passive)
+  \item $(V - V_{\text{ion}})$: driving force for each ion
+\end{itemize}
+
+\subsection{Action Potential Dynamics}
+Depolarization $\to$ fast Na$^+$ channels open ($m\uparrow$) $\to$ spike. Then Na$^+$ inactivates ($h\downarrow$) and K$^+$ opens ($n\uparrow$) $\to$ repolarization. Refractory period from slow recovery of $h$ and $n$.
+
+%=============================================================
+\section{9. CONSTRAINT \& CONSERVATION}
+
+\subsection{General Principle}
+If $\sum_i X_i = N = \text{const}$, then $\sum_i \frac{dX_i}{dt} = 0$.\\
+This eliminates one equation; replace one variable, e.g.\ $R = N - S - I$.
+
+\subsection{When Conservation Fails}
+If there are births/deaths (source/sink terms), total is NOT conserved. Check by summing all ODEs:
+\[
+\frac{dN}{dt} = \sum_i \frac{dX_i}{dt}
+\]
+If this $\neq 0$, cannot use conservation to reduce equations.
+
+%=============================================================
+\section{10. CONTINUOUS vs.\ DISCRETE}
+
+\subsection{Translation Table}
+\begin{tabular}{ll}
+\toprule
+Continuous & Discrete \\
+\midrule
+$\frac{dN}{dt} = rN$ & $N(t+1) = \lambda N(t)$ \\
+$N(t) = N(0)e^{rt}$ & $N(t) = N(0)\lambda^t$ \\
+$r$ [time$^{-1}$] & $\lambda = e^r = 1 + r_d$ \\
+$r > 0$: grows & $\lambda > 1$: grows \\
+$r = 0$: const & $\lambda = 1$: const \\
+\bottomrule
+\end{tabular}
+
+\subsection{Discrete-to-Continuous}
+\[
+r_c = \ln(\lambda) = \ln(1 + r_d)
+\]
+For small $r_d$: $r_c \approx r_d$.
+
+\subsection{Effective Growth Rate}
+Piecewise rates $r_1$ for time $t_1$, $r_2$ for time $t_2$:
+\[
+N(t_1+t_2) = N(0)\,e^{r_1 t_1 + r_2 t_2}
+\]
+Effective rate: $r_{\text{eff}} = \frac{r_1 t_1 + r_2 t_2}{t_1 + t_2}$ (time-weighted average).
+
+%=============================================================
+\section{11. EXAM PATTERN SUMMARY}
+
+\subsection{Question Types (Every Year)}
+\begin{enumerate}
+  \item \textbf{Growth equation}: novel ODE, solve, Taylor expand, find ``perfect'' space
+  \item \textbf{Predator-prey variant}: write equations, $A$ matrix, find FP, eigenvalues, interpret stability
+  \item \textbf{SIR variant}: write compartments, conservation, Jacobian, $R_0$, stability
+  \item \textbf{QSSA or Eigenvalue analysis}: Michaelis-Menten, or analyze given perturbation solution
+\end{enumerate}
+
+\subsection{Common Exam Traps}
+\begin{itemize}
+  \item Using $A$ matrix at a trivial FP (wrong!) $\to$ must use Jacobian
+  \item Forgetting to check $\text{Im}(\lambda) \neq 0$ for oscillations
+  \item Not using conservation to reduce equations first
+  \item Writing Type II functional response and trying to form $A$ matrix (impossible)
+  \item Confusing $\bar{\beta}$ (consumption rate per predator) with $\beta$ (infection rate per contact)
+  \item For Taylor series: check derivatives \emph{exist} before claiming RK4 improves approximation
+\end{itemize}
+
+\subsection{Stability: Quick Decision Tree}
+\begin{enumerate}
+  \item Find FP: set $d\vec{X}/dt = 0$
+  \item If FP has zeros: use Jacobian. Else: either method works.
+  \item Compute Tr and Det.
+  \item $\text{Tr} < 0$ and $\text{Det} > 0$: stable. Otherwise: check sign of $\text{Re}(\lambda)$.
+  \item Check $4\text{Det} > \text{Tr}^2$ for oscillations.
+\end{enumerate}
+
+%=============================================================
+\section{12. KEY FORMULAS AT A GLANCE}
+
+\[
+\lambda_\pm = \frac{\text{Tr}}{2}\left(1 \pm \sqrt{1 - \frac{4\text{Det}}{\text{Tr}^2}}\right)
+\]
+\[
+R_0 = \frac{\beta S^*}{\gamma}, \quad \text{spreads if } R_0 > 1
+\]
+\[
+\frac{dP}{dt}\bigg|_{\text{MM}} = \frac{V_{\max} S}{K_M + S}, \quad K_M = \frac{k_{-1}+k_2}{k_1}
+\]
+\textbf{Lotka-Volterra FP}: $N^* = Z/(\varepsilon\bar\beta)$, $P^* = r/\bar\beta$\\
+\textbf{LV eigenvalues}: $\lambda_\pm = \pm i\bar\beta\sqrt\varepsilon = \pm i\sqrt{rZ}$\\
+\textbf{With $K$}: $\lambda_\pm = -\frac{r}{2K}\!\left(1 \pm \sqrt{1 - \frac{4\varepsilon\bar\beta^2 K^2}{r^2}}\right)$\\
+\textbf{Cannibalism}: $\text{Tr}(A) = -\bar\beta_c(1-\varepsilon) < 0$ (stabilizing)
+
+\end{multicols}
+\end{document}

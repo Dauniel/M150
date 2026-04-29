@@ -1,0 +1,17 @@
+# macOS
+.DS_Store
+
+# Readings
+readings/
+
+# LaTeX build artifacts
+*.aux
+*.log
+*.toc
+*.out
+*.synctex.gz
+*.fls
+*.fdb_latexmk
+*.nav
+*.snm
+*.vrb
