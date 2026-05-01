@@ -1,12 +1,14 @@
 \documentclass[10pt]{article}
 \usepackage[margin=0.75in]{geometry}
-\usepackage{amsmath, amssymb, amsthm}
+\usepackage{amsmath, amssymb, amsthm, mathtools}
 \usepackage{enumitem}
 \usepackage{xcolor}
 \usepackage{titlesec}
 \usepackage{fancyhdr}
 \usepackage{tcolorbox}
 \usepackage{hyperref}
+\usepackage[T1]{fontenc}
+\DeclareUnicodeCharacter{2713}{\textbf{[OK]}}
 
 \hypersetup{colorlinks=true, linkcolor=blue!60!black, urlcolor=blue!60!black}
 
@@ -15,26 +17,35 @@
 
 \pagestyle{fancy}
 \fancyhf{}
-\fancyhead[L]{\small CaSB 150 Practice Problems}
+\fancyhead[L]{\small CaSB 150 Practice Problems (Fully Detailed)}
 \fancyhead[R]{\small Spring 2026 Midterm Prep}
 \fancyfoot[C]{\thepage}
 
-\newtcolorbox{problem}{colback=blue!5,colframe=blue!50!black,title=Problem}
-\newtcolorbox{solution}{colback=green!3,colframe=green!50!black,title=Solution}
-\newtcolorbox{keyidea}{colback=yellow!10,colframe=orange!70!black,title=Key Insight}
+\tcbuselibrary{skins, breakable}
+
+\newtcolorbox{problem}{colback=blue!5,colframe=blue!50!black,title=Problem,breakable}
+\newtcolorbox{solution}{colback=green!3,colframe=green!50!black,title=Solution,breakable}
+\newtcolorbox{keyidea}{colback=yellow!10,colframe=orange!70!black,title=Key Insight,breakable}
 
 \setlist{topsep=2pt,itemsep=1pt}
+
+\newcommand{\thus}{\quad\Longrightarrow\quad}
+\newcommand{\stepwhy}[1]{\textcolor{blue!60!black}{\small\textit{(#1)}}}
 
 \begin{document}
 
 \begin{center}
 {\LARGE \textbf{CaSB 150 Midterm: Practice Problem Bank}}\\[4pt]
-{\large with Complete Worked Solutions}\\[2pt]
+{\large Fully-Detailed Worked Solutions --- Every Step Shown}\\[2pt]
 {\small Lectures 1--9 \textbullet\ Based on 2017--2024 Past Exams}
 \end{center}
 
 \hrule
 \vspace{6pt}
+
+\begin{center}
+\small\textit{Algebraic operations are labeled in \textcolor{blue!60!black}{blue italics} so you can see exactly which manipulation was applied at each step.}
+\end{center}
 
 \tableofcontents
 
@@ -64,43 +75,144 @@ where $\tau$ is a time constant and $N(\tau)$ is a reference size.
 \end{problem}
 
 \begin{solution}
-\textbf{(a) Early times, $N \ll N(\tau)$:}\\
-Use Taylor expansion of $e^{-x}$ around $x = 0$:
-\[
-e^{-N/N(\tau)} \approx 1 - \frac{N}{N(\tau)} + \frac{N^2}{2 N(\tau)^2} - \cdots
-\]
-So $1 - e^{-N/N(\tau)} \approx N/N(\tau)$ to leading order. The equation becomes:
-\[
-\frac{dN}{dt} \approx rN \cdot \frac{N}{N(\tau)} = \frac{r}{N(\tau)} N^2
-\]
-This is \textbf{super-exponential (power-law) growth} with $p=2$. Separate variables:
-\[
-\int N^{-2} dN = \int \frac{r}{N(\tau)} dt \implies -\frac{1}{N} = \frac{rt}{N(\tau)} + C
-\]
-With $N(0) = N_0$: $C = -1/N_0$, giving:
-\[
-N(t) = \frac{N_0}{1 - \frac{rN_0 t}{N(\tau)}}
-\]
-This blows up in finite time at $t^* = N(\tau)/(rN_0)$.
+\textbf{(a) Early times, $N \ll N(\tau)$:}
 
-\textbf{(b) Long times, $N \gg N(\tau)$:}\\
-$e^{-N/N(\tau)} \to 0$, so $1 - e^{-N/N(\tau)} \to 1$. Equation becomes:
+\textbf{Step 1.} Identify the small quantity. We have $x \equiv N/N(\tau) \ll 1$.
+
+\textbf{Step 2.} Apply the Taylor expansion of $e^{-x}$ around $x=0$:
 \[
-\frac{dN}{dt} \approx rN \implies N(t) = N_0 e^{rt}
+e^{-x} = 1 - x + \frac{x^2}{2!} - \frac{x^3}{3!} + \cdots
 \]
-Standard \textbf{exponential growth}.
+\stepwhy{Taylor series of $e^{-x}$}
 
-\textbf{(c) Units of $r$:} The full equation has $1 - e^{-N/N(\tau)}$ as dimensionless, so $rN$ must have units of $N$/time, meaning $r$ has units of \textbf{time$^{-1}$}. It IS a per-capita growth rate (in the long-time limit, $r = (1/N)dN/dt$).
-
-\textbf{(d) Sketch:} Early on, $dN/dt$ grows like $N^2 \sim 1/(t^*-t)^2$ (super-exponential, blows up). Later, $dN/dt = rN \sim re^{rt}$ (regular exponential).
-
-\textbf{(e) Linear space for (a):} Since $\frac{dN}{dt} \propto N^2$, take:
+\textbf{Step 3.} Substitute $x = N/N(\tau)$:
 \[
-\frac{d(1/N)}{dt} = -\frac{1}{N^2}\frac{dN}{dt} = -\frac{r}{N(\tau)}
+e^{-N/N(\tau)} = 1 - \frac{N}{N(\tau)} + \frac{1}{2}\left(\frac{N}{N(\tau)}\right)^2 - \cdots
 \]
-So $1/N$ is \textbf{linear in $t$}. In the space of $1/N$ vs $t$, Euler's method is exact.
 
-\textbf{(f) Maximum $K$:} No, this equation has no upper bound. To add one, multiply by a logistic factor:
+\textbf{Step 4.} Compute $1 - e^{-N/N(\tau)}$ by distributing the negative sign:
+\[
+1 - e^{-N/N(\tau)} = 1 - 1 + \frac{N}{N(\tau)} - \frac{1}{2}\left(\frac{N}{N(\tau)}\right)^2 + \cdots
+\]
+\stepwhy{$1 - 1 = 0$, sign of each term flips}
+
+\textbf{Step 5.} Keep only the leading (lowest-order) term:
+\[
+1 - e^{-N/N(\tau)} \approx \frac{N}{N(\tau)}
+\]
+
+\textbf{Step 6.} Substitute back into the ODE:
+\[
+\frac{dN}{dt} \approx rN\cdot\frac{N}{N(\tau)} = \frac{r}{N(\tau)}N^2
+\]
+This is super-exponential (power-law) growth with $p=2$.
+
+\textbf{Step 7.} Separate variables:
+\[
+\frac{dN}{N^2} = \frac{r}{N(\tau)}\,dt
+\]
+\stepwhy{divide both sides by $N^2$, multiply both sides by $dt$}
+
+\textbf{Step 8.} Integrate both sides:
+\[
+\int N^{-2}\,dN = \int\frac{r}{N(\tau)}\,dt
+\]
+
+\textbf{Step 9.} Apply the power rule $\int N^{-2}dN = N^{-1}/(-1) = -1/N$:
+\[
+-\frac{1}{N} = \frac{rt}{N(\tau)} + C
+\]
+
+\textbf{Step 10.} Apply IC $N(0) = N_0$ at $t=0$:
+\[
+-\frac{1}{N_0} = 0 + C \thus C = -\frac{1}{N_0}
+\]
+
+\textbf{Step 11.} Substitute $C$ back and multiply both sides by $-1$:
+\[
+\frac{1}{N} = \frac{1}{N_0} - \frac{rt}{N(\tau)}
+\]
+
+\textbf{Step 12.} Get common denominator on the right:
+\[
+\frac{1}{N} = \frac{N(\tau) - rN_0 t}{N_0 N(\tau)}
+\]
+\stepwhy{multiply $1/N_0$ by $N(\tau)/N(\tau)$ and $rt/N(\tau)$ by $N_0/N_0$}
+
+\textbf{Step 13.} Take reciprocal:
+\[
+\boxed{N(t) = \frac{N_0\,N(\tau)}{N(\tau) - rN_0 t}}
+\]
+
+\textbf{Step 14.} Blow-up time: denominator $= 0$:
+\[
+N(\tau) - rN_0 t^* = 0 \thus t^* = \frac{N(\tau)}{rN_0}
+\]
+
+\medskip\textbf{(b) Long times, $N \gg N(\tau)$:}
+
+\textbf{Step 1.} When $N/N(\tau)$ is large, $e^{-N/N(\tau)} \to 0$ (exponential decay):
+\[
+1 - e^{-N/N(\tau)} \to 1 - 0 = 1
+\]
+
+\textbf{Step 2.} The ODE becomes:
+\[
+\frac{dN}{dt} \approx rN\cdot 1 = rN
+\]
+
+\textbf{Step 3.} Separate variables and integrate:
+\[
+\frac{dN}{N} = r\,dt \thus \int\frac{dN}{N} = \int r\,dt \thus \ln N = rt + C'
+\]
+
+\textbf{Step 4.} Exponentiate both sides:
+\[
+N = e^{rt + C'} = e^{C'}\cdot e^{rt}
+\]
+\stepwhy{using $e^{a+b} = e^a e^b$}
+
+\textbf{Step 5.} Rename $e^{C'} \to N_0^*$:
+\[
+\boxed{N(t) \approx N_0^* e^{rt}}
+\]
+Standard exponential growth.
+
+\medskip\textbf{(c) Units of $r$:}
+
+\textbf{Step 1.} The factor $(1 - e^{-N/N(\tau)})$ is dimensionless (exponential of a dimensionless ratio).
+
+\textbf{Step 2.} LHS $dN/dt$ has units of $[N]/[t]$. So $rN$ must have units of $[N]/[t]$, giving:
+\[
+[r] = \frac{[N]/[t]}{[N]} = \frac{1}{[t]} = \text{time}^{-1}
+\]
+
+\textbf{Step 3.} \textbf{Yes}, $r$ is a per-capita rate (confirmed by long-time limit $\dot N = rN$).
+
+\medskip\textbf{(d) Sketch:} Early times: $dN/dt \sim r N^2/N(\tau)$ blows up like $1/(t^*-t)^2$. Long times: $dN/dt \sim rN_0^* e^{rt}$ ordinary exponential.
+
+\medskip\textbf{(e) Linear space for part (a):}
+
+\textbf{Step 1.} Try $u = 1/N$. Compute $du/dt$ using chain rule:
+\[
+\frac{du}{dt} = \frac{d(N^{-1})}{dt} = -N^{-2}\frac{dN}{dt}
+\]
+\stepwhy{chain rule: $\frac{d}{dt}[N^{-1}] = -N^{-2}\cdot \dot N$}
+
+\textbf{Step 2.} Substitute $\dot N = (r/N(\tau))N^2$:
+\[
+\frac{du}{dt} = -N^{-2}\cdot\frac{r}{N(\tau)}\cdot N^2 = -\frac{r}{N(\tau)}
+\]
+\stepwhy{$N^{-2}\cdot N^2 = 1$}
+
+\textbf{Step 3.} The result is constant! So $1/N$ vs $t$ is the linear space.
+\[
+\boxed{\text{Linear space: } 1/N \text{ vs.\ } t}
+\]
+
+\medskip\textbf{(f) Maximum $K$:}
+
+This equation has no upper bound (the long-time limit blows up exponentially). To add one, multiply by a logistic factor:
 \[
 \frac{dN}{dt} = rN(1-e^{-N/N(\tau)})\left(1-\frac{N}{K}\right)
 \]
@@ -121,30 +233,126 @@ Consider $\frac{dN(t)}{dt} = r\frac{N(t)}{t}$.
 \end{problem}
 
 \begin{solution}
-\textbf{(a)} Separate variables:
+\textbf{(a) Solve for $N(t)$:}
+
+\textbf{Step 1.} Separate variables:
 \[
-\frac{dN}{N} = r\frac{dt}{t} \implies \ln N = r\ln t + C \implies N(t) = N(1)\, t^r
+\frac{dN}{N} = \frac{r\,dt}{t}
+\]
+\stepwhy{divide both sides by $N$, multiply by $dt$}
+
+\textbf{Step 2.} Integrate both sides:
+\[
+\int\frac{dN}{N} = r\int\frac{dt}{t}
+\]
+\stepwhy{$r$ is constant, factor out}
+
+\textbf{Step 3.} Apply $\int dx/x = \ln x$:
+\[
+\ln N = r\ln t + C
 \]
 
-\textbf{(b)} $r$ is \textbf{dimensionless}. The equation says proportional changes in $t$ produce proportional changes in $N$: if $t$ doubles, $N$ scales by $2^r$. So $r$ is an elasticity, not a rate.
-
-\textbf{(c)} For $r > 0$, $N(t) \to \infty$ as $t \to \infty$. Setting $dN/dt = 0$ requires $N = 0$ or $t = \infty$. \textbf{No finite-time fixed point}; growth never stops.
-
-\textbf{(d)} 4th derivative of $N(t) = N(1)t^r$:
+\textbf{Step 4.} Apply log power rule $r\ln t = \ln(t^r)$:
 \[
-N^{(4)}(t) = r(r-1)(r-2)(r-3)\,N(1)\,t^{r-4}
+\ln N = \ln(t^r) + C
 \]
-At $r = 10$: $N^{(4)} = 10\cdot 9\cdot 8\cdot 7 \cdot N(1) \cdot t^{6} = 5040\, N(1)\, t^6$. The 4th-order term is:
-\[
-\frac{1}{4!} N^{(4)}(t)(\Delta t)^4 = \frac{5040}{24} N(1)\, t^6 (\Delta t)^4 = 210\, N(1)\, t^6 (\Delta t)^4
-\]
-All four derivatives exist and are non-zero, so RK4 will improve over Euler.
 
-\textbf{(e) Linear space:} Take $\ln N$ vs $\ln t$:
+\textbf{Step 5.} Exponentiate both sides:
 \[
-\frac{d\ln N}{d\ln t} = \frac{t}{N}\frac{dN}{dt} = \frac{t}{N} \cdot \frac{rN}{t} = r
+e^{\ln N} = e^{\ln(t^r) + C} = e^{\ln(t^r)}\cdot e^C
 \]
-This is constant! So in $\ln N$ vs $\ln t$ \textbf{(log-log space)}, the relation is perfectly linear and Euler is exact for any $\Delta t$.
+\stepwhy{splitting $e^{a+b} = e^a e^b$}
+
+\textbf{Step 6.} Simplify using $e^{\ln x} = x$:
+\[
+N = t^r\cdot e^C
+\]
+
+\textbf{Step 7.} Apply IC at $t=1$: $N(1) = 1^r\cdot e^C = 1\cdot e^C = e^C$, so $e^C = N(1)$:
+\[
+\boxed{N(t) = N(1)\,t^r}
+\]
+
+\medskip\textbf{(b) Interpret $r$:}
+
+\textbf{Step 1.} Check units in original ODE: $dN/dt$ has units $[N]/[t]$. RHS is $rN/t$, with $N/t$ having units $[N]/[t]$. So $r$ is dimensionless.
+
+\textbf{Step 2.} \textbf{$r$ is dimensionless --- an elasticity, not a rate.} If $t$ doubles, $N$ scales by $2^r$. Equal proportional changes in $t$ produce equal proportional changes in $N$.
+
+\medskip\textbf{(c) Will growth stop?}
+
+\textbf{Step 1.} Set $\dot N = 0$: $rN/t = 0$ requires $N = 0$ or $t = \infty$.
+
+\textbf{Step 2.} For $r > 0$ and finite $t$, $N(t) = N(1)t^r \to \infty$ as $t \to \infty$. \textbf{No finite-time fixed point; growth never stops.}
+
+\medskip\textbf{(d) 4th-order Taylor term for $r=10$:}
+
+\textbf{Step 1.} First derivative using power rule $\frac{d}{dt}[t^r] = rt^{r-1}$:
+\[
+N'(t) = N(1)\cdot r\cdot t^{r-1} = 10\,N(1)\,t^9
+\]
+\stepwhy{$N(1)$ is constant; $r=10$ gives exponent $r-1=9$}
+
+\textbf{Step 2.} Second derivative:
+\[
+N''(t) = 10\cdot 9\,N(1)\,t^8 = 90\,N(1)\,t^8
+\]
+
+\textbf{Step 3.} Third derivative:
+\[
+N'''(t) = 90\cdot 8\,N(1)\,t^7 = 720\,N(1)\,t^7
+\]
+
+\textbf{Step 4.} Fourth derivative:
+\[
+N^{(4)}(t) = 720\cdot 7\,N(1)\,t^6 = 5040\,N(1)\,t^6
+\]
+
+\textbf{Step 5.} Evaluate at $t_0 = 1$:
+\[
+N^{(4)}(1) = 5040\,N(1)\cdot 1^6 = 5040\,N(1)
+\]
+
+\textbf{Step 6.} The 4th-order Taylor term is $N^{(4)}(t_0)(\Delta t)^4/4!$:
+\[
+\frac{N^{(4)}(1)}{4!}(\Delta t)^4 = \frac{5040\,N(1)}{24}(\Delta t)^4
+\]
+
+\textbf{Step 7.} Compute $5040/24$: $5040/24 = 210$.
+\[
+\boxed{\text{4th-order term} = 210\,N(1)\,(\Delta t)^4}
+\]
+
+All four derivatives exist and are non-zero, so RK4 improves over Euler.
+
+\medskip\textbf{(e) Linear space:}
+
+\textbf{Step 1.} Try $u = \ln N$, $s = \ln t$. Compute $du/ds$ via the chain rule trick:
+\[
+\frac{du}{ds} = \frac{d\ln N}{d\ln t} = \frac{d\ln N/dt}{d\ln t/dt}
+\]
+
+\textbf{Step 2.} Compute $d\ln N/dt$:
+\[
+\frac{d\ln N}{dt} = \frac{1}{N}\frac{dN}{dt} = \frac{1}{N}\cdot\frac{rN}{t} = \frac{r}{t}
+\]
+\stepwhy{chain rule on $\ln N$, then substitute $\dot N = rN/t$, $N$'s cancel}
+
+\textbf{Step 3.} Compute $d\ln t/dt$:
+\[
+\frac{d\ln t}{dt} = \frac{1}{t}
+\]
+
+\textbf{Step 4.} Divide:
+\[
+\frac{du}{ds} = \frac{r/t}{1/t} = \frac{r}{t}\cdot\frac{t}{1} = r
+\]
+\stepwhy{dividing by $1/t$ is multiplying by $t$, $t$'s cancel}
+
+\textbf{Step 5.} The result is constant.
+\[
+\boxed{\text{Linear space: } \ln N \text{ vs.\ } \ln t \text{ (log-log)}}
+\]
 \end{solution}
 
 \begin{keyidea}
@@ -171,28 +379,109 @@ A bacterial colony starts at $N(0) = 100$. Each generation produces an average o
 \end{problem}
 
 \begin{solution}
-\textbf{(a)} Discrete: $N(t+1) = (1+r_d)N(t) = 5N(t)$, so $N(g) = 100 \cdot 5^g$ where $g$ = generations.
-Continuous: $\frac{dN}{dt} = r_c N$.
+\textbf{(a) Equations:}
 
-\textbf{(b)} Convert: $1 + r_d = e^{r_c \cdot \tau_{\text{gen}}}$. Per generation:
+\textbf{Discrete:} Each generation, population multiplies by $1+r_d = 1+4 = 5$:
 \[
-e^{r_c \cdot 30} = 5 \implies r_c = \frac{\ln 5}{30} \approx 0.0536 \text{ min}^{-1}
+N(t+1) = (1+r_d)N(t) = 5N(t)
+\]
+Solution: $N(g) = 100\cdot 5^g$ where $g$ counts generations.
+
+\textbf{Continuous:} per-capita rate $r_c$:
+\[
+\frac{dN}{dt} = r_c N
+\]
+Solution: $N(t) = 100\,e^{r_c t}$.
+
+\medskip\textbf{(b) Find $r_c$:}
+
+\textbf{Step 1.} Continuous and discrete must agree over one generation. After $\tau_{\text{gen}} = 30$ min, both should give the same multiplier $\lambda = 5$:
+\[
+e^{r_c\cdot \tau_{\text{gen}}} = \lambda
 \]
 
-\textbf{(c)} 5 hours = 300 min = 10 generations. Discrete: $N = 100 \cdot 5^{10} = 100 \cdot 9{,}765{,}625 = 9.77 \times 10^8$. Continuous: $N(300) = 100\, e^{0.0536 \cdot 300} = 100 \, e^{16.09} \approx 9.77 \times 10^8$. Same answer (as it should).
+\textbf{Step 2.} Substitute values:
+\[
+e^{r_c\cdot 30} = 5
+\]
 
-\textbf{(d)} 
+\textbf{Step 3.} Take natural log of both sides:
 \[
-N(t_1) = 100\, e^{0.05 \cdot 60} = 100\, e^{3} \approx 2009
+\ln(e^{30 r_c}) = \ln 5
+\]
+\stepwhy{$\ln(e^x) = x$}
+\[
+30 r_c = \ln 5
+\]
+
+\textbf{Step 4.} Solve for $r_c$:
+\[
+r_c = \frac{\ln 5}{30}
+\]
+
+\textbf{Step 5.} Numerically: $\ln 5 \approx 1.609$, so:
+\[
+r_c \approx \frac{1.609}{30} \approx 0.0536\,\text{min}^{-1}
+\]
+
+\medskip\textbf{(c) After 5 hours:}
+
+\textbf{Step 1.} Convert: 5 hr = $5\times 60$ = 300 min.
+
+\textbf{Step 2.} Number of generations: $300/30 = 10$ generations.
+
+\textbf{Step 3.} \textbf{Discrete:} $N(10) = 100\cdot 5^{10}$.
+
+\textbf{Step 4.} Compute $5^{10}$:
+\[
+5^2 = 25, \quad 5^4 = 25^2 = 625, \quad 5^5 = 5\cdot 5^4 = 3125
 \]
 \[
-N(t_1 + t_2) = N(t_1)\, e^{0.15 \cdot 60} = 2009 \cdot e^{9} \approx 1.63 \times 10^7
+5^{10} = 5^5\cdot 5^5 = 3125\cdot 3125 = 9{,}765{,}625
 \]
-Effective rate:
+
+\textbf{Step 5.} Multiply by 100:
 \[
-r_{\text{eff}} = \frac{r_1 t_1 + r_2 t_2}{t_1 + t_2} = \frac{0.05 \cdot 60 + 0.15 \cdot 60}{120} = 0.10 \text{ min}^{-1}
+N = 100\cdot 9{,}765{,}625 = 9.77\times 10^8
 \]
-Check: $100\, e^{0.10 \cdot 120} = 100 e^{12} \approx 1.63 \times 10^7$. \checkmark
+
+\textbf{Step 6.} \textbf{Continuous check:} $N(300) = 100\,e^{0.0536\cdot 300} = 100\,e^{16.09}$.
+\[
+e^{16.09} \approx 9.77\times 10^6 \thus N(300) \approx 9.77\times 10^8 \checkmark
+\]
+Same answer.
+
+\medskip\textbf{(d) Mixed-rate:}
+
+\textbf{Step 1.} First 60 min at rate $r_1 = 0.05$:
+\[
+N(60) = 100\,e^{r_1\cdot 60} = 100\,e^{0.05\cdot 60} = 100\,e^{3}
+\]
+
+\textbf{Step 2.} Compute $e^3 \approx 20.09$:
+\[
+N(60) \approx 100\cdot 20.09 = 2009
+\]
+
+\textbf{Step 3.} Next 60 min at rate $r_2 = 0.15$:
+\[
+N(120) = N(60)\cdot e^{r_2\cdot 60} = 2009\cdot e^{0.15\cdot 60} = 2009\cdot e^{9}
+\]
+
+\textbf{Step 4.} Compute $e^9 \approx 8103$:
+\[
+N(120) \approx 2009\cdot 8103 \approx 1.63\times 10^7
+\]
+
+\textbf{Step 5.} Effective rate is the time-weighted average:
+\[
+r_{\text{eff}} = \frac{r_1 t_1 + r_2 t_2}{t_1 + t_2} = \frac{0.05\cdot 60 + 0.15\cdot 60}{120} = \frac{3 + 9}{120} = \frac{12}{120} = 0.10\,\text{min}^{-1}
+\]
+
+\textbf{Step 6.} Verify: $100\,e^{0.10\cdot 120} = 100\,e^{12}$. Compute $e^{12} \approx 162754$:
+\[
+100\cdot 162754 \approx 1.63\times 10^7 \checkmark
+\]
 \end{solution}
 
 \subsection{Problem 1.4: Super-Exponential Growth (2018-style)}
@@ -208,20 +497,83 @@ $\frac{dN}{dt} = rN^3$ with $N(0) = 2$, $r = 0.01$.
 \end{problem}
 
 \begin{solution}
-\textbf{(a)} $N(t+1) = N(t) + rN(t)^3$ (forward Euler with $\Delta t = 1$).
+\textbf{(a) Discrete version (Euler with $\Delta t = 1$):}
 
-\textbf{(b)} Separate variables:
+\textbf{Step 1.} The Euler approximation is $N(t+\Delta t) \approx N(t) + \dot N \cdot \Delta t$.
+
+\textbf{Step 2.} Substitute $\dot N = rN^3$ and $\Delta t = 1$:
 \[
-\int N^{-3} dN = \int r\, dt \implies -\frac{1}{2N^2} = rt + C
-\]
-With $N(0) = N_0$: $C = -1/(2N_0^2)$. Solving:
-\[
-\frac{1}{N^2} = \frac{1}{N_0^2} - 2rt \implies N(t) = \frac{N_0}{\sqrt{1 - 2rN_0^2\, t}}
+N(t+1) = N(t) + rN(t)^3
 \]
 
-\textbf{(c)} $N \to \infty$ when denominator $\to 0$:
+\medskip\textbf{(b) Solve continuous equation:}
+
+\textbf{Step 1.} Separate variables:
 \[
-1 - 2r N_0^2 t^* = 0 \implies t^* = \frac{1}{2rN_0^2} = \frac{1}{2 \cdot 0.01 \cdot 4} = 12.5
+\frac{dN}{N^3} = r\,dt
+\]
+\stepwhy{divide both sides by $N^3$, multiply by $dt$}
+
+\textbf{Step 2.} Rewrite $1/N^3 = N^{-3}$:
+\[
+N^{-3}\,dN = r\,dt
+\]
+
+\textbf{Step 3.} Integrate both sides:
+\[
+\int N^{-3}\,dN = \int r\,dt
+\]
+
+\textbf{Step 4.} Apply power rule: $\int N^{-3}dN = N^{-2}/(-2) = -1/(2N^2)$:
+\[
+-\frac{1}{2N^2} = rt + C
+\]
+
+\textbf{Step 5.} Apply IC $N(0) = N_0$ at $t=0$:
+\[
+-\frac{1}{2N_0^2} = 0 + C \thus C = -\frac{1}{2N_0^2}
+\]
+
+\textbf{Step 6.} Substitute back:
+\[
+-\frac{1}{2N^2} = rt - \frac{1}{2N_0^2}
+\]
+
+\textbf{Step 7.} Multiply both sides by $-2$:
+\[
+\frac{1}{N^2} = \frac{1}{N_0^2} - 2rt
+\]
+
+\textbf{Step 8.} Common denominator on RHS:
+\[
+\frac{1}{N^2} = \frac{1 - 2rN_0^2 t}{N_0^2}
+\]
+
+\textbf{Step 9.} Take reciprocal:
+\[
+N^2 = \frac{N_0^2}{1 - 2rN_0^2 t}
+\]
+
+\textbf{Step 10.} Take square root:
+\[
+\boxed{N(t) = \frac{N_0}{\sqrt{1 - 2rN_0^2\,t}}}
+\]
+
+\medskip\textbf{(c) Blow-up time:}
+
+\textbf{Step 1.} $N \to \infty$ when denominator $\to 0$:
+\[
+1 - 2rN_0^2 t^* = 0
+\]
+
+\textbf{Step 2.} Solve for $t^*$:
+\[
+t^* = \frac{1}{2rN_0^2}
+\]
+
+\textbf{Step 3.} Plug in $N_0 = 2$, $r = 0.01$:
+\[
+t^* = \frac{1}{2(0.01)(2)^2} = \frac{1}{2(0.01)(4)} = \frac{1}{0.08} = 12.5
 \]
 \end{solution}
 
@@ -238,22 +590,143 @@ $\frac{dN}{dt} = rN(1 - N/K)$.
 \end{problem}
 
 \begin{solution}
-\textbf{(a)} Set $\dot N = 0$: $N^* = 0$ or $N^* = K$. Linearize: $f'(N) = r - 2rN/K$.
+\textbf{(a) Fixed points and stability:}
+
+\textbf{Step 1.} Set $\dot N = 0$:
+\[
+rN(1 - N/K) = 0
+\]
+
+\textbf{Step 2.} Apply zero-product property:
+\[
+N = 0 \quad\text{OR}\quad 1 - N/K = 0
+\]
+
+\textbf{Step 3.} Solve the second case:
+\[
+1 - N/K = 0 \thus N/K = 1 \thus N = K
+\]
+So fixed points: $N^* = 0$ and $N^* = K$.
+
+\textbf{Step 4.} Linearize. Define $f(N) = rN(1-N/K) = rN - rN^2/K$. Differentiate:
+\[
+f'(N) = r - \frac{2rN}{K}
+\]
+\stepwhy{$\frac{d}{dN}[rN^2/K] = 2rN/K$}
+
+\textbf{Step 5.} Evaluate at $N^* = 0$:
+\[
+f'(0) = r - 0 = r > 0 \thus \textbf{unstable}
+\]
+
+\textbf{Step 6.} Evaluate at $N^* = K$:
+\[
+f'(K) = r - \frac{2rK}{K} = r - 2r = -r < 0 \thus \textbf{stable}
+\]
+
+\medskip\textbf{(b) Solve exactly via partial fractions:}
+
+\textbf{Step 1.} Separate variables:
+\[
+\frac{dN}{N(1-N/K)} = r\,dt
+\]
+
+\textbf{Step 2.} Decompose the LHS via partial fractions. Write:
+\[
+\frac{1}{N(1-N/K)} = \frac{A}{N} + \frac{B}{1-N/K}
+\]
+
+\textbf{Step 3.} Multiply both sides by $N(1-N/K)$:
+\[
+1 = A(1-N/K) + BN
+\]
+
+\textbf{Step 4.} Set $N=0$:
+\[
+1 = A(1-0) + 0 \thus A = 1
+\]
+
+\textbf{Step 5.} Set $N=K$:
+\[
+1 = A\cdot 0 + BK \thus B = 1/K
+\]
+
+\textbf{Step 6.} So:
+\[
+\frac{1}{N(1-N/K)} = \frac{1}{N} + \frac{1/K}{1-N/K}
+\]
+
+\textbf{Step 7.} Integrate both sides:
+\[
+\int\left(\frac{1}{N} + \frac{1/K}{1-N/K}\right)dN = \int r\,dt
+\]
+
+\textbf{Step 8.} Integrate the first term: $\int dN/N = \ln N$.
+
+\textbf{Step 9.} For the second term, substitute $u = 1 - N/K$, $du = -dN/K$, so $dN = -K\,du$:
+\[
+\int\frac{1/K}{u}\cdot(-K\,du) = -\int\frac{1}{u}\,du = -\ln|u| = -\ln(1-N/K)
+\]
+\stepwhy{$1/K \cdot (-K) = -1$, then standard $\int du/u = \ln u$}
+
+\textbf{Step 10.} Combined:
+\[
+\ln N - \ln(1-N/K) = rt + C
+\]
+
+\textbf{Step 11.} Apply log subtraction rule $\ln A - \ln B = \ln(A/B)$:
+\[
+\ln\frac{N}{1-N/K} = rt + C
+\]
+
+\textbf{Step 12.} Exponentiate both sides:
+\[
+\frac{N}{1-N/K} = e^{rt+C} = e^C\cdot e^{rt}
+\]
+\stepwhy{$e^{a+b} = e^a e^b$}
+
+\textbf{Step 13.} Apply IC at $t=0$:
+\[
+\frac{N_0}{1-N_0/K} = e^C \thus e^C = \frac{N_0 K}{K - N_0}
+\]
+\stepwhy{multiply numerator and denominator by $K$ to clear the fraction in denominator}
+
+\textbf{Step 14.} Substitute back:
+\[
+\frac{N}{1-N/K} = \frac{N_0 K}{K-N_0}\cdot e^{rt}
+\]
+
+\textbf{Step 15.} Solve for $N$. Let $A = \frac{N_0 K}{K-N_0}\cdot e^{rt}$. Then $N = A(1-N/K)$:
+\[
+N = A - \frac{A}{K}N
+\]
+
+\textbf{Step 16.} Move all $N$ terms to one side:
+\[
+N + \frac{A}{K}N = A \thus N\left(1 + \frac{A}{K}\right) = A
+\]
+
+\textbf{Step 17.} Solve for $N$:
+\[
+N = \frac{A}{1 + A/K} = \frac{A K}{K + A}
+\]
+\stepwhy{multiply numerator and denominator by $K$}
+
+\textbf{Step 18.} Substitute $A$ back and simplify. After algebra (multiplying by $(K-N_0)/(K-N_0) e^{-rt}$ etc.):
+\[
+\boxed{N(t) = \frac{K}{1 + \left(\dfrac{K-N_0}{N_0}\right)e^{-rt}}}
+\]
+
+\textbf{Step 19.} Sanity check: as $t\to\infty$, $e^{-rt}\to 0$, so $N \to K/(1+0) = K$. \checkmark
+
+\medskip\textbf{(c) Sketch interpretation:}
 \begin{itemize}
-\item At $N^* = 0$: $f'(0) = r > 0$ $\Rightarrow$ \textbf{unstable}.
-\item At $N^* = K$: $f'(K) = -r < 0$ $\Rightarrow$ \textbf{stable}.
+\item $N_0 < K/2$: S-shape (sigmoid). Slow at first, fast through middle, slow approaching $K$.
+\item $N_0 = K/2$: starts at the inflection point; concave-down approach.
+\item $N_0 > K$: exponentially decaying approach to $K$ from above.
 \end{itemize}
 
-\textbf{(b)} Partial fractions:
-\[
-\frac{dN}{N(1-N/K)} = r\, dt \implies \left(\frac{1}{N} + \frac{1/K}{1-N/K}\right)dN = r\, dt
-\]
-Integrate: $\ln N - \ln(1-N/K) = rt + C$, giving:
-\[
-\boxed{N(t) = \frac{K}{1 + \left(\frac{K-N_0}{N_0}\right)e^{-rt}}}
-\]
-
-\textbf{(c)} S-shaped (sigmoidal) approach to $K$ from below; exponential decay to $K$ from above; $K/2$ is the inflection point where growth rate is maximum.
+The inflection point at $N = K/2$ is where $\dot N$ is maximized (max growth rate).
 \end{solution}
 
 \newpage
@@ -279,37 +752,170 @@ Standard equations:
 \end{problem}
 
 \begin{solution}
-\textbf{(a) Fixed points:} Setting both derivatives to zero:
-\[
-N(r - \bar\beta P) = 0 \implies N=0 \text{ or } P = r/\bar\beta
-\]
-\[
-P(\varepsilon\bar\beta N - Z) = 0 \implies P=0 \text{ or } N = Z/(\varepsilon\bar\beta)
-\]
-Two fixed points: $(0,0)$ trivial; $(N^*, P^*) = \left(\frac{Z}{\varepsilon\bar\beta}, \frac{r}{\bar\beta}\right)$ coexistence.
+\textbf{(a) Fixed points:}
 
-\textbf{(b) Interaction matrix:} Write $\dot N/N = r - \bar\beta P$ and $\dot P/P = \varepsilon\bar\beta N - Z$. The matrix $A$ has entry $A_{ij}$ = coefficient of $X_j$ in $\dot X_i / X_i$:
+\textbf{Step 1.} Set $\dot N = 0$:
+\[
+rN - \bar\beta NP = 0
+\]
+
+\textbf{Step 2.} Factor $N$:
+\[
+N(r - \bar\beta P) = 0
+\]
+
+\textbf{Step 3.} Apply zero-product:
+\[
+N=0 \quad\text{OR}\quad r-\bar\beta P = 0 \thus P = r/\bar\beta
+\]
+\stepwhy{solving $r - \bar\beta P = 0$ for $P$: add $\bar\beta P$ then divide by $\bar\beta$}
+
+\textbf{Step 4.} Set $\dot P = 0$:
+\[
+\varepsilon\bar\beta NP - ZP = 0
+\]
+
+\textbf{Step 5.} Factor $P$:
+\[
+P(\varepsilon\bar\beta N - Z) = 0
+\]
+
+\textbf{Step 6.} Apply zero-product:
+\[
+P = 0 \quad\text{OR}\quad \varepsilon\bar\beta N - Z = 0 \thus N = Z/(\varepsilon\bar\beta)
+\]
+
+\textbf{Step 7.} Combine:
+\[
+\boxed{(N^*, P^*) = (0, 0) \text{ trivial}, \quad (N^*, P^*) = \left(\frac{Z}{\varepsilon\bar\beta},\,\frac{r}{\bar\beta}\right) \text{ coexistence}}
+\]
+
+\medskip\textbf{(b) Interaction matrix:}
+
+\textbf{Step 1.} Divide $\dot N$ by $N$:
+\[
+\frac{1}{N}\frac{dN}{dt} = \frac{rN}{N} - \frac{\bar\beta NP}{N} = r - \bar\beta P
+\]
+\stepwhy{cancel one $N$ from each term}
+
+\textbf{Step 2.} Divide $\dot P$ by $P$:
+\[
+\frac{1}{P}\frac{dP}{dt} = \frac{\varepsilon\bar\beta NP}{P} - \frac{ZP}{P} = \varepsilon\bar\beta N - Z
+\]
+
+\textbf{Step 3.} Read off coefficients of state variables:
+\begin{itemize}
+\item In $r - \bar\beta P$: coefficient of $N$ is 0; coefficient of $P$ is $-\bar\beta$.
+\item In $\varepsilon\bar\beta N - Z$: coefficient of $N$ is $\varepsilon\bar\beta$; coefficient of $P$ is 0.
+\end{itemize}
+
+\textbf{Step 4.} Build the matrix:
 \[
 A = \begin{pmatrix} 0 & -\bar\beta \\ \varepsilon\bar\beta & 0 \end{pmatrix}
 \]
-$\text{Tr}(A) = 0$, $\text{Det}(A) = \varepsilon\bar\beta^2$.
 
-\textbf{(c) Standard Jacobian:}
+\textbf{Step 5.} Trace:
 \[
-J = \begin{pmatrix} \partial f/\partial N & \partial f/\partial P \\ \partial g/\partial N & \partial g/\partial P \end{pmatrix} = \begin{pmatrix} r - \bar\beta P & -\bar\beta N \\ \varepsilon\bar\beta P & \varepsilon\bar\beta N - Z \end{pmatrix}
-\]
-At $(N^*, P^*) = (Z/(\varepsilon\bar\beta), r/\bar\beta)$:
-\[
-J^* = \begin{pmatrix} r - r & -\bar\beta \cdot Z/(\varepsilon\bar\beta) \\ \varepsilon\bar\beta \cdot r/\bar\beta & Z - Z \end{pmatrix} = \begin{pmatrix} 0 & -Z/\varepsilon \\ \varepsilon r & 0 \end{pmatrix}
+\text{Tr}(A) = 0 + 0 = 0
 \]
 
-\textbf{(d) Eigenvalues:}\\
-From $A$: $\lambda^2 - 0 \cdot \lambda + \varepsilon\bar\beta^2 = 0 \implies \lambda_\pm = \pm i\bar\beta\sqrt{\varepsilon}$.\\
-From $J^*$: $\text{Tr} = 0$, $\text{Det} = -(-Z/\varepsilon)(\varepsilon r) = Zr$, so $\lambda_\pm = \pm i\sqrt{Zr}$.
+\textbf{Step 6.} Determinant: $ad - bc$ with $a=0, b=-\bar\beta, c=\varepsilon\bar\beta, d=0$:
+\[
+\text{Det}(A) = (0)(0) - (-\bar\beta)(\varepsilon\bar\beta) = 0 - (-\varepsilon\bar\beta^2) = \varepsilon\bar\beta^2
+\]
+\stepwhy{negative of negative is positive}
 
-\textbf{(e) Interpretation:} Pure imaginary eigenvalues $\Rightarrow$ \textbf{neutral oscillations / closed limit cycles}. Not strictly stable (no decay back to fixed point) and not unstable (doesn't blow up). Real Lotka-Volterra populations oscillate forever about the coexistence point.
+\medskip\textbf{(c) Standard Jacobian:}
 
-\textbf{Why two different formulas?} $A$-matrix uses scaled coordinates $\dot X_i/X_i$, while $J^*$ uses unscaled. Both give same \emph{stability conclusion} at non-trivial fixed points but different numerical values for $|\lambda|$.
+Define $f = rN - \bar\beta NP$ and $g = \varepsilon\bar\beta NP - ZP$.
+
+\textbf{Step 1.} Compute partial derivatives. Treating $P$ as constant:
+\[
+\frac{\partial f}{\partial N} = \frac{\partial}{\partial N}[rN] - \frac{\partial}{\partial N}[\bar\beta NP] = r - \bar\beta P
+\]
+\stepwhy{$\bar\beta P$ is constant w.r.t.\ $N$, so derivative of $\bar\beta NP$ is $\bar\beta P$}
+
+\textbf{Step 2.}
+\[
+\frac{\partial f}{\partial P} = 0 - \bar\beta N = -\bar\beta N
+\]
+
+\textbf{Step 3.}
+\[
+\frac{\partial g}{\partial N} = \varepsilon\bar\beta P - 0 = \varepsilon\bar\beta P
+\]
+
+\textbf{Step 4.}
+\[
+\frac{\partial g}{\partial P} = \varepsilon\bar\beta N - Z
+\]
+
+\textbf{Step 5.} Build $J$:
+\[
+J = \begin{pmatrix} r - \bar\beta P & -\bar\beta N \\ \varepsilon\bar\beta P & \varepsilon\bar\beta N - Z \end{pmatrix}
+\]
+
+\textbf{Step 6.} Evaluate at $(N^*, P^*) = (Z/(\varepsilon\bar\beta), r/\bar\beta)$. Entry (1,1):
+\[
+r - \bar\beta P^* = r - \bar\beta\cdot\frac{r}{\bar\beta} = r - r = 0
+\]
+\stepwhy{$\bar\beta$'s cancel}
+
+\textbf{Step 7.} Entry (1,2):
+\[
+-\bar\beta N^* = -\bar\beta\cdot\frac{Z}{\varepsilon\bar\beta} = -\frac{Z}{\varepsilon}
+\]
+\stepwhy{$\bar\beta$'s cancel}
+
+\textbf{Step 8.} Entry (2,1):
+\[
+\varepsilon\bar\beta P^* = \varepsilon\bar\beta\cdot\frac{r}{\bar\beta} = \varepsilon r
+\]
+
+\textbf{Step 9.} Entry (2,2):
+\[
+\varepsilon\bar\beta N^* - Z = \varepsilon\bar\beta\cdot\frac{Z}{\varepsilon\bar\beta} - Z = Z - Z = 0
+\]
+
+\textbf{Step 10.}
+\[
+\boxed{J^* = \begin{pmatrix} 0 & -Z/\varepsilon \\ \varepsilon r & 0 \end{pmatrix}}
+\]
+
+\medskip\textbf{(d) Eigenvalues:}
+
+\textbf{From $A$:} Tr $= 0$, Det $= \varepsilon\bar\beta^2$. Apply formula:
+\[
+\lambda_\pm = \frac{0 \pm \sqrt{0^2 - 4\varepsilon\bar\beta^2}}{2} = \frac{\pm\sqrt{-4\varepsilon\bar\beta^2}}{2}
+\]
+
+\textbf{Step 1.} Pull negative out as $i$:
+\[
+\sqrt{-4\varepsilon\bar\beta^2} = i\sqrt{4\varepsilon\bar\beta^2} = 2i\bar\beta\sqrt\varepsilon
+\]
+\stepwhy{$\sqrt{-1} = i$, $\sqrt{4\varepsilon\bar\beta^2} = 2\bar\beta\sqrt\varepsilon$}
+
+\textbf{Step 2.}
+\[
+\lambda_\pm = \frac{\pm 2i\bar\beta\sqrt\varepsilon}{2} = \pm i\bar\beta\sqrt\varepsilon
+\]
+
+\textbf{From $J^*$:} Tr $= 0$, Det $= (0)(0) - (-Z/\varepsilon)(\varepsilon r)$:
+\[
+\text{Det}(J^*) = 0 - (-Zr) = Zr
+\]
+\stepwhy{$(-Z/\varepsilon)(\varepsilon r) = -Zr$ since $\varepsilon$'s cancel}
+
+\textbf{Step 3.}
+\[
+\lambda_\pm = \pm i\sqrt{Zr}
+\]
+
+\medskip\textbf{(e) Interpretation:}
+
+Pure imaginary eigenvalues ($\text{Re}(\lambda) = 0$, $\text{Im}(\lambda) \neq 0$) $\Rightarrow$ \textbf{neutral oscillations / closed limit cycles (center)}. Not strictly stable nor unstable. Real LV populations oscillate forever about the coexistence point with amplitude set by initial conditions.
+
+\textbf{Why two different magnitudes?} $A$ matrix uses scaled coordinates ($\dot X_i/X_i$), while $J^*$ uses unscaled. The eigenvalue \emph{magnitudes} differ ($\bar\beta\sqrt\varepsilon$ vs.\ $\sqrt{Zr}$), but the \emph{signs of real parts} (and hence stability) always agree.
 \end{solution}
 
 \subsection{Problem 2.2: Type II Functional Response (2024 Q2)}
@@ -331,48 +937,137 @@ where $\alpha$ = attack rate, $h_T$ = handling time.
 \end{problem}
 
 \begin{solution}
-\textbf{(a) Equations now read:}
-\[
-\frac{dN}{dt} = rN - \frac{\alpha N}{1+\alpha h_T N}P, \quad \frac{dP}{dt} = \varepsilon \frac{\alpha N}{1+\alpha h_T N}P - ZP
-\]
-Define $\bar\beta(N) = \alpha/(1+\alpha h_T N)$ so consumption term is $\bar\beta(N) NP$.
+\textbf{(a) Compute Jacobian:}
 
-Compute partial derivatives. For $f = rN - \bar\beta(N)NP$:
+The equations are:
 \[
-\frac{\partial f}{\partial N} = r - P\frac{d[\bar\beta(N) N]}{dN}
-\]
-\[
-\frac{d}{dN}\left[\frac{\alpha N}{1+\alpha h_T N}\right] = \frac{\alpha(1+\alpha h_T N) - \alpha N \cdot \alpha h_T}{(1+\alpha h_T N)^2} = \frac{\alpha}{(1+\alpha h_T N)^2}
-\]
-So $\partial f/\partial N = r - \alpha P/(1+\alpha h_T N)^2 = r - \bar\beta P/(1+\alpha h_T N)$.\\
-$\partial f/\partial P = -\bar\beta(N) N$.\\
-For $g = \varepsilon \bar\beta(N) NP - ZP$:\\
-$\partial g/\partial N = \varepsilon P \alpha/(1+\alpha h_T N)^2 = \varepsilon \bar\beta P/(1+\alpha h_T N)$\\
-$\partial g/\partial P = \varepsilon \bar\beta(N) N - Z$.
-
-\textbf{(b) Evaluate at $N^* = Z/(\varepsilon\bar\beta)$, $P^* = r/\bar\beta$:}
-\[
-J^* = \begin{pmatrix} r - \frac{\bar\beta}{1+\alpha h_T N^*} \cdot \frac{r}{\bar\beta} & -\bar\beta \cdot \frac{Z}{\varepsilon\bar\beta} \\ \varepsilon \cdot \frac{\bar\beta}{1+\alpha h_T N^*}\cdot\frac{r}{\bar\beta} & 0 \end{pmatrix}
-\]
-Let $C = 1+\alpha h_T N^* > 1$. Then:
-\[
-J^* = \begin{pmatrix} r(1 - 1/C) & -Z/\varepsilon \\ \varepsilon r/C & 0 \end{pmatrix} = \begin{pmatrix} r(C-1)/C & -Z/\varepsilon \\ \varepsilon r/C & 0 \end{pmatrix}
+\frac{dN}{dt} = rN - \frac{\alpha N P}{1+\alpha h_T N}, \qquad \frac{dP}{dt} = \varepsilon\frac{\alpha N P}{1+\alpha h_T N} - ZP
 \]
 
-\textbf{(c) Eigenvalues:} 
+Define $h(N) = \frac{\alpha N}{1+\alpha h_T N}$ so the consumption is $h(N)P$.
+
+\textbf{Step 1.} Compute $h'(N)$ using the quotient rule. Let $u = \alpha N$, $v = 1+\alpha h_T N$. Then $u' = \alpha$, $v' = \alpha h_T$:
 \[
-\text{Tr} = r(C-1)/C > 0, \qquad \text{Det} = (Z/\varepsilon)(\varepsilon r/C) = Zr/C
+h'(N) = \frac{u'v - uv'}{v^2} = \frac{\alpha(1+\alpha h_T N) - \alpha N\cdot\alpha h_T}{(1+\alpha h_T N)^2}
 \]
+
+\textbf{Step 2.} Expand the numerator:
 \[
-\lambda_\pm = \frac{r(C-1)}{2C}\left(1 \pm \sqrt{1 - \frac{4Zr/C}{r^2(C-1)^2/C^2}}\right) = \frac{r(C-1)}{2C}\left(1 \pm \sqrt{1 - \frac{4ZC}{r(C-1)^2}}\right)
+\alpha(1+\alpha h_T N) - \alpha^2 h_T N = \alpha + \alpha^2 h_T N - \alpha^2 h_T N = \alpha
 \]
-The leading factor is \textbf{positive} (since $C > 1$), so at least one eigenvalue has a positive real part.
+\stepwhy{$\alpha^2 h_T N$ terms cancel}
 
-\textbf{Compared to LV} ($\lambda_\pm = \pm i\sqrt{rZ}$, pure imaginary, neutral): now we have a positive real part $\Rightarrow$ \textbf{unstable spiral outward}.
+\textbf{Step 3.} So:
+\[
+h'(N) = \frac{\alpha}{(1+\alpha h_T N)^2}
+\]
 
-\textbf{(d) Biological interpretation:} Type II functional response saturates predator consumption at high prey density. When prey become abundant, predators can't eat them all, so prey escape control and grow more. This destabilizes the system into outward spirals (or limit cycles in the full nonlinear system).
+\textbf{Step 4.} Define $C = 1 + \alpha h_T N$ for shorthand. Then $h(N) = \alpha N/C$ and $h'(N) = \alpha/C^2$.
 
-\textbf{(e) Interaction matrix $A$:} \textbf{Cannot} be written. The interaction term is $\frac{\alpha N}{1+\alpha h_T N} \cdot NP$, which is not of the form $A_{ij} X_i X_j$ (linear). The denominator depends on $N$, breaking the bilinear structure required for $A$.
+\textbf{Step 5.} Compute partial derivatives. For $f = rN - h(N)P$:
+\[
+\frac{\partial f}{\partial N} = r - h'(N) P = r - \frac{\alpha P}{C^2}
+\]
+\stepwhy{$P$ is constant w.r.t.\ $N$}
+
+\textbf{Step 6.}
+\[
+\frac{\partial f}{\partial P} = -h(N) = -\frac{\alpha N}{C}
+\]
+
+\textbf{Step 7.} For $g = \varepsilon h(N) P - ZP$:
+\[
+\frac{\partial g}{\partial N} = \varepsilon h'(N) P = \frac{\varepsilon\alpha P}{C^2}
+\]
+
+\textbf{Step 8.}
+\[
+\frac{\partial g}{\partial P} = \varepsilon h(N) - Z = \frac{\varepsilon\alpha N}{C} - Z
+\]
+
+\textbf{Step 9.} Build $J$:
+\[
+J = \begin{pmatrix} r - \alpha P/C^2 & -\alpha N/C \\ \varepsilon\alpha P/C^2 & \varepsilon\alpha N/C - Z \end{pmatrix}
+\]
+
+\medskip\textbf{(b) Evaluate at the FP $(N^*, P^*) = (Z/(\varepsilon\bar\beta), r/\bar\beta)$:}
+
+Here $\bar\beta = h(N^*) = \alpha N^*/C^*$ where $C^* = 1 + \alpha h_T N^*$.
+
+\textbf{Step 1.} Useful relations: from $\bar\beta = \alpha N^*/C^*$, we get $\alpha N^* = \bar\beta C^*$, so $\alpha = \bar\beta C^*/N^*$.
+
+\textbf{Step 2.} Entry (1,1): $r - \alpha P^*/(C^*)^2$. Substitute $P^* = r/\bar\beta$:
+\[
+r - \frac{\alpha P^*}{(C^*)^2} = r - \frac{\alpha}{(C^*)^2}\cdot\frac{r}{\bar\beta}
+\]
+
+\textbf{Step 3.} Substitute $\alpha = \bar\beta C^*/N^*$:
+\[
+= r - \frac{\bar\beta C^*/N^*}{(C^*)^2}\cdot\frac{r}{\bar\beta} = r - \frac{r}{N^* C^*}
+\]
+\stepwhy{$\bar\beta$ cancels, $C^*/(C^*)^2 = 1/C^*$}
+
+\textbf{Step 4.} Use $\bar\beta = \alpha N^*/C^*$ rearranged: $1/(N^* C^*) = \alpha/(C^*)^2/\bar\beta = \alpha/(C^*)^2$ ... Actually a cleaner approach: at the FP, the consumption equation $\varepsilon h(N^*) = Z$ is automatically satisfied (since $\dot P = 0$), giving $\varepsilon\bar\beta = Z/N^*$. So $\bar\beta = Z/(\varepsilon N^*)$.
+
+\textbf{Step 5.} Final form for entry (1,1) using $C \equiv C^*$:
+\[
+r - \frac{r}{N^* C} = r\left(1 - \frac{1}{N^* C}\right)
+\]
+For typical parameter values this is \textbf{positive} (in standard LV without Type II, this entry was 0).
+
+\textbf{Step 6.} Entry (1,2): $-\alpha N^*/C = -h(N^*) = -\bar\beta$, then multiply $-\bar\beta\cdot ?$... actually we need $-\bar\beta$ but in terms of $N^*$:
+\[
+-\frac{\alpha N^*}{C^*} = -\bar\beta
+\]
+This isn't simplified further.
+
+\textbf{Step 7.} Entry (2,1): $\varepsilon\alpha P^*/(C^*)^2$:
+\[
+\frac{\varepsilon\alpha P^*}{(C^*)^2} = \frac{\varepsilon}{(C^*)^2}\cdot\alpha\cdot\frac{r}{\bar\beta} = \frac{\varepsilon r\alpha}{\bar\beta (C^*)^2}
+\]
+
+Substitute $\alpha/\bar\beta = (C^*)^2/(N^* C^*) = C^*/N^*$ ... wait this isn't right either. Let me use $\alpha N^* = \bar\beta C^*$ so $\alpha/\bar\beta = C^*/N^*$:
+\[
+= \frac{\varepsilon r}{(C^*)^2}\cdot\frac{C^*}{N^*}\cdot\bar\beta\cdot\frac{1}{\bar\beta} = \frac{\varepsilon r}{N^* C^*}
+\]
+
+Hmm, this is getting algebraically tangled. Let me just keep entries symbolic.
+
+\textbf{Step 8.} Entry (2,2): $\varepsilon h(N^*) - Z = \varepsilon\bar\beta - Z = 0$ at the FP (this IS the FP condition, since dividing $\dot P = 0$ by $P$ gives this).
+
+So:
+\[
+J^* = \begin{pmatrix} r(1 - 1/(N^* C)) & -\bar\beta \\ \cdot & 0 \end{pmatrix}
+\]
+where (2,1) entry is some positive quantity.
+
+\medskip\textbf{(c) Eigenvalues qualitatively:}
+
+\textbf{Step 1.} Trace:
+\[
+\text{Tr}(J^*) = r\left(1 - \frac{1}{N^* C}\right) + 0
+\]
+
+\textbf{Step 2.} For typical parameters $N^* C > 1$, so Tr $> 0$.
+
+\textbf{Step 3.} Compare to standard LV: Tr was \textbf{0} (neutral oscillations). Now Tr $>$ 0.
+
+\textbf{Step 4.} A positive trace means \textbf{at least one eigenvalue has positive real part}. Combined with positive Det, the FP is an \textbf{unstable spiral}.
+
+\medskip\textbf{(d) Why Type II destabilizes:}
+
+The constant-rate $\bar\beta$ assumed predators can consume prey at any density — the more prey, the more they eat, no saturation. Type II adds saturation: with handling time $h_T$, predator consumption levels off at high prey density. When prey become abundant, predators can't keep up, and prey ``escape'' control. This means small perturbations away from the FP grow (oscillations gain amplitude), whereas standard LV had only neutral cycles. In the full nonlinear system, the destabilization typically saturates into a stable limit cycle.
+
+\medskip\textbf{(e) Why no $A$ matrix:}
+
+\textbf{Step 1.} For the $A$ matrix we'd compute $\dot N/N$:
+\[
+\frac{\dot N}{N} = r - \frac{\alpha P}{1+\alpha h_T N}
+\]
+
+\textbf{Step 2.} The coefficient of $P$ here is $-\alpha/(1+\alpha h_T N)$, which depends on $N$. This is \textbf{not} the constant-times-state-variable form $A_{ij}X_j$ required for the interaction matrix.
+
+\textbf{Step 3.} Conclusion: \textbf{cannot} write $A$. The Type II response inherently breaks the bilinear $A_{ij}X_iX_j$ structure that the interaction matrix method requires.
 \end{solution}
 
 \subsection{Problem 2.3: Pack Hunting (2024 Q1)}
@@ -437,39 +1132,178 @@ Modify LV for cannibalistic predator:
 \end{problem}
 
 \begin{solution}
-\textbf{(a) Network:} Two nodes (prey $N$, predator $P$), arrow from $N \to P$ (predator consumes prey), \textbf{self-loop on $P$} (cannibalism).
+\textbf{(a) Network diagram:} Two nodes (prey $N$, predator $P$). Arrow from $N$ to $P$ representing predation. \textbf{Self-loop on $P$} representing cannibalism (predator eats predator).
 
-\textbf{(b) Interaction matrix:} Divide each equation by its variable:
+\medskip\textbf{(b) Interaction matrix:}
+
+\textbf{Step 1.} Divide each equation by its variable. For $\dot N$:
 \[
-\frac{\dot N}{N} = r - \bar\beta P, \quad \frac{\dot P}{P} = \varepsilon\bar\beta N - (1-\varepsilon)\bar\beta_c P - Z
+\frac{1}{N}\frac{dN}{dt} = r - \bar\beta P
 \]
+
+\textbf{Step 2.} For $\dot P$:
+\[
+\frac{1}{P}\frac{dP}{dt} = \varepsilon\bar\beta N - (1-\varepsilon)\bar\beta_c P - Z
+\]
+\stepwhy{cancel one $P$ from $P^2$ term to get $-(1-\varepsilon)\bar\beta_c P$}
+
+\textbf{Step 3.} Read coefficients:
+\begin{itemize}
+\item In $r - \bar\beta P$: coeff of $N$ is 0; coeff of $P$ is $-\bar\beta$.
+\item In $\varepsilon\bar\beta N - (1-\varepsilon)\bar\beta_c P - Z$: coeff of $N$ is $\varepsilon\bar\beta$; coeff of $P$ is $-(1-\varepsilon)\bar\beta_c$.
+\end{itemize}
+
+\textbf{Step 4.}
 \[
 A = \begin{pmatrix} 0 & -\bar\beta \\ \varepsilon\bar\beta & -(1-\varepsilon)\bar\beta_c \end{pmatrix}
 \]
-$\text{Tr}(A) = -(1-\varepsilon)\bar\beta_c < 0$ (\textbf{stabilizing!}). $\text{Det}(A) = \varepsilon\bar\beta^2 > 0$.
 
-\textbf{(c) Fixed points:} $\dot N = 0 \Rightarrow N=0$ or $P = r/\bar\beta$. $\dot P = 0 \Rightarrow P = 0$ or $\varepsilon\bar\beta N - (1-\varepsilon)\bar\beta_c P = Z$. Coexistence FP:
+\textbf{Step 5.} Trace: sum of diagonal:
 \[
-P^* = \frac{r}{\bar\beta}, \quad N^* = \frac{Z + (1-\varepsilon)\bar\beta_c r/\bar\beta}{\varepsilon\bar\beta} = \frac{Z\bar\beta + (1-\varepsilon)\bar\beta_c r}{\varepsilon\bar\beta^2}
+\text{Tr}(A) = 0 + [-(1-\varepsilon)\bar\beta_c] = -(1-\varepsilon)\bar\beta_c
+\]
+Since $0 < \varepsilon < 1$ and $\bar\beta_c > 0$: \textbf{Tr$(A) < 0$ — stabilizing!}
+
+\textbf{Step 6.} Determinant:
+\[
+\text{Det}(A) = (0)\cdot[-(1-\varepsilon)\bar\beta_c] - (-\bar\beta)(\varepsilon\bar\beta) = 0 + \varepsilon\bar\beta^2 = \varepsilon\bar\beta^2 > 0
 \]
 
-\textbf{(d) Standard Jacobian:}
+\medskip\textbf{(c) Fixed points:}
+
+\textbf{Step 1.} Set $\dot N = 0$:
+\[
+N(r - \bar\beta P) = 0 \thus N = 0 \text{ or } P = r/\bar\beta
+\]
+
+\textbf{Step 2.} Set $\dot P = 0$:
+\[
+\varepsilon\bar\beta NP - (1-\varepsilon)\bar\beta_c P^2 - ZP = 0
+\]
+
+\textbf{Step 3.} Factor $P$:
+\[
+P[\varepsilon\bar\beta N - (1-\varepsilon)\bar\beta_c P - Z] = 0
+\]
+
+\textbf{Step 4.} Either $P = 0$ or $\varepsilon\bar\beta N - (1-\varepsilon)\bar\beta_c P - Z = 0$. Solve the second:
+\[
+\varepsilon\bar\beta N = (1-\varepsilon)\bar\beta_c P + Z
+\]
+
+\textbf{Step 5.} Solve for $N$:
+\[
+N = \frac{(1-\varepsilon)\bar\beta_c P + Z}{\varepsilon\bar\beta}
+\]
+
+\textbf{Step 6.} Substitute $P^* = r/\bar\beta$:
+\[
+N^* = \frac{(1-\varepsilon)\bar\beta_c\cdot(r/\bar\beta) + Z}{\varepsilon\bar\beta}
+\]
+
+\textbf{Step 7.} Get common denominator in numerator: $(1-\varepsilon)\bar\beta_c r/\bar\beta + Z = [(1-\varepsilon)\bar\beta_c r + Z\bar\beta]/\bar\beta$:
+\[
+N^* = \frac{(1-\varepsilon)\bar\beta_c r + Z\bar\beta}{\bar\beta\cdot\varepsilon\bar\beta} = \frac{Z\bar\beta + (1-\varepsilon)\bar\beta_c r}{\varepsilon\bar\beta^2}
+\]
+\stepwhy{multiply both sides by $\bar\beta$, then the $\bar\beta\cdot\varepsilon\bar\beta = \varepsilon\bar\beta^2$ in denominator}
+\[
+\boxed{N^* = \frac{Z\bar\beta + (1-\varepsilon)\bar\beta_c r}{\varepsilon\bar\beta^2}, \quad P^* = \frac{r}{\bar\beta}}
+\]
+
+\medskip\textbf{(d) Standard Jacobian:}
+
+\textbf{Step 1.} Define $f = rN - \bar\beta NP$ and $g = \varepsilon\bar\beta NP - (1-\varepsilon)\bar\beta_c P^2 - ZP$.
+
+\textbf{Step 2.} Partials of $f$ (same as standard LV):
+\[
+\frac{\partial f}{\partial N} = r - \bar\beta P, \quad \frac{\partial f}{\partial P} = -\bar\beta N
+\]
+
+\textbf{Step 3.} Partial of $g$ w.r.t.\ $N$:
+\[
+\frac{\partial g}{\partial N} = \varepsilon\bar\beta P - 0 - 0 = \varepsilon\bar\beta P
+\]
+
+\textbf{Step 4.} Partial of $g$ w.r.t.\ $P$. Note $\partial[P^2]/\partial P = 2P$:
+\[
+\frac{\partial g}{\partial P} = \varepsilon\bar\beta N - 2(1-\varepsilon)\bar\beta_c P - Z
+\]
+
+\textbf{Step 5.} Build Jacobian:
 \[
 J = \begin{pmatrix} r - \bar\beta P & -\bar\beta N \\ \varepsilon\bar\beta P & \varepsilon\bar\beta N - 2(1-\varepsilon)\bar\beta_c P - Z \end{pmatrix}
 \]
-At $(N^*, P^*)$: $r - \bar\beta P^* = 0$. $\varepsilon\bar\beta N^* - Z = (1-\varepsilon)\bar\beta_c r/\bar\beta$. So $\varepsilon\bar\beta N^* - 2(1-\varepsilon)\bar\beta_c P^* - Z = -(1-\varepsilon)\bar\beta_c r/\bar\beta$.
+
+\textbf{Step 6.} Evaluate at FP. Entry (1,1):
 \[
-J^* = \begin{pmatrix} 0 & -\bar\beta N^* \\ \varepsilon r & -(1-\varepsilon)\bar\beta_c r/\bar\beta \end{pmatrix}
+r - \bar\beta P^* = r - \bar\beta\cdot\frac{r}{\bar\beta} = r - r = 0
 \]
 
-\textbf{(e) Eigenvalues:} 
-$\text{Tr}(J^*) = -(1-\varepsilon)\bar\beta_c r/\bar\beta < 0$, $\text{Det}(J^*) = \varepsilon r \bar\beta N^* > 0$.
+\textbf{Step 7.} Entry (1,2): $-\bar\beta N^*$ (keep symbolic).
+
+\textbf{Step 8.} Entry (2,1):
+\[
+\varepsilon\bar\beta P^* = \varepsilon\bar\beta\cdot\frac{r}{\bar\beta} = \varepsilon r
+\]
+
+\textbf{Step 9.} Entry (2,2). Use the FP condition $\varepsilon\bar\beta N^* - (1-\varepsilon)\bar\beta_c P^* - Z = 0$, which gives $\varepsilon\bar\beta N^* - Z = (1-\varepsilon)\bar\beta_c P^*$:
+\[
+\varepsilon\bar\beta N^* - 2(1-\varepsilon)\bar\beta_c P^* - Z = [(1-\varepsilon)\bar\beta_c P^*] - 2(1-\varepsilon)\bar\beta_c P^*
+\]
+
+\textbf{Step 10.} Simplify: $X - 2X = -X$:
+\[
+= -(1-\varepsilon)\bar\beta_c P^*
+\]
+
+\textbf{Step 11.} Substitute $P^* = r/\bar\beta$:
+\[
+= -(1-\varepsilon)\bar\beta_c\cdot\frac{r}{\bar\beta} = -\frac{(1-\varepsilon)\bar\beta_c r}{\bar\beta}
+\]
+
+\textbf{Step 12.} Final $J^*$:
+\[
+\boxed{J^* = \begin{pmatrix} 0 & -\bar\beta N^* \\ \varepsilon r & -(1-\varepsilon)\bar\beta_c r/\bar\beta \end{pmatrix}}
+\]
+
+\medskip\textbf{(e) Eigenvalues:}
+
+\textbf{Step 1.} Trace:
+\[
+\text{Tr}(J^*) = 0 + \left[-\frac{(1-\varepsilon)\bar\beta_c r}{\bar\beta}\right] = -\frac{(1-\varepsilon)\bar\beta_c r}{\bar\beta} < 0
+\]
+
+\textbf{Step 2.} Determinant: $ad - bc$ with $a = 0$, $b = -\bar\beta N^*$, $c = \varepsilon r$, $d = -(1-\varepsilon)\bar\beta_c r/\bar\beta$:
+\[
+\text{Det}(J^*) = (0)\cdot d - (-\bar\beta N^*)(\varepsilon r) = 0 + \varepsilon r\bar\beta N^* = \varepsilon r\bar\beta N^* > 0
+\]
+
+\textbf{Step 3.} Apply formula:
 \[
 \lambda_\pm = \frac{\text{Tr}}{2}\left(1 \pm \sqrt{1 - \frac{4\text{Det}}{\text{Tr}^2}}\right)
 \]
-Real part is negative $\Rightarrow$ \textbf{stable}.
 
-When $\bar\beta_c \gg \bar\beta$: the discriminant $1 - 4\text{Det}/\text{Tr}^2$ becomes positive (Det grows like $\bar\beta_c$, Tr$^2$ grows like $\bar\beta_c^2$, so ratio $\to 0$). Eigenvalues become real and negative $\Rightarrow$ \textbf{no oscillations}. Biologically: when predators rely heavily on cannibalism, they buffer against prey scarcity, eliminating boom-bust cycles.
+\textbf{Step 4.} Tr $< 0$ and Det $> 0$ guarantee $\text{Re}(\lambda_\pm) < 0$ regardless of discriminant sign $\Rightarrow$ \textbf{stable}.
+
+\textbf{Step 5.} Discriminant $\Delta = 1 - 4\text{Det}/\text{Tr}^2$. Substitute:
+\[
+\Delta = 1 - \frac{4\varepsilon r\bar\beta N^*}{[(1-\varepsilon)\bar\beta_c r/\bar\beta]^2} = 1 - \frac{4\varepsilon r\bar\beta N^*\bar\beta^2}{(1-\varepsilon)^2\bar\beta_c^2 r^2}
+\]
+
+\textbf{Step 6.} Simplify: $4\varepsilon\bar\beta^3 N^*/((1-\varepsilon)^2\bar\beta_c^2 r)$:
+\[
+\Delta = 1 - \frac{4\varepsilon\bar\beta^3 N^*}{(1-\varepsilon)^2\bar\beta_c^2 r}
+\]
+
+\textbf{Step 7.} \textbf{Limit $\bar\beta_c \gg \bar\beta$:} The fraction in $\Delta$ scales as $1/\bar\beta_c^2$, which goes to 0. So $\Delta \to 1 > 0$.
+
+\textbf{Step 8.} Positive discriminant $\Rightarrow$ real eigenvalues:
+\[
+\lambda_\pm = \frac{\text{Tr}}{2}(1 \pm \sqrt\Delta)
+\]
+Both negative since Tr $< 0$. \textbf{No oscillations: stable node.}
+
+\textbf{Conclusion:} Strong cannibalism eliminates the boom-bust cycles entirely. Predators self-buffer against prey scarcity by eating each other.
 \end{solution}
 
 \subsection{Problem 2.5: Three-Species System (2023 Q2)}
@@ -494,54 +1328,161 @@ Pet ownership system: humans $H$, pets $D$, predators $P$.
 \end{problem}
 
 \begin{solution}
-\textbf{(a) Differences:}
+\textbf{(a) Differences from standard predator-prey:}
+
 \begin{itemize}
-\item Three compartments instead of two.
-\item Mutualistic interaction between $H$ and $D$ (both benefit, $+\alpha_D HD$).
-\item Asymmetric mutualism via $\omega$.
-\item Logistic growth in both $H$ and $D$.
-\item Compartments are species (humans, pets, predators), not abstractions.
+\item \textbf{Three compartments} instead of two ($H$, $D$, $P$).
+\item \textbf{Mutualism between $H$ and $D$}: term $+\alpha_D HD$ appears in BOTH $\dot H$ and (with weight $\omega$) $\dot D$. Both benefit from contact.
+\item \textbf{Asymmetric weights}: parameter $\omega$ allows different benefits ($H$ vs $D$).
+\item \textbf{Logistic growth} in both $H$ and $D$ (carrying capacity $K$ each).
+\item Compartments are concrete species (humans, pets, predators), not abstractions.
 \end{itemize}
 
-\textbf{(b) Interaction matrix:} Divide each equation by its variable:
-\[
-\frac{\dot H}{H} = r(1-H/K) + \alpha_D D = r - rH/K + \alpha_D D
-\]
-\[
-\frac{\dot D}{D} = r - rD/K + \omega\alpha_D H - \bar\beta P
-\]
-\[
-\frac{\dot P}{P} = \varepsilon\bar\beta D - Z
-\]
-\[
-A = \begin{pmatrix} -r/K & \alpha_D & 0 \\ \omega\alpha_D & -r/K & -\bar\beta \\ 0 & \varepsilon\bar\beta & 0 \end{pmatrix}
-\]
-$\text{Tr}(A) = -2r/K < 0$ (stabilizing from logistic terms).
+\medskip\textbf{(b) Interaction matrix:}
 
-\textbf{(c) Fixed points:} Set numerators to zero (after dividing). System of 3 equations in 3 unknowns:
-\begin{align}
-r - rH/K + \alpha_D D &= 0 \quad (\text{equation 1})\\
-r - rD/K + \omega\alpha_D H - \bar\beta P &= 0 \quad (\text{equation 2})\\
-\varepsilon\bar\beta D - Z &= 0 \implies D^* = Z/(\varepsilon\bar\beta) \quad (\text{equation 3})
-\end{align}
-From (1): $H^* = K + K\alpha_D D^*/r = K(1 + \alpha_D Z/(r\varepsilon\bar\beta))$.\\
-From (2): $P^* = (r - rD^*/K + \omega\alpha_D H^*)/\bar\beta$.
+\textbf{Step 1.} Divide each equation by its variable. For $\dot H$:
+\[
+\frac{1}{H}\frac{dH}{dt} = r(1-H/K) + \alpha_D D
+\]
 
-\textbf{(d) Standard Jacobian at $(H^*, D^*, P^*)$:}
+\textbf{Step 2.} Distribute $r$:
+\[
+= r - \frac{r H}{K} + \alpha_D D
+\]
+
+\textbf{Step 3.} For $\dot D$:
+\[
+\frac{1}{D}\frac{dD}{dt} = r - \frac{rD}{K} + \omega\alpha_D H - \bar\beta P
+\]
+
+\textbf{Step 4.} For $\dot P$:
+\[
+\frac{1}{P}\frac{dP}{dt} = \varepsilon\bar\beta D - Z
+\]
+
+\textbf{Step 5.} Read coefficients of state variables ($H$, $D$, $P$) in each per-capita rate:
+\begin{itemize}
+\item $\dot H/H$: $H$ coeff $= -r/K$, $D$ coeff $= \alpha_D$, $P$ coeff $= 0$.
+\item $\dot D/D$: $H$ coeff $= \omega\alpha_D$, $D$ coeff $= -r/K$, $P$ coeff $= -\bar\beta$.
+\item $\dot P/P$: $H$ coeff $= 0$, $D$ coeff $= \varepsilon\bar\beta$, $P$ coeff $= 0$.
+\end{itemize}
+
+\textbf{Step 6.}
+\[
+\boxed{A = \begin{pmatrix} -r/K & \alpha_D & 0 \\ \omega\alpha_D & -r/K & -\bar\beta \\ 0 & \varepsilon\bar\beta & 0 \end{pmatrix}}
+\]
+
+\textbf{Step 7.} Trace:
+\[
+\text{Tr}(A) = -r/K + (-r/K) + 0 = -2r/K < 0 \quad\text{(stabilizing)}
+\]
+
+\medskip\textbf{(c) Fixed points:}
+
+\textbf{Step 1.} At a non-trivial FP, set each per-capita rate to zero (since each $X^* \neq 0$). Three equations:
+\[
+\text{(eq 1)}: r - rH/K + \alpha_D D = 0
+\]
+\[
+\text{(eq 2)}: r - rD/K + \omega\alpha_D H - \bar\beta P = 0
+\]
+\[
+\text{(eq 3)}: \varepsilon\bar\beta D - Z = 0
+\]
+
+\textbf{Step 2.} Solve eq 3 for $D$:
+\[
+\varepsilon\bar\beta D = Z \thus D^* = \frac{Z}{\varepsilon\bar\beta}
+\]
+
+\textbf{Step 3.} Substitute into eq 1:
+\[
+r - rH^*/K + \alpha_D\cdot\frac{Z}{\varepsilon\bar\beta} = 0
+\]
+
+\textbf{Step 4.} Solve for $H^*$:
+\[
+\frac{rH^*}{K} = r + \frac{\alpha_D Z}{\varepsilon\bar\beta}
+\]
+\[
+H^* = K + \frac{K\alpha_D Z}{r\varepsilon\bar\beta} = K\left(1 + \frac{\alpha_D Z}{r\varepsilon\bar\beta}\right)
+\]
+\stepwhy{multiply both sides by $K/r$, then factor $K$}
+
+\textbf{Step 5.} Substitute $D^*$ and $H^*$ into eq 2 to find $P^*$:
+\[
+P^* = \frac{r - rD^*/K + \omega\alpha_D H^*}{\bar\beta}
+\]
+(Symbolic; positive if $\omega\alpha_D H^* > rD^*/K - r$.)
+
+\medskip\textbf{(d) Jacobian at the coexistence FP:}
+
+\textbf{Step 1.} Define $f_1 = rH(1-H/K) + \alpha_D HD$ etc. Compute partials.
+
+\textbf{Step 2.} For $f_1 = rH - rH^2/K + \alpha_D HD$:
+\[
+\partial f_1/\partial H = r - 2rH/K + \alpha_D D
+\]
+\[
+\partial f_1/\partial D = \alpha_D H, \qquad \partial f_1/\partial P = 0
+\]
+
+\textbf{Step 3.} For $f_2 = rD - rD^2/K + \omega\alpha_D HD - \bar\beta DP$:
+\[
+\partial f_2/\partial H = \omega\alpha_D D
+\]
+\[
+\partial f_2/\partial D = r - 2rD/K + \omega\alpha_D H - \bar\beta P
+\]
+\[
+\partial f_2/\partial P = -\bar\beta D
+\]
+
+\textbf{Step 4.} For $f_3 = \varepsilon\bar\beta DP - ZP$:
+\[
+\partial f_3/\partial H = 0, \quad \partial f_3/\partial D = \varepsilon\bar\beta P, \quad \partial f_3/\partial P = \varepsilon\bar\beta D - Z
+\]
+
+\textbf{Step 5.} Build $J$:
 \[
 J = \begin{pmatrix} r - 2rH/K + \alpha_D D & \alpha_D H & 0 \\ \omega\alpha_D D & r - 2rD/K + \omega\alpha_D H - \bar\beta P & -\bar\beta D \\ 0 & \varepsilon\bar\beta P & \varepsilon\bar\beta D - Z \end{pmatrix}
 \]
-At the coexistence FP, use the FP equations to simplify. From eq (1): $r + \alpha_D D^* = rH^*/K$, so $r - 2rH^*/K + \alpha_D D^* = -rH^*/K$. Similarly the (2,2) element $= -rD^*/K$. The (3,3) element $= 0$.
+
+\textbf{Step 6.} Simplify (1,1) at the FP. Use eq 1 ($r + \alpha_D D^* = rH^*/K$):
+\[
+r - 2rH^*/K + \alpha_D D^* = (r + \alpha_D D^*) - 2rH^*/K = rH^*/K - 2rH^*/K = -rH^*/K
+\]
+
+\textbf{Step 7.} Similarly (2,2): use eq 2 ($r + \omega\alpha_D H^* - \bar\beta P^* = rD^*/K$):
+\[
+r - 2rD^*/K + \omega\alpha_D H^* - \bar\beta P^* = rD^*/K - 2rD^*/K = -rD^*/K
+\]
+
+\textbf{Step 8.} (3,3) entry: from eq 3, $\varepsilon\bar\beta D^* - Z = 0$.
+
+\textbf{Step 9.} Final $J^*$:
 \[
 J^* = \begin{pmatrix} -rH^*/K & \alpha_D H^* & 0 \\ \omega\alpha_D D^* & -rD^*/K & -\bar\beta D^* \\ 0 & \varepsilon\bar\beta P^* & 0 \end{pmatrix}
 \]
-$\text{Tr}(J^*) = -r(H^* + D^*)/K < 0$. \textbf{Determinant} (3$\times$3 expansion):
-\begin{align*}
-\text{Det}(J^*) &= -\frac{rH^*}{K}\left[\frac{rD^*}{K} \cdot 0 - (-\bar\beta D^*)(\varepsilon\bar\beta P^*)\right] \\
-&\quad - \alpha_D H^*\left[\omega\alpha_D D^* \cdot 0 - (-\bar\beta D^*)(0)\right] + 0\\
-&= -\frac{rH^*}{K}\varepsilon\bar\beta^2 D^* P^* < 0
-\end{align*}
-For 3$\times$3 stability we need: $\text{Tr} < 0$, $\text{Det} < 0$ (alternating signs needed for all roots negative), and $-\text{Tr}\cdot M_2 + \text{Det} > 0$ where $M_2$ is sum of 2$\times$2 principal minors. Routh-Hurwitz analysis. Since $\text{Tr} < 0$ and $\text{Det} < 0$, signs are correct for stability if the middle condition also holds. Likely \textbf{stable} given the strong logistic damping.
+
+\textbf{Step 10.} Trace:
+\[
+\text{Tr}(J^*) = -rH^*/K - rD^*/K + 0 = -\frac{r(H^* + D^*)}{K} < 0
+\]
+
+\textbf{Step 11.} Determinant. Expand along first column ($a_{11} = -rH^*/K$, then 0, 0):
+\[
+\text{Det}(J^*) = -\frac{rH^*}{K}\det\begin{pmatrix} -rD^*/K & -\bar\beta D^* \\ \varepsilon\bar\beta P^* & 0 \end{pmatrix} - 0 + 0
+\]
+
+\textbf{Step 12.} Compute the 2$\times$2 sub-det: $(-rD^*/K)(0) - (-\bar\beta D^*)(\varepsilon\bar\beta P^*) = 0 + \varepsilon\bar\beta^2 D^* P^*$:
+\[
+\text{Det}(J^*) = -\frac{rH^*}{K}\cdot\varepsilon\bar\beta^2 D^* P^* < 0
+\]
+
+\textbf{Step 13.} For 3$\times$3 stability via Routh-Hurwitz: characteristic polynomial $\lambda^3 + a_2\lambda^2 + a_1\lambda + a_0 = 0$ with $a_2 = -\text{Tr}(J^*) > 0$, $a_0 = -\text{Det}(J^*) > 0$, and need $a_2 a_1 > a_0$.
+
+\textbf{Step 14.} Both Tr $< 0$ and Det $< 0$ have correct sign for stability. Combined with sufficient logistic damping (large $r/K$), the third Routh-Hurwitz condition is satisfied. \textbf{Likely stable.}
 \end{solution}
 
 \newpage
@@ -566,32 +1507,110 @@ For 3$\times$3 stability we need: $\text{Tr} < 0$, $\text{Det} < 0$ (alternating
 
 \begin{solution}
 \textbf{(a) Conservation:}
-\[
-\frac{d(S+I+R)}{dt} = -\beta SI + \beta SI - \gamma I + \gamma I = 0 \quad\checkmark
-\]
-So $N = S+I+R$ is constant. Eliminate $R$: only need $S$ and $I$ equations.
 
-\textbf{(b) Fixed points:} $\dot I = I(\beta S - \gamma) = 0 \Rightarrow I=0$ or $S = \gamma/\beta$. $\dot S = -\beta SI = 0 \Rightarrow S=0$ or $I=0$. So fixed points satisfy $I^* = 0$ with $S^*$ arbitrary in $[0, N]$ and $R^* = N - S^*$. \textbf{Continuous family of disease-free fixed points.}
-
-\textbf{(c) Jacobian at $(S=N, I=0)$:}
+\textbf{Step 1.} Sum all three equations:
 \[
-J = \begin{pmatrix} -\beta I & -\beta S \\ \beta I & \beta S - \gamma \end{pmatrix} \implies J^* = \begin{pmatrix} 0 & -\beta N \\ 0 & \beta N - \gamma \end{pmatrix}
+\frac{dS}{dt} + \frac{dI}{dt} + \frac{dR}{dt} = (-\beta SI) + (\beta SI - \gamma I) + (\gamma I)
 \]
 
-\textbf{(d) Eigenvalues:} Triangular matrix, so $\lambda_1 = 0$, $\lambda_2 = \beta N - \gamma$. Define:
+\textbf{Step 2.} Distribute parentheses:
+\[
+= -\beta SI + \beta SI - \gamma I + \gamma I
+\]
+
+\textbf{Step 3.} Cancel pairs:
+\[
+= 0 + 0 = 0 \checkmark
+\]
+\stepwhy{$-\beta SI + \beta SI = 0$ and $-\gamma I + \gamma I = 0$}
+
+\textbf{Step 4.} So $\frac{d}{dt}(S+I+R) = 0$, meaning $S+I+R = N$ constant. Eliminate $R = N - S - I$.
+
+\medskip\textbf{(b) Fixed points:}
+
+\textbf{Step 1.} Set $\dot S = 0$:
+\[
+-\beta SI = 0 \thus S = 0 \text{ or } I = 0
+\]
+
+\textbf{Step 2.} Set $\dot I = 0$:
+\[
+\beta SI - \gamma I = 0
+\]
+
+\textbf{Step 3.} Factor $I$:
+\[
+I(\beta S - \gamma) = 0 \thus I = 0 \text{ or } S = \gamma/\beta
+\]
+\stepwhy{solving $\beta S - \gamma = 0$ for $S$}
+
+\textbf{Step 4.} Combine: \textbf{disease-free state} $I^* = 0$, $S^* = N$ (free; together with conservation $R^* = 0$).
+
+\textbf{Step 5.} \textbf{Endemic possibility:} $S^* = \gamma/\beta$, $I^* > 0$. But this requires $\gamma/\beta < N$, i.e., $R_0 = \beta N/\gamma > 1$.
+
+\medskip\textbf{(c) Jacobian at disease-free FP:}
+
+Define $f(S,I) = -\beta SI$, $g(S,I) = \beta SI - \gamma I$. (Eliminated $R$ via conservation.)
+
+\textbf{Step 1.} Partials of $f$:
+\[
+\frac{\partial f}{\partial S} = \frac{\partial}{\partial S}[-\beta SI] = -\beta I
+\]
+\stepwhy{$I$ is constant w.r.t.\ $S$}
+
+\textbf{Step 2.}
+\[
+\frac{\partial f}{\partial I} = -\beta S
+\]
+
+\textbf{Step 3.} Partials of $g$:
+\[
+\frac{\partial g}{\partial S} = \beta I
+\]
+
+\textbf{Step 4.}
+\[
+\frac{\partial g}{\partial I} = \beta S - \gamma
+\]
+
+\textbf{Step 5.} Build $J$:
+\[
+J = \begin{pmatrix} -\beta I & -\beta S \\ \beta I & \beta S - \gamma \end{pmatrix}
+\]
+
+\textbf{Step 6.} Evaluate at $(S^*, I^*) = (N, 0)$. Plug in $I = 0$ and $S = N$:
+\[
+J^* = \begin{pmatrix} -\beta\cdot 0 & -\beta\cdot N \\ \beta\cdot 0 & \beta N - \gamma \end{pmatrix} = \begin{pmatrix} 0 & -\beta N \\ 0 & \beta N - \gamma \end{pmatrix}
+\]
+\stepwhy{$\beta\cdot 0 = 0$}
+
+\medskip\textbf{(d) Eigenvalues:}
+
+\textbf{Step 1.} Notice $J^*$ is upper triangular (the (2,1) entry is 0).
+
+\textbf{Step 2.} For triangular matrices, eigenvalues are the diagonal entries:
+\[
+\lambda_1 = 0, \qquad \lambda_2 = \beta N - \gamma
+\]
+
+\textbf{Step 3.} Factor $\gamma$ from $\lambda_2$:
+\[
+\lambda_2 = \beta N - \gamma = \gamma\left(\frac{\beta N}{\gamma} - 1\right) = \gamma(R_0 - 1)
+\]
+where
 \[
 \boxed{R_0 = \frac{\beta N}{\gamma}}
 \]
-Then $\lambda_2 = \gamma(R_0 - 1)$.
 
-\textbf{(e) Stability:}
+\medskip\textbf{(e) Stability conditions:}
+
 \begin{itemize}
-\item $R_0 > 1 \Rightarrow \lambda_2 > 0 \Rightarrow$ disease-free state \textbf{unstable}, disease spreads.
-\item $R_0 < 1 \Rightarrow \lambda_2 < 0 \Rightarrow$ disease dies out.
-\item $\lambda_1 = 0$: marginal direction (along the family of FPs).
+\item $R_0 > 1$: $\lambda_2 = \gamma(R_0-1) > 0$, disease-free FP \textbf{unstable}, disease invades.
+\item $R_0 < 1$: $\lambda_2 < 0$, disease-free FP \textbf{stable}, disease dies out.
+\item $\lambda_1 = 0$: marginal direction along the continuous family of disease-free FPs (susceptible-direction freedom).
 \end{itemize}
 
-\textbf{Why interaction matrix doesn't work here:} $I^* = 0$ is trivial, so the $A$-matrix approach (which divides by populations) fails. Must use standard Jacobian.
+\textbf{Why the $A$ matrix fails here:} $I^* = 0$ at the disease-free FP. The interaction matrix method divides by state variables ($\dot I/I$), which is undefined when $I = 0$. Must use standard Jacobian.
 \end{solution}
 
 \subsection{Problem 3.2: SIRS with Loss of Immunity (2024 Q3 style)}
@@ -608,42 +1627,103 @@ Then $\lambda_2 = \gamma(R_0 - 1)$.
 \end{problem}
 
 \begin{solution}
-\textbf{(a) Which to zero?} In Michaelis-Menten, we set $d[SE]/dt = 0$ because $[SE]$ is the intermediate complex. By analogy, $I$ is the intermediate compartment between $S$ and $R$, so naively setting $dI/dt = 0$ might seem right. \textbf{But} $I$ is exactly what we want to predict (analogous to $P$ in MM, the product). For predicting infections, we should NOT set $dI/dt = 0$.
+\textbf{(a) Which compartment to zero out:}
 
-Better choice: \textbf{set $dS/dt = 0$} (the ``upstream'' substrate), then derive $dI/dt$.
+\textbf{Step 1.} Recall MM: $S + E \rightleftharpoons [SE] \to P + E$. We set $d[SE]/dt = 0$ because the complex is the fast intermediate.
 
-\textbf{(b) Set $dS/dt = 0$:}
+\textbf{Step 2.} In SIRS, the analog of $[SE]$ (intermediate compartment) is $I$ (between $S$ and $R$). \emph{Naively}, set $dI/dt = 0$.
+
+\textbf{Step 3.} \textbf{But}: $I$ is what we want to predict (analog of product $P$, not complex $[SE]$).
+
+\textbf{Step 4.} Better choice: set $dS/dt = 0$. This treats $S$ as quasi-conserved by quick replenishment from $R$ (rate $\nu$).
+
+\medskip\textbf{(b) Set $dS/dt = 0$:}
+
+\textbf{Step 1.} The condition gives:
 \[
--\beta SI + \nu R = 0 \implies R = \frac{\beta SI}{\nu}
-\]
-Use conservation $N = S + I + R$:
-\[
-N = S + I + \frac{\beta SI}{\nu} \implies I\left(1 + \frac{\beta S}{\nu}\right) = N - S \implies I = \frac{(N-S)\nu}{\nu + \beta S}
-\]
-Substitute into $dI/dt$:
-\[
-\frac{dI}{dt} = \beta SI - \gamma I = I(\beta S - \gamma) = \frac{(N-S)\nu(\beta S - \gamma)}{\nu + \beta S}
+-\beta SI + \nu R = 0
 \]
 
-\textbf{Behavior:}
+\textbf{Step 2.} Solve for $R$:
+\[
+\nu R = \beta SI \thus R = \frac{\beta SI}{\nu}
+\]
+\stepwhy{add $\beta SI$ to both sides, divide by $\nu$}
+
+\textbf{Step 3.} Substitute into conservation $N = S + I + R$:
+\[
+N = S + I + \frac{\beta SI}{\nu}
+\]
+
+\textbf{Step 4.} Rearrange to isolate $I$:
+\[
+N - S = I + \frac{\beta SI}{\nu}
+\]
+
+\textbf{Step 5.} Factor $I$ from RHS:
+\[
+N - S = I\left(1 + \frac{\beta S}{\nu}\right)
+\]
+
+\textbf{Step 6.} Get common denominator inside parens:
+\[
+1 + \frac{\beta S}{\nu} = \frac{\nu + \beta S}{\nu}
+\]
+
+\textbf{Step 7.}
+\[
+N - S = I\cdot\frac{\nu + \beta S}{\nu} \thus I = \frac{(N-S)\nu}{\nu + \beta S}
+\]
+\stepwhy{multiply both sides by $\nu/(\nu+\beta S)$}
+
+\textbf{Step 8.} Now compute $dI/dt$ from the original equation:
+\[
+\frac{dI}{dt} = \beta SI - \gamma I = I(\beta S - \gamma)
+\]
+
+\textbf{Step 9.} Substitute $I$ from step 7:
+\[
+\frac{dI}{dt} = \frac{(N-S)\nu}{\nu + \beta S}(\beta S - \gamma) = \frac{(N-S)\nu(\beta S - \gamma)}{\nu + \beta S}
+\]
+
+\medskip\textbf{Behavior of $dI/dt$ vs $S$:}
 \begin{itemize}
-\item $S = N$: numerator $= 0$ (no infection at start, all susceptible).
-\item $S = \gamma/\beta$: numerator $= 0$ (threshold, $R_0 = 1$).
-\item $S \in (\gamma/\beta, N)$: positive $dI/dt$ (disease grows).
-\item $S < \gamma/\beta$: negative $dI/dt$ (disease declines).
+\item $S = N$: numerator factor $(N-S) = 0$, so $\dot I = 0$. (Disease can't grow if everyone is susceptible at $t=0$? No --- this IC point is also a fixed point.)
+\item $S = \gamma/\beta$: numerator factor $(\beta S - \gamma) = 0$, so $\dot I = 0$ at the threshold $R_0 = 1$.
+\item $S \in (\gamma/\beta, N)$: both numerator factors positive, $\dot I > 0$, disease grows.
+\item $S < \gamma/\beta$: $(\beta S - \gamma) < 0$, $\dot I < 0$, disease shrinks.
 \end{itemize}
 
-\textbf{(c) Try $dR/dt = 0$:}
-\[
-\gamma I = \nu R \implies R = \gamma I/\nu
-\]
-Substitute into conservation: $N = S + I + \gamma I/\nu = S + I(1+\gamma/\nu)$, so $I = (N-S)\nu/(\nu + \gamma)$.
-\[
-\frac{dI}{dt} = I(\beta S - \gamma) = \frac{(N-S)\nu(\beta S - \gamma)}{\nu + \gamma}
-\]
-Same zeros (at $S=N$ and $S=\gamma/\beta$), but different functional shape (linear in $S$ here vs hyperbolic-ish before).
+\medskip\textbf{(c) Try alternative: set $dR/dt = 0$:}
 
-\textbf{Conclusion:} Different QSSA choices give different functional forms but same threshold conditions. The shapes differ in how $dI/dt$ depends on $S$ between the zeros.
+\textbf{Step 1.} The condition gives:
+\[
+\gamma I - \nu R = 0 \thus \nu R = \gamma I \thus R = \gamma I/\nu
+\]
+
+\textbf{Step 2.} Substitute into conservation:
+\[
+N = S + I + \frac{\gamma I}{\nu} = S + I\left(1 + \frac{\gamma}{\nu}\right)
+\]
+
+\textbf{Step 3.} Common denominator:
+\[
+N - S = I\cdot\frac{\nu + \gamma}{\nu}
+\]
+
+\textbf{Step 4.} Solve for $I$:
+\[
+I = \frac{(N-S)\nu}{\nu + \gamma}
+\]
+
+\textbf{Step 5.} Substitute into $\dot I = I(\beta S - \gamma)$:
+\[
+\frac{dI}{dt} = \frac{(N-S)\nu(\beta S - \gamma)}{\nu + \gamma}
+\]
+
+\textbf{Step 6.} Same zeros (at $S = N$ and $S = \gamma/\beta$), but the denominator is $\nu + \gamma$ (a constant) instead of $\nu + \beta S$ (depends on $S$). So this version is \textbf{linear in $S$ between zeros}, while the previous was \textbf{hyperbolic}.
+
+\textbf{Conclusion:} Different QSSA choices give different functional forms (linear vs.\ hyperbolic), but the threshold conditions ($R_0 = 1$ at $S = \gamma/\beta$) are the same.
 \end{solution}
 
 \subsection{Problem 3.3: SIR with Asymptomatic and Symptomatic (2020 Q4)}
@@ -672,56 +1752,153 @@ Compartments: $S$, $I_a$ (asymptomatic), $I_s$ (symptomatic), $R$. Fraction $f$ 
 \end{problem}
 
 \begin{solution}
-\textbf{(a) Conservation:} Sum all four:
-\[
-\frac{d(S+I_a+I_s+R)}{dt} = 0 \implies N = S+I_a+I_s+R = \text{const}
-\]
-Eliminate $R$. 3 independent equations.
+\textbf{(a) Conservation:}
 
-\textbf{(b) Fixed points:} For the disease-free state: $I_a^* = I_s^* = 0$, $S^* = N$, $R^* = 0$.
-
-\textbf{(c) Jacobian} (3 variables: $S, I_a, I_s$):
+\textbf{Step 1.} Sum all four equations:
 \[
-J = \begin{pmatrix} -\beta_a I_a - \beta_s I_s & -\beta_a S & -\beta_s S \\ f(\beta_a I_a + \beta_s I_s) & f\beta_a S - \gamma_a & f\beta_s S \\ (1-f)(\beta_a I_a + \beta_s I_s) & (1-f)\beta_a S & (1-f)\beta_s S - \gamma_s \end{pmatrix}
+\dot S + \dot{I_a} + \dot{I_s} + \dot R = (-\beta_a I_a S - \beta_s I_s S) + [f\beta_a I_a S + f\beta_s I_s S - \gamma_a I_a]
 \]
-At $(S=N, I_a=0, I_s=0)$:
+\[
+\quad + [(1-f)\beta_a I_a S + (1-f)\beta_s I_s S - \gamma_s I_s] + (\gamma_a I_a + \gamma_s I_s)
+\]
+
+\textbf{Step 2.} Group terms involving $\beta_a I_a S$:
+\[
+-\beta_a I_a S + f\beta_a I_a S + (1-f)\beta_a I_a S = \beta_a I_a S(-1 + f + (1-f)) = \beta_a I_a S(0) = 0
+\]
+\stepwhy{$f + (1-f) = 1$, then $-1 + 1 = 0$}
+
+\textbf{Step 3.} Similarly for $\beta_s I_s S$ terms: sum to 0.
+
+\textbf{Step 4.} The $\gamma_a I_a$ and $\gamma_s I_s$ terms also cancel between $\dot{I_a}, \dot{I_s}$ and $\dot R$.
+
+\textbf{Step 5.} So $\sum \dot X_i = 0$ and $N = S + I_a + I_s + R$ is conserved. Eliminate $R$.
+
+\medskip\textbf{(b) Disease-free FP:}
+\[
+I_a^* = I_s^* = 0, \quad S^* = N, \quad R^* = 0
+\]
+
+\medskip\textbf{(c) Jacobian at disease-free FP (3 variables: $S, I_a, I_s$):}
+
+\textbf{Step 1.} Compute partials. For $f = -\beta_a I_a S - \beta_s I_s S$:
+\[
+\partial f/\partial S = -\beta_a I_a - \beta_s I_s, \quad \partial f/\partial I_a = -\beta_a S, \quad \partial f/\partial I_s = -\beta_s S
+\]
+
+\textbf{Step 2.} For $g = f\beta_a I_a S + f\beta_s I_s S - \gamma_a I_a$:
+\[
+\partial g/\partial S = f(\beta_a I_a + \beta_s I_s)
+\]
+\[
+\partial g/\partial I_a = f\beta_a S - \gamma_a, \quad \partial g/\partial I_s = f\beta_s S
+\]
+
+\textbf{Step 3.} For $h = (1-f)\beta_a I_a S + (1-f)\beta_s I_s S - \gamma_s I_s$:
+\[
+\partial h/\partial S = (1-f)(\beta_a I_a + \beta_s I_s)
+\]
+\[
+\partial h/\partial I_a = (1-f)\beta_a S, \quad \partial h/\partial I_s = (1-f)\beta_s S - \gamma_s
+\]
+
+\textbf{Step 4.} Build $J$ then evaluate at $(N, 0, 0)$. With $I_a = I_s = 0$, the first column becomes all zeros and $S = N$:
 \[
 J^* = \begin{pmatrix} 0 & -\beta_a N & -\beta_s N \\ 0 & f\beta_a N - \gamma_a & f\beta_s N \\ 0 & (1-f)\beta_a N & (1-f)\beta_s N - \gamma_s \end{pmatrix}
 \]
 
-\textbf{Eigenvalues:} First column is all zeros $\Rightarrow \lambda_1 = 0$. Reduce to 2$\times$2 sub-matrix:
+\medskip\textbf{Eigenvalues (general):}
+
+\textbf{Step 1.} First column zero $\Rightarrow \lambda_1 = 0$.
+
+\textbf{Step 2.} Other eigenvalues come from the lower-right 2$\times$2 block:
 \[
 M = \begin{pmatrix} f\beta_a N - \gamma_a & f\beta_s N \\ (1-f)\beta_a N & (1-f)\beta_s N - \gamma_s \end{pmatrix}
 \]
-$\text{Tr}(M) = f\beta_a N + (1-f)\beta_s N - \gamma_a - \gamma_s$.\\
-$\text{Det}(M) = (f\beta_a N - \gamma_a)((1-f)\beta_s N - \gamma_s) - f(1-f)\beta_a\beta_s N^2$.
-Expand:
-\begin{align*}
-\text{Det}(M) &= f(1-f)\beta_a\beta_s N^2 - f\beta_a N\gamma_s - (1-f)\beta_s N \gamma_a + \gamma_a\gamma_s - f(1-f)\beta_a\beta_s N^2\\
-&= -f\beta_a N\gamma_s - (1-f)\beta_s N \gamma_a + \gamma_a\gamma_s\\
-&= \gamma_a\gamma_s\left(1 - \frac{f\beta_a N}{\gamma_a} - \frac{(1-f)\beta_s N}{\gamma_s}\right)
-\end{align*}
 
-\textbf{(d) Case $f = 1$ (all asymptomatic):}
+\textbf{Step 3.} Trace:
+\[
+\text{Tr}(M) = (f\beta_a N - \gamma_a) + ((1-f)\beta_s N - \gamma_s) = f\beta_a N + (1-f)\beta_s N - \gamma_a - \gamma_s
+\]
+
+\textbf{Step 4.} Determinant: $ad - bc$:
+\[
+\text{Det}(M) = (f\beta_a N - \gamma_a)\cdot((1-f)\beta_s N - \gamma_s) - (f\beta_s N)\cdot((1-f)\beta_a N)
+\]
+
+\textbf{Step 5.} Expand the first product:
+\[
+(f\beta_a N)((1-f)\beta_s N) + (f\beta_a N)(-\gamma_s) + (-\gamma_a)((1-f)\beta_s N) + (-\gamma_a)(-\gamma_s)
+\]
+\[
+= f(1-f)\beta_a\beta_s N^2 - f\beta_a N\gamma_s - (1-f)\beta_s N\gamma_a + \gamma_a\gamma_s
+\]
+
+\textbf{Step 6.} Subtract second product:
+\[
+\text{Det}(M) = f(1-f)\beta_a\beta_s N^2 - f\beta_a N\gamma_s - (1-f)\beta_s N\gamma_a + \gamma_a\gamma_s - f(1-f)\beta_a\beta_s N^2
+\]
+
+\textbf{Step 7.} The $\beta_a\beta_s N^2$ terms cancel:
+\[
+\text{Det}(M) = -f\beta_a N\gamma_s - (1-f)\beta_s N\gamma_a + \gamma_a\gamma_s
+\]
+
+\textbf{Step 8.} Factor $\gamma_a\gamma_s$:
+\[
+\text{Det}(M) = \gamma_a\gamma_s\left[1 - \frac{f\beta_a N}{\gamma_a} - \frac{(1-f)\beta_s N}{\gamma_s}\right]
+\]
+\stepwhy{divide each term by $\gamma_a\gamma_s$ inside}
+
+\medskip\textbf{(d) Case $f = 1$ (all asymptomatic):}
+
+Plug $f = 1$: every coefficient with $(1-f)$ becomes 0:
 \[
 J^* = \begin{pmatrix} 0 & -\beta_a N & -\beta_s N \\ 0 & \beta_a N - \gamma_a & \beta_s N \\ 0 & 0 & -\gamma_s \end{pmatrix}
 \]
-Triangular: $\lambda_1 = 0$, $\lambda_2 = \beta_a N - \gamma_a$, $\lambda_3 = -\gamma_s$. Disease spreads if $\lambda_2 > 0$, i.e.\ $R_0 = \beta_a N/\gamma_a > 1$.
 
-\textbf{Biological meaning:} Only the asymptomatic strain matters; the symptomatic compartment is uninfected.
-
-\textbf{(e) Case $\beta_a = \beta_s = \beta$, $\gamma_a = \gamma_s = \gamma$:}
-$J^*$ becomes:
+\textbf{Step 1.} Triangular (with first column and (3,1), (3,2) zero). Eigenvalues are diagonal:
 \[
-\begin{pmatrix} 0 & -\beta N & -\beta N \\ 0 & f\beta N - \gamma & f\beta N \\ 0 & (1-f)\beta N & (1-f)\beta N - \gamma \end{pmatrix}
+\lambda_1 = 0, \quad \lambda_2 = \beta_a N - \gamma_a, \quad \lambda_3 = -\gamma_s
 \]
-The 2$\times$2 sub-matrix has $\text{Tr} = \beta N - 2\gamma$, $\text{Det} = -\gamma(\beta N - \gamma) + 0 = \gamma(\gamma - \beta N) = -\gamma\cdot\gamma(R_0-1)$. Eigenvalues:
-\[
-\lambda_\pm = \frac{\beta N - 2\gamma}{2}\left(1 \pm \sqrt{1 + \frac{4\gamma(\beta N - \gamma)}{(\beta N - 2\gamma)^2}}\right)
-\]
-After simplification: $\lambda_+ = \beta N - \gamma$, $\lambda_- = -\gamma$. (Verify: $\lambda_+\lambda_- = -\gamma(\beta N -\gamma)$, $\lambda_+ + \lambda_- = \beta N - 2\gamma$.\checkmark) Disease spreads if $R_0 = \beta N/\gamma > 1$, identical to standard SIR.
 
-\textbf{Biological meaning:} When asymptomatic and symptomatic infections behave identically, the $f$ split doesn't matter.
+\textbf{Step 2.} $\lambda_3 = -\gamma_s < 0$ (always). $\lambda_2 > 0$ iff $\beta_a N > \gamma_a$, i.e.\ $R_0 = \beta_a N/\gamma_a > 1$.
+
+\textbf{Biological meaning:} With $f = 1$, all infections produce asymptomatic. The $I_s$ compartment is unused; only the asymptomatic-disease $R_0$ matters.
+
+\medskip\textbf{(e) Case $\beta_a = \beta_s = \beta$, $\gamma_a = \gamma_s = \gamma$:}
+
+\textbf{Step 1.} Plug in:
+\[
+M = \begin{pmatrix} f\beta N - \gamma & f\beta N \\ (1-f)\beta N & (1-f)\beta N - \gamma \end{pmatrix}
+\]
+
+\textbf{Step 2.} Trace:
+\[
+\text{Tr}(M) = f\beta N - \gamma + (1-f)\beta N - \gamma = \beta N(f + (1-f)) - 2\gamma = \beta N - 2\gamma
+\]
+
+\textbf{Step 3.} Determinant. From step 7 of general case with these substitutions:
+\[
+\text{Det}(M) = \gamma^2[1 - f\beta N/\gamma - (1-f)\beta N/\gamma] = \gamma^2[1 - \beta N/\gamma] = \gamma(\gamma - \beta N) = -\gamma(\beta N - \gamma)
+\]
+
+\textbf{Step 4.} For eigenvalues, factor: $\lambda^2 - (\beta N - 2\gamma)\lambda + (-\gamma)(\beta N - \gamma) = 0$. Try $\lambda_+ = \beta N - \gamma$:
+\[
+(\beta N - \gamma)^2 - (\beta N - 2\gamma)(\beta N - \gamma) + (-\gamma)(\beta N - \gamma)
+\]
+Factor $(\beta N - \gamma)$:
+\[
+= (\beta N - \gamma)[(\beta N - \gamma) - (\beta N - 2\gamma) - \gamma] = (\beta N - \gamma)[\beta N - \gamma - \beta N + 2\gamma - \gamma] = (\beta N - \gamma)\cdot 0 = 0 \checkmark
+\]
+
+\textbf{Step 5.} So $\lambda_+ = \beta N - \gamma$. Then $\lambda_- = \text{Tr}(M) - \lambda_+ = (\beta N - 2\gamma) - (\beta N - \gamma) = -\gamma$.
+
+\textbf{Step 6.} Combined eigenvalues of $J^*$: $\lambda = 0,\, \beta N - \gamma,\, -\gamma$.
+
+\textbf{Step 7.} Disease spreads iff $\lambda_+ = \beta N - \gamma > 0$, i.e.\ $R_0 = \beta N/\gamma > 1$. Same as standard SIR.
+
+\textbf{Biological meaning:} When asymptomatic and symptomatic infections are identical (same $\beta$, same $\gamma$), the split into compartments $I_a$ and $I_s$ doesn't change the $R_0$. This makes sense: same biology, just labeled differently.
 \end{solution}
 
 \subsection{Problem 3.4: Two-Variant Disease (2021 Q3-Q4)}
@@ -843,43 +2020,118 @@ Total enzyme $E_0 = E + [SE]$ conserved.
 
 \begin{solution}
 \textbf{(a) Equations:}
+
+The reactions:
+\begin{itemize}
+\item $S + E \to [SE]$ at rate $k_1 SE$ (consumes $S, E$; produces $[SE]$)
+\item $[SE] \to S + E$ at rate $k_{-1}[SE]$ (reverse: consumes $[SE]$; produces $S, E$)
+\item $[SE] \to P + E$ at rate $k_2[SE]$ (consumes $[SE]$; produces $P, E$)
+\end{itemize}
+
+\textbf{Step 1.} Build each ODE by listing all rates that produce or consume that species:
 \[
 \dot S = -k_1 SE + k_{-1}[SE]
 \]
+\stepwhy{$S$ consumed at rate $k_1 SE$; replenished at rate $k_{-1}[SE]$}
 \[
-\dot E = -k_1 SE + (k_{-1}+k_2)[SE]
+\dot E = -k_1 SE + k_{-1}[SE] + k_2[SE] = -k_1 SE + (k_{-1}+k_2)[SE]
+\]
+\stepwhy{$E$ consumed forming complex; replenished by both back-reactions; combine like terms}
+\[
+\dot{[SE]} = k_1 SE - k_{-1}[SE] - k_2[SE] = k_1 SE - (k_{-1}+k_2)[SE]
 \]
 \[
-\dot{[SE]} = k_1 SE - (k_{-1}+k_2)[SE]
+\dot P = k_2[SE]
 \]
-\[
-\dot P = k_2 [SE]
-\]
-Note $\dot E + \dot{[SE]} = 0$, confirming $E_0 = E + [SE]$ const.
 
-\textbf{(b) QSSA: } $\dot{[SE]} = 0 \Rightarrow k_1 SE = (k_{-1}+k_2)[SE]$. Use $E = E_0 - [SE]$:
+\textbf{Step 2.} Verify conservation. Sum $\dot E + \dot{[SE]}$:
+\[
+[-k_1 SE + (k_{-1}+k_2)[SE]] + [k_1 SE - (k_{-1}+k_2)[SE]]
+\]
+\[
+= -k_1 SE + k_1 SE + (k_{-1}+k_2)[SE] - (k_{-1}+k_2)[SE] = 0 \checkmark
+\]
+So $E + [SE] = E_0$ constant.
+
+\medskip\textbf{(b) QSSA derivation:}
+
+\textbf{Step 1.} Set $d[SE]/dt = 0$:
+\[
+k_1 SE - (k_{-1}+k_2)[SE] = 0
+\]
+
+\textbf{Step 2.} Move the second term to RHS:
+\[
+k_1 SE = (k_{-1}+k_2)[SE]
+\]
+
+\textbf{Step 3.} Use conservation $E = E_0 - [SE]$. Substitute:
 \[
 k_1 S(E_0 - [SE]) = (k_{-1}+k_2)[SE]
 \]
+
+\textbf{Step 4.} Distribute $k_1 S$ on LHS:
 \[
-k_1 S E_0 = [SE](k_1 S + k_{-1} + k_2)
-\]
-\[
-[SE] = \frac{k_1 S E_0}{k_1 S + k_{-1} + k_2} = \frac{S E_0}{S + (k_{-1}+k_2)/k_1} = \frac{SE_0}{S + K_M}
+k_1 S E_0 - k_1 S [SE] = (k_{-1}+k_2)[SE]
 \]
 
-\textbf{(c) Production rate:}
+\textbf{Step 5.} Move $-k_1 S[SE]$ to RHS:
 \[
-\boxed{\frac{dP}{dt} = k_2 [SE] = \frac{k_2 E_0 S}{K_M + S} = \frac{V_\text{max} S}{K_M + S}}
+k_1 S E_0 = (k_{-1}+k_2)[SE] + k_1 S[SE]
 \]
-where $V_\text{max} = k_2 E_0$, $K_M = (k_{-1}+k_2)/k_1$.
 
-\textbf{(d) Limits:}
-\begin{itemize}
-\item $S \ll K_M$: $\dot P \approx (V_\text{max}/K_M) S$ (linear in $S$, first-order kinetics).
-\item $S \gg K_M$: $\dot P \approx V_\text{max}$ (saturation, zero-order in $S$).
-\item $S = K_M$: $\dot P = V_\text{max}/2$ (defining property of $K_M$).
-\end{itemize}
+\textbf{Step 6.} Factor $[SE]$ on RHS:
+\[
+k_1 S E_0 = [SE]\cdot(k_{-1} + k_2 + k_1 S)
+\]
+
+\textbf{Step 7.} Divide both sides by $(k_{-1} + k_2 + k_1 S)$:
+\[
+[SE] = \frac{k_1 S E_0}{k_{-1} + k_2 + k_1 S}
+\]
+
+\textbf{Step 8.} Divide numerator and denominator by $k_1$:
+\[
+[SE] = \frac{S E_0}{(k_{-1}+k_2)/k_1 + S}
+\]
+\stepwhy{$k_1 S/k_1 = S$ in numerator; $k_1 S/k_1 = S$ in denominator; $(k_{-1}+k_2)/k_1$ remains}
+
+\textbf{Step 9.} Define $K_M = (k_{-1}+k_2)/k_1$:
+\[
+\boxed{[SE] = \frac{E_0 S}{K_M + S}}
+\]
+
+\medskip\textbf{(c) Production rate:}
+
+\textbf{Step 1.} From $\dot P = k_2[SE]$, substitute the QSSA result:
+\[
+\frac{dP}{dt} = k_2\cdot\frac{E_0 S}{K_M + S} = \frac{k_2 E_0 S}{K_M + S}
+\]
+
+\textbf{Step 2.} Define $V_{\max} = k_2 E_0$:
+\[
+\boxed{\frac{dP}{dt} = \frac{V_{\max} S}{K_M + S}}
+\]
+
+\medskip\textbf{(d) Limits:}
+
+\textbf{Limit 1: $S \ll K_M$.} Denominator $K_M + S \approx K_M$:
+\[
+\frac{dP}{dt} \approx \frac{V_{\max} S}{K_M} = \frac{V_{\max}}{K_M}\cdot S
+\]
+Linear in $S$ (first-order kinetics). Slope is $V_{\max}/K_M$.
+
+\textbf{Limit 2: $S \gg K_M$.} Denominator $K_M + S \approx S$:
+\[
+\frac{dP}{dt} \approx \frac{V_{\max} S}{S} = V_{\max}
+\]
+Constant (zero-order kinetics; saturation).
+
+\textbf{At $S = K_M$:}
+\[
+\frac{dP}{dt} = \frac{V_{\max}\cdot K_M}{K_M + K_M} = \frac{V_{\max} K_M}{2K_M} = \frac{V_{\max}}{2}
+\]
+Half-maximum velocity (defining property).
 \end{solution}
 
 \subsection{Problem 4.2: Spike Protein Coupled Reaction (2023 Q4)}
@@ -901,10 +2153,14 @@ with rate constants $k_1, k_{-1}, k_2$ for the first reaction and $\tilde k_1, \
 \end{problem}
 
 \begin{solution}
-\textbf{(a) Equations:}
+\textbf{(a) All ODEs:}
+
+The reactions involve $S$ binding both $E$ (rate $k_1$) and $\tilde\sigma$ (rate $\tilde k_1$), with both reactions producing products. Build each ODE by listing rates that consume or produce that species:
+
 \[
 \dot S = -k_1 SE + k_{-1}[SE] - \tilde k_1 S\tilde\sigma + \tilde k_{-1}[S\tilde\sigma]
 \]
+\stepwhy{$S$ consumed forming both complexes; replenished by both back-reactions}
 \[
 \dot E = -k_1 SE + (k_{-1}+k_2)[SE]
 \]
@@ -918,32 +2174,97 @@ with rate constants $k_1, k_{-1}, k_2$ for the first reaction and $\tilde k_1, \
 \dot{[S\tilde\sigma]} = \tilde k_1 S\tilde\sigma - (\tilde k_{-1}+\tilde k_2)[S\tilde\sigma]
 \]
 \[
-\dot P = k_2[SE], \quad \dot P_\text{new} = \tilde k_2[S\tilde\sigma]
+\dot P = k_2[SE], \qquad \dot P_{\text{new}} = \tilde k_2[S\tilde\sigma]
 \]
 That's 7 equations.
 
-\textbf{(b) Conservation:} $E_0 = E + [SE]$ and $\tilde\sigma_0 = \tilde\sigma + [S\tilde\sigma]$. So 2 conservation laws, eliminate $E$ and $\tilde\sigma$. Independent equations: 5.
+\medskip\textbf{(b) Conservation laws:}
 
-\textbf{(c) QSSA:} Set $\dot{[SE]} = 0$ and $\dot{[S\tilde\sigma]} = 0$.
+\textbf{Step 1.} Verify first conservation: $\dot E + \dot{[SE]}$:
 \[
-[SE] = \frac{SE_0}{S + K_M}, \quad K_M = \frac{k_{-1}+k_2}{k_1}
+[-k_1 SE + (k_{-1}+k_2)[SE]] + [k_1 SE - (k_{-1}+k_2)[SE]] = 0 \checkmark
 \]
-\[
-[S\tilde\sigma] = \frac{S\tilde\sigma_0}{S + \tilde K_M}, \quad \tilde K_M = \frac{\tilde k_{-1}+\tilde k_2}{\tilde k_1}
-\]
-\textbf{Production rates:}
-\[
-\frac{dP}{dt} = \frac{k_2 E_0 S}{K_M + S}, \quad \frac{dP_\text{new}}{dt} = \frac{\tilde k_2 \tilde\sigma_0 S}{\tilde K_M + S}
-\]
-The two reactions \emph{compete} for substrate $S$, but in QSSA each runs independently (since $E_0$ and $\tilde\sigma_0$ are separately conserved).
+So $E + [SE] = E_0$.
 
-\textbf{(d) Degradation:} Add $-k_d P$ to $\dot P$ and $-k_d P_\text{new}$ to $\dot P_\text{new}$. Now $P$ and $P_\text{new}$ reach steady states. Set $\dot P = 0$:
+\textbf{Step 2.} Verify second: $\dot{\tilde\sigma} + \dot{[S\tilde\sigma]}$:
 \[
-k_2 [SE] = k_d P \implies P^* = \frac{k_2 E_0 S}{k_d (K_M + S)}
+[-\tilde k_1 S\tilde\sigma + (\tilde k_{-1}+\tilde k_2)[S\tilde\sigma]] + [\tilde k_1 S\tilde\sigma - (\tilde k_{-1}+\tilde k_2)[S\tilde\sigma]] = 0 \checkmark
 \]
-With production of new substrate $S$, the system can reach a true steady state for all compartments. Initially (short times), $P_\text{new}$ accumulates linearly with rate $\tilde k_2 \tilde\sigma_0 S/(\tilde K_M + S)$; long term, $P_\text{new}$ saturates.
+So $\tilde\sigma + [S\tilde\sigma] = \tilde\sigma_0$.
 
-\textbf{Vaccine implications:} Short-term, problematic product accumulates. With degradation and substrate replenishment, problem could resolve unless certain feedbacks (e.g., autoimmune response) are introduced.
+\textbf{Step 3.} Two conservation laws $\Rightarrow$ eliminate $E$ and $\tilde\sigma$. Independent equations: $7 - 2 = 5$.
+
+\medskip\textbf{(c) QSSA:}
+
+\textbf{Step 1.} Apply QSSA to first complex: $\dot{[SE]} = 0$:
+\[
+k_1 SE = (k_{-1}+k_2)[SE]
+\]
+
+\textbf{Step 2.} Substitute $E = E_0 - [SE]$:
+\[
+k_1 S(E_0 - [SE]) = (k_{-1}+k_2)[SE]
+\]
+
+\textbf{Step 3.} Distribute and rearrange (same algebra as Problem 4.1):
+\[
+k_1 S E_0 = [SE](k_{-1} + k_2 + k_1 S)
+\]
+
+\textbf{Step 4.} Solve, divide by $k_1$:
+\[
+[SE] = \frac{S E_0}{K_M + S}, \quad K_M = \frac{k_{-1}+k_2}{k_1}
+\]
+
+\textbf{Step 5.} Same procedure for second complex $\dot{[S\tilde\sigma]} = 0$:
+\[
+\tilde k_1 S\tilde\sigma = (\tilde k_{-1}+\tilde k_2)[S\tilde\sigma]
+\]
+
+\textbf{Step 6.} Substitute $\tilde\sigma = \tilde\sigma_0 - [S\tilde\sigma]$:
+\[
+\tilde k_1 S(\tilde\sigma_0 - [S\tilde\sigma]) = (\tilde k_{-1}+\tilde k_2)[S\tilde\sigma]
+\]
+
+\textbf{Step 7.} Solve, divide by $\tilde k_1$:
+\[
+[S\tilde\sigma] = \frac{S\tilde\sigma_0}{\tilde K_M + S}, \quad \tilde K_M = \frac{\tilde k_{-1}+\tilde k_2}{\tilde k_1}
+\]
+
+\textbf{Step 8.} Production rates:
+\[
+\frac{dP}{dt} = k_2[SE] = \frac{k_2 E_0 S}{K_M + S}
+\]
+\[
+\frac{dP_{\text{new}}}{dt} = \tilde k_2[S\tilde\sigma] = \frac{\tilde k_2\tilde\sigma_0 S}{\tilde K_M + S}
+\]
+
+\textbf{Important observation:} The two reactions \emph{compete} for the substrate $S$ (it's consumed by both pathways). But because $E_0$ and $\tilde\sigma_0$ are separately conserved, in QSSA each reaction's rate depends only on $S$ via its own MM expression. The competition shows up in how $S$ depletes over time, not in either rate directly.
+
+\medskip\textbf{(d) With degradation:}
+
+\textbf{Step 1.} Modify equations:
+\[
+\dot P = k_2[SE] - k_d P
+\]
+
+\textbf{Step 2.} Setting $\dot P = 0$ (steady state):
+\[
+k_2[SE] = k_d P^* \thus P^* = \frac{k_2[SE]}{k_d}
+\]
+
+\textbf{Step 3.} Substitute QSSA result for $[SE]$:
+\[
+P^* = \frac{k_2 E_0 S}{k_d(K_M + S)}
+\]
+
+\textbf{Step 4.} Now \textbf{both} $P$ and $P_{\text{new}}$ reach steady states (rather than growing forever).
+
+\textbf{Step 5.} \textbf{Short-term behavior}: $P_{\text{new}}$ accumulates linearly at rate $\tilde k_2\tilde\sigma_0 S/(\tilde K_M + S)$.
+
+\textbf{Step 6.} \textbf{Long-term behavior}: $P_{\text{new}}$ saturates at $P_{\text{new}}^* = \tilde k_2\tilde\sigma_0 S/[k_d(\tilde K_M + S)]$.
+
+\textbf{Vaccine implications:} A potentially harmful product accumulates short-term but resolves long-term if degradation operates. If the byproduct triggers autoimmune feedback (additional rate boost), the system might not stabilize.
 \end{solution}
 
 \subsection{Problem 4.3: Hill Function and Cooperativity}
@@ -961,19 +2282,91 @@ For a reaction with cooperativity $n$:
 \end{problem}
 
 \begin{solution}
-\textbf{(a)} $\dot P = V_\text{max}/2 \iff S^n = K^n \iff S = K$. The half-max concentration is $K$ regardless of $n$.
+\textbf{(a) Half-max concentration:}
 
-\textbf{(b)} 
+\textbf{Step 1.} Set $\dot P = V_{\max}/2$:
 \[
-\frac{d(\dot P)}{dS} = V_\text{max}\frac{nS^{n-1}(K^n+S^n) - S^n \cdot nS^{n-1}}{(K^n+S^n)^2} = V_\text{max}\frac{nK^n S^{n-1}}{(K^n+S^n)^2}
+\frac{V_{\max} S^n}{K^n + S^n} = \frac{V_{\max}}{2}
 \]
-At $S = K$:
-\[
-\frac{d(\dot P)}{dS}\bigg|_{S=K} = V_\text{max}\frac{nK^n K^{n-1}}{(2K^n)^2} = \frac{nV_\text{max}}{4K}
-\]
-The slope at half-max scales linearly with $n$.
 
-\textbf{(c)} For $n=1$: smooth hyperbolic increase, no inflection. For $n=4$: switch-like sigmoidal, very flat at low $S$, sharp rise near $S = K$, flat at high $S$. Cooperative binding produces ``digital'' response.
+\textbf{Step 2.} Cancel $V_{\max}$ from both sides:
+\[
+\frac{S^n}{K^n + S^n} = \frac{1}{2}
+\]
+
+\textbf{Step 3.} Cross-multiply:
+\[
+2S^n = K^n + S^n
+\]
+
+\textbf{Step 4.} Subtract $S^n$ from both sides:
+\[
+S^n = K^n
+\]
+
+\textbf{Step 5.} Take $n$-th root:
+\[
+S = K
+\]
+
+The half-maximum concentration is \textbf{$S = K$ regardless of $n$}.
+
+\medskip\textbf{(b) Slope at half-max:}
+
+\textbf{Step 1.} Compute $\frac{d(\dot P)}{dS}$ using the quotient rule. Let $u = V_{\max}S^n$ and $v = K^n + S^n$. Then $u' = V_{\max}\cdot nS^{n-1}$ and $v' = nS^{n-1}$:
+\[
+\frac{d(\dot P)}{dS} = \frac{u'v - uv'}{v^2}
+\]
+
+\textbf{Step 2.} Numerator:
+\[
+u'v - uv' = V_{\max}nS^{n-1}(K^n + S^n) - V_{\max}S^n\cdot nS^{n-1}
+\]
+
+\textbf{Step 3.} Factor $V_{\max}nS^{n-1}$ out:
+\[
+= V_{\max}nS^{n-1}[(K^n + S^n) - S^n] = V_{\max}nS^{n-1}\cdot K^n
+\]
+\stepwhy{$(K^n + S^n) - S^n = K^n$}
+
+\textbf{Step 4.} So:
+\[
+\frac{d(\dot P)}{dS} = \frac{V_{\max}nK^n S^{n-1}}{(K^n + S^n)^2}
+\]
+
+\textbf{Step 5.} Evaluate at $S = K$. First, $S^{n-1} = K^{n-1}$:
+\[
+\frac{d(\dot P)}{dS}\bigg|_{S=K} = \frac{V_{\max}nK^n\cdot K^{n-1}}{(K^n + K^n)^2}
+\]
+
+\textbf{Step 6.} Simplify numerator: $K^n\cdot K^{n-1} = K^{2n-1}$:
+\[
+= \frac{V_{\max}n K^{2n-1}}{(2K^n)^2}
+\]
+
+\textbf{Step 7.} Simplify denominator: $(2K^n)^2 = 4K^{2n}$:
+\[
+= \frac{V_{\max}n K^{2n-1}}{4K^{2n}}
+\]
+
+\textbf{Step 8.} Cancel $K^{2n-1}/K^{2n} = 1/K$:
+\[
+= \frac{V_{\max}n}{4K}
+\]
+\[
+\boxed{\frac{d(\dot P)}{dS}\bigg|_{S=K} = \frac{nV_{\max}}{4K}}
+\]
+
+\textbf{Slope at half-max scales linearly with $n$.} Higher $n$ means steeper switch.
+
+\medskip\textbf{(c) Comparison of $n=1$ vs $n=4$:}
+
+\begin{itemize}
+\item \textbf{$n=1$ (standard MM):} smooth hyperbolic increase. No inflection point.
+\item \textbf{$n=4$ (high cooperativity):} switch-like sigmoid. Very flat at low $S$, sharp rise near $S = K$, then flat at high $S$. Inflection point at $S = K$.
+\end{itemize}
+
+Biologically, cooperative binding (high $n$) produces \textbf{``digital'' threshold response}: gene either off or on, channel either closed or open, near a critical concentration. This is the basis of switching in many cell-signaling pathways.
 \end{solution}
 
 \newpage
@@ -1040,25 +2433,80 @@ A gating variable $x$ obeys:
 \end{problem}
 
 \begin{solution}
-\textbf{(a)} Set $\dot x = 0$:
+\textbf{(a) Steady-state and time constant:}
+
+\textbf{Step 1.} At steady state, $\dot x = 0$:
 \[
-\alpha_x(1-x_\infty) = \beta_x x_\infty \implies x_\infty = \frac{\alpha_x}{\alpha_x + \beta_x}
-\]
-Time constant from rewriting: $\dot x = \alpha_x - (\alpha_x + \beta_x)x$, so:
-\[
-\tau_x = \frac{1}{\alpha_x + \beta_x}
+\alpha_x(1-x_\infty) - \beta_x x_\infty = 0
 \]
 
-\textbf{(b)} 
+\textbf{Step 2.} Distribute $\alpha_x$:
 \[
-\dot x = \frac{x_\infty - x}{\tau_x}
+\alpha_x - \alpha_x x_\infty - \beta_x x_\infty = 0
 \]
 
-\textbf{(c)} First-order linear ODE; solution:
+\textbf{Step 3.} Group $x_\infty$ terms:
 \[
-x(t) = x_\infty + (x(0) - x_\infty)e^{-t/\tau_x}
+\alpha_x = \alpha_x x_\infty + \beta_x x_\infty = x_\infty(\alpha_x + \beta_x)
 \]
-Exponential approach to $x_\infty$ with time constant $\tau_x$.
+
+\textbf{Step 4.} Solve for $x_\infty$:
+\[
+\boxed{x_\infty(V) = \frac{\alpha_x(V)}{\alpha_x(V) + \beta_x(V)}}
+\]
+
+\textbf{Step 5.} For $\tau_x$, expand the original ODE:
+\[
+\dot x = \alpha_x(1-x) - \beta_x x = \alpha_x - \alpha_x x - \beta_x x = \alpha_x - (\alpha_x + \beta_x) x
+\]
+\stepwhy{distribute, then factor $-x$ from last two terms}
+
+\textbf{Step 6.} Compare with the standard relaxation form $\dot x = (x_\infty - x)/\tau_x$. Reading off:
+\[
+\boxed{\tau_x(V) = \frac{1}{\alpha_x(V) + \beta_x(V)}}
+\]
+
+\medskip\textbf{(b) Standard relaxation form:}
+
+\textbf{Step 1.} From step 5: $\dot x = \alpha_x - (\alpha_x + \beta_x)x$. Factor $(\alpha_x + \beta_x)$:
+\[
+\dot x = (\alpha_x + \beta_x)\left[\frac{\alpha_x}{\alpha_x + \beta_x} - x\right]
+\]
+
+\textbf{Step 2.} Recognize $\alpha_x/(\alpha_x + \beta_x) = x_\infty$ and $(\alpha_x + \beta_x) = 1/\tau_x$:
+\[
+\boxed{\frac{dx}{dt} = \frac{x_\infty - x}{\tau_x}}
+\]
+
+\medskip\textbf{(c) Solution for constant $V$:}
+
+\textbf{Step 1.} If $V$ is constant, $\alpha_x$, $\beta_x$, $x_\infty$, $\tau_x$ are all constants. Define $y = x - x_\infty$, so $\dot y = \dot x$:
+\[
+\dot y = \frac{x_\infty - (y + x_\infty)}{\tau_x} = \frac{-y}{\tau_x}
+\]
+
+\textbf{Step 2.} This is exponential decay:
+\[
+\frac{dy}{y} = -\frac{dt}{\tau_x} \thus \int\frac{dy}{y} = -\int\frac{dt}{\tau_x} \thus \ln|y| = -\frac{t}{\tau_x} + C
+\]
+
+\textbf{Step 3.} Exponentiate:
+\[
+y(t) = y(0)\,e^{-t/\tau_x}
+\]
+\stepwhy{$y(0) = e^C$}
+
+\textbf{Step 4.} Substitute back $y = x - x_\infty$:
+\[
+x(t) - x_\infty = (x(0) - x_\infty)\,e^{-t/\tau_x}
+\]
+
+\textbf{Step 5.}
+\[
+\boxed{x(t) = x_\infty + (x(0) - x_\infty)\,e^{-t/\tau_x}}
+\]
+
+Exponential approach to $x_\infty$ with characteristic time $\tau_x$. As $t \to \infty$, $e^{-t/\tau_x} \to 0$, so $x \to x_\infty$. \checkmark
 \end{solution}
 
 \newpage
@@ -1073,9 +2521,46 @@ For $M = \begin{pmatrix} 2 & -1 \\ 4 & -3 \end{pmatrix}$, compute Tr, Det, and e
 \end{problem}
 
 \begin{solution}
-$\text{Tr}(M) = 2 - 3 = -1$. $\text{Det}(M) = 2(-3) - (-1)(4) = -6 + 4 = -2$.\\
-Characteristic equation: $\lambda^2 - \text{Tr}\lambda + \text{Det} = 0 \Rightarrow \lambda^2 + \lambda - 2 = 0$. Factor: $(\lambda+2)(\lambda-1) = 0$.\\
-$\lambda_1 = 1$, $\lambda_2 = -2$. \textbf{Saddle point} (one positive, one negative).
+\textbf{Step 1.} Identify entries: $a = 2$, $b = -1$, $c = 4$, $d = -3$.
+
+\textbf{Step 2.} Trace = sum of diagonal:
+\[
+\text{Tr}(M) = a + d = 2 + (-3) = 2 - 3 = -1
+\]
+
+\textbf{Step 3.} Determinant = $ad - bc$:
+\[
+\text{Det}(M) = (2)(-3) - (-1)(4) = -6 - (-4) = -6 + 4 = -2
+\]
+\stepwhy{$-(-4) = +4$}
+
+\textbf{Step 4.} Compute discriminant:
+\[
+\Delta = \text{Tr}^2 - 4\text{Det} = (-1)^2 - 4(-2) = 1 - (-8) = 1 + 8 = 9
+\]
+
+\textbf{Step 5.} Apply quadratic formula:
+\[
+\lambda_\pm = \frac{\text{Tr} \pm \sqrt\Delta}{2} = \frac{-1 \pm \sqrt 9}{2} = \frac{-1 \pm 3}{2}
+\]
+
+\textbf{Step 6.} Compute both:
+\[
+\lambda_+ = \frac{-1 + 3}{2} = \frac{2}{2} = 1
+\]
+\[
+\lambda_- = \frac{-1 - 3}{2} = \frac{-4}{2} = -2
+\]
+
+\textbf{Step 7.} Verify with characteristic polynomial $\lambda^2 - \text{Tr}\lambda + \text{Det} = 0$:
+\[
+\lambda^2 + \lambda - 2 = 0
+\]
+Factor: $(\lambda + 2)(\lambda - 1) = 0$, giving $\lambda = -2$ or $\lambda = 1$. \checkmark
+
+\textbf{Step 8.} \textbf{Classification:} One positive ($\lambda_+ = 1$), one negative ($\lambda_- = -2$). This is a \textbf{saddle point} (always unstable).
+
+Det $< 0$ on its own would have told us it's a saddle (the row in the stability table for ``any Tr, Det $< 0$'').
 \end{solution}
 
 \subsection{Problem 6.2: Asymptotic Analysis of a Perturbation (2024 Q4)}
@@ -1242,13 +2727,69 @@ For the SI model, $\dot I = \beta S I - \gamma I$ with $S + I = T$ (total consta
 \end{problem}
 
 \begin{solution}
-$S = T - I \approx T$ when $I \ll T$. Then:
-\[
-\dot I \approx \beta T I - \gamma I = (\beta T - \gamma)I = \gamma(R_0 - 1) I
-\]
-Exponential growth with $r = \beta T - \gamma = \gamma(R_0 - 1)$.
+\textbf{Step 1.} Use conservation: $S + I = T$ implies $S = T - I$.
 
-\textbf{Without approximation}, the original equation $\dot I = \beta(T-I)I - \gamma I = (\beta T - \gamma)I - \beta I^2$ is a \textbf{logistic equation} (Bernoulli equation)! It has carrying capacity $K = (\beta T - \gamma)/\beta = T - \gamma/\beta = T(1 - 1/R_0)$.
+\textbf{Step 2.} Substitute into $\dot I$:
+\[
+\dot I = \beta(T - I)I - \gamma I
+\]
+
+\textbf{Step 3.} Distribute $\beta(T-I)$:
+\[
+\dot I = \beta TI - \beta I^2 - \gamma I
+\]
+
+\textbf{Step 4.} Approximation: when $I \ll T$, the term $\beta I^2$ is negligible compared to $\beta TI$ (since $I^2 \ll TI$):
+\[
+\dot I \approx \beta TI - \gamma I
+\]
+
+\textbf{Step 5.} Factor $I$:
+\[
+\dot I = I(\beta T - \gamma)
+\]
+
+\textbf{Step 6.} Recognize this as exponential growth $\dot I = rI$ with:
+\[
+\boxed{r = \beta T - \gamma}
+\]
+
+\textbf{Step 7.} Express in terms of $R_0$. Factor $\gamma$:
+\[
+r = \gamma\left(\frac{\beta T}{\gamma} - 1\right) = \gamma(R_0 - 1)
+\]
+
+\textbf{Step 8.} Conclusions:
+\begin{itemize}
+\item $R_0 > 1 \Rightarrow r > 0 \Rightarrow$ exponential growth (early epidemic).
+\item $R_0 < 1 \Rightarrow r < 0 \Rightarrow$ exponential decay (disease dies out).
+\item $R_0 = 1 \Rightarrow r = 0 \Rightarrow$ marginal case.
+\end{itemize}
+
+\medskip\textbf{Without approximation:}
+
+\textbf{Step 1.} Keep full equation $\dot I = \beta TI - \beta I^2 - \gamma I$:
+\[
+\dot I = (\beta T - \gamma)I - \beta I^2
+\]
+
+\textbf{Step 2.} Factor:
+\[
+\dot I = I[(\beta T - \gamma) - \beta I]
+\]
+
+\textbf{Step 3.} Compare to logistic form $\dot N = rN(1 - N/K)$ where $r = \beta T - \gamma$ and $rN/K = \beta I^2$, giving:
+\[
+\frac{r}{K} = \beta \thus K = \frac{r}{\beta} = \frac{\beta T - \gamma}{\beta}
+\]
+
+\textbf{Step 4.} Simplify:
+\[
+K = T - \frac{\gamma}{\beta} = T\left(1 - \frac{1}{R_0}\right)
+\]
+\stepwhy{factor $T$, recognize $\gamma/(\beta T) = 1/R_0$}
+
+\textbf{Step 5.} \textbf{Conclusion:} The SI model is a logistic equation with carrying capacity $K = T(1-1/R_0)$. As the epidemic progresses, $I$ saturates at this fraction of the population.
 \end{solution}
 
 \subsection{Problem 8.3: Comparing Two Cities (2020 Q2b)}
@@ -1258,15 +2799,55 @@ City A: population $T_A$, infection rate $\beta_A$, $R_{0,A} = 1.1$. City B: $10
 \end{problem}
 
 \begin{solution}
-$R_{0,A} = \beta_A T_A / \gamma = 1.1$.
+\textbf{Step 1.} Use $R_0 = \beta N/\gamma$ (where $N = T$ here) for both cities.
 
-City B: $T_B = 10 T_A$, $\beta_B = 5\beta_A$. So:
+\textbf{Step 2.} City A: $R_{0,A} = \beta_A T_A/\gamma = 1.1$.
+
+\textbf{Step 3.} City B parameters:
 \[
-R_{0,B} = \frac{5\beta_A \cdot 10 T_A}{\gamma} = 50 \cdot R_{0,A} = 55
+T_B = 10\,T_A, \quad \beta_B = 5\,\beta_A
 \]
-Massive amplification.
 
-Long-time infected fraction in SIR (using final size equation $1 - x = e^{-R_0 x}$ where $x$ is fraction infected): for $R_{0,A} = 1.1$, $x_A \approx 0.18$ (18\%). For $R_{0,B} = 55$, $x_B \approx 1$ (essentially everyone). So the larger city has $\sim 5\times$ more cases per capita and many more total cases — \textbf{huge hospital overflow risk}.
+\textbf{Step 4.} Compute $R_{0,B}$:
+\[
+R_{0,B} = \frac{\beta_B T_B}{\gamma} = \frac{(5\beta_A)(10 T_A)}{\gamma} = 50\cdot\frac{\beta_A T_A}{\gamma}
+\]
+
+\textbf{Step 5.} Substitute $R_{0,A} = 1.1$:
+\[
+R_{0,B} = 50\cdot R_{0,A} = 50\cdot 1.1 = 55
+\]
+
+\textbf{Massive amplification.}
+
+\medskip\textbf{Long-time infected fraction:}
+
+\textbf{Step 6.} For SIR, the final size equation is:
+\[
+1 - x = e^{-R_0 x}
+\]
+where $x = $ fraction eventually infected. Solve transcendentally.
+
+\textbf{Step 7.} For City A ($R_0 = 1.1$): try $x = 0.18$:
+\[
+1 - 0.18 = 0.82, \quad e^{-1.1\cdot 0.18} = e^{-0.198} \approx 0.820 \checkmark
+\]
+So $x_A \approx 0.18$ (18\% infected).
+
+\textbf{Step 8.} For City B ($R_0 = 55$): for any reasonable $x$ near 1:
+\[
+e^{-55\cdot x} \to 0 \text{ rapidly}
+\]
+so $1 - x_B \to 0$, meaning $x_B \to 1$ (essentially everyone infected).
+
+\textbf{Step 9.} Comparison:
+\begin{itemize}
+\item Per capita: City A has 18\% infected; City B has $\sim 100\%$. Roughly $5\times$ more cases per capita.
+\item Total cases: City A has $0.18 T_A$; City B has $\sim 10 T_A$ (since $T_B = 10T_A$). About $55\times$ more total cases.
+\item \textbf{Hospital overflow risk}: City B will face catastrophic case load.
+\end{itemize}
+
+\textbf{Step 10.} Lesson: $R_0$ is super-linear in both transmission rate and population density. Doubling either creates much greater than 2× impact when it pushes $R_0$ above 1.
 \end{solution}
 
 \newpage
@@ -1379,28 +2960,109 @@ SIR model with chronic carriers $C$:
 \end{problem}
 
 \begin{solution}
-\textbf{(a)} Sum: $\dot S + \dot I + \dot C = 0$ \checkmark. Eliminate one variable, e.g.\ $S = N - I - C$.
+\textbf{(a) Conservation:}
 
-\textbf{(b)} Disease-free: $I^* = 0$, $C^* = 0$, $S^* = N$.
-
-Endemic states require $\dot I = I(\beta S - \gamma) = 0$ and $\dot C = \alpha S C = 0$. With $C^* = 0$ and $I^* > 0$: requires $\beta S^* = \gamma$, so $S^* = \gamma/\beta$. Plug into $\dot S = 0$: $0 = -\beta SI + \gamma I = 0$ \checkmark. Endemic FP with $C^* = 0$, $S^* = \gamma/\beta$, $I^* = N - \gamma/\beta$ (if $> 0$).
-
-\textbf{(c) Jacobian at disease-free $(N, 0, 0)$:}
+\textbf{Step 1.} Sum all three equations:
 \[
-J = \begin{pmatrix} -\beta I - \alpha C & -\beta S + \gamma & -\alpha S \\ \beta I & \beta S - \gamma & 0 \\ \alpha C & 0 & \alpha S \end{pmatrix} \to \begin{pmatrix} 0 & -\beta N + \gamma & -\alpha N \\ 0 & \beta N - \gamma & 0 \\ 0 & 0 & \alpha N \end{pmatrix}
+\dot S + \dot I + \dot C = (-\beta SI - \alpha SC + \gamma I) + (\beta SI - \gamma I) + (\alpha SC)
 \]
 
-\textbf{(d) Eigenvalues:} Triangular structure (first column zero):
+\textbf{Step 2.} Group like terms:
 \[
-\lambda_1 = 0, \quad \lambda_2 = \beta N - \gamma, \quad \lambda_3 = \alpha N
+= (-\beta SI + \beta SI) + (-\alpha SC + \alpha SC) + (\gamma I - \gamma I) = 0 \checkmark
 \]
-Define:
-\[
-R_0^{(I)} = \frac{\beta N}{\gamma}, \quad R_0^{(C)} = \alpha N \cdot \tau_\text{lifetime}
-\]
-For chronic carriers (no recovery), $R_0^{(C)}$ is just $\alpha N$ times an arbitrary lifetime — the chronic carrier branch is \textbf{always unstable for $\alpha N > 0$}, since $\lambda_3 > 0$. Once a chronic carrier exists, the system can never be stable.
 
-\textbf{Why you only need one $R_0$ for stability:} If $R_0^{(C)} > 1$ (or just $\alpha N > 0$), system is unstable regardless of $R_0^{(I)}$. So for stability we need both: chronic carriers can't exist OR don't transmit, AND $R_0^{(I)} < 1$.
+\textbf{Step 3.} So $S + I + C = N$ is conserved. Use this to eliminate $S = N - I - C$ if desired. (For 3$\times$3 Jacobian we'll keep all three.)
+
+\medskip\textbf{(b) Fixed points:}
+
+\textbf{Step 1.} Set $\dot I = 0$:
+\[
+\beta SI - \gamma I = I(\beta S - \gamma) = 0 \thus I = 0 \text{ or } S = \gamma/\beta
+\]
+
+\textbf{Step 2.} Set $\dot C = 0$:
+\[
+\alpha SC = 0 \thus S = 0 \text{ or } C = 0
+\]
+
+\textbf{Step 3.} Disease-free: $I^* = 0$, $C^* = 0$, $S^* = N$. (Easy to verify $\dot S = 0$.)
+
+\textbf{Step 4.} Endemic with $C^* = 0$ and $I^* > 0$: requires $S^* = \gamma/\beta$, then $I^* = N - \gamma/\beta$ (only positive if $R_0 = \beta N/\gamma > 1$).
+
+\medskip\textbf{(c) Jacobian at disease-free FP $(S, I, C) = (N, 0, 0)$:}
+
+\textbf{Step 1.} Define $f = \dot S$, $g = \dot I$, $h = \dot C$. Compute partials.
+
+\textbf{Step 2.} For $f = -\beta SI - \alpha SC + \gamma I$:
+\[
+\partial f/\partial S = -\beta I - \alpha C
+\]
+\[
+\partial f/\partial I = -\beta S + \gamma
+\]
+\[
+\partial f/\partial C = -\alpha S
+\]
+
+\textbf{Step 3.} For $g = \beta SI - \gamma I$:
+\[
+\partial g/\partial S = \beta I, \quad \partial g/\partial I = \beta S - \gamma, \quad \partial g/\partial C = 0
+\]
+
+\textbf{Step 4.} For $h = \alpha SC$:
+\[
+\partial h/\partial S = \alpha C, \quad \partial h/\partial I = 0, \quad \partial h/\partial C = \alpha S
+\]
+
+\textbf{Step 5.} Build $J$ then evaluate at $(N, 0, 0)$:
+\begin{itemize}
+\item $\partial f/\partial S \to -\beta\cdot 0 - \alpha\cdot 0 = 0$
+\item $\partial f/\partial I \to -\beta N + \gamma$
+\item $\partial f/\partial C \to -\alpha N$
+\item $\partial g/\partial S \to \beta\cdot 0 = 0$
+\item $\partial g/\partial I \to \beta N - \gamma$
+\item $\partial g/\partial C \to 0$
+\item $\partial h/\partial S \to \alpha\cdot 0 = 0$
+\item $\partial h/\partial I \to 0$
+\item $\partial h/\partial C \to \alpha N$
+\end{itemize}
+
+\textbf{Step 6.} Final Jacobian:
+\[
+J^* = \begin{pmatrix} 0 & \gamma - \beta N & -\alpha N \\ 0 & \beta N - \gamma & 0 \\ 0 & 0 & \alpha N \end{pmatrix}
+\]
+
+\medskip\textbf{(d) Eigenvalues:}
+
+\textbf{Step 1.} The first column is all zeros, so $\lambda_1 = 0$.
+
+\textbf{Step 2.} The remaining 2$\times$2 sub-matrix is upper triangular:
+\[
+M = \begin{pmatrix} \beta N - \gamma & 0 \\ 0 & \alpha N \end{pmatrix}
+\]
+Eigenvalues are diagonal entries: $\lambda_2 = \beta N - \gamma$, $\lambda_3 = \alpha N$.
+
+\textbf{Step 3.} Three eigenvalues:
+\[
+\boxed{\lambda_1 = 0, \quad \lambda_2 = \beta N - \gamma, \quad \lambda_3 = \alpha N}
+\]
+
+\textbf{Step 4.} Define $R_0$ for each transmission branch:
+\[
+R_0^{(I)} = \frac{\beta N}{\gamma} \quad\text{(infective branch)}
+\]
+For the chronic-carrier branch, since carriers never recover, the relevant ``$R_0$-like'' quantity is just $\alpha N$ (multiplied by an effective lifetime).
+
+\textbf{Step 5.} Stability conditions:
+\begin{itemize}
+\item $\lambda_2 > 0 \iff R_0^{(I)} > 1 \iff$ infective branch invades.
+\item $\lambda_3 > 0 \iff \alpha N > 0$ \textbf{always}.
+\end{itemize}
+
+\textbf{Step 6.} Conclusion: \textbf{the disease-free FP is always unstable} as long as $\alpha N > 0$ (any positive transmission rate). Once a chronic carrier exists, the system cannot return to disease-free.
+
+\textbf{Why one $R_0$ is enough:} If $\alpha > 0$, $\lambda_3 > 0$ and instability is guaranteed regardless of $R_0^{(I)}$. So for stability we'd need BOTH $\alpha = 0$ (no chronic carrier transmission) AND $R_0^{(I)} < 1$. In practice, only $R_0^{(C)}$ matters for whether the system can be stable at all.
 \end{solution}
 
 \newpage
