@@ -1,0 +1,565 @@
+\documentclass[12pt]{article}
+\usepackage{amsmath, amssymb}
+\usepackage{geometry}
+\usepackage{titlesec}
+\usepackage{xcolor}
+\usepackage{mdframed}
+\usepackage{enumitem}
+\usepackage{parskip}
+\usepackage{booktabs}
+
+\geometry{margin=1in}
+
+\definecolor{problemblue}{RGB}{30, 80, 160}
+\definecolor{solutiongreen}{RGB}{20, 120, 60}
+\definecolor{lightblue}{RGB}{230, 240, 255}
+\definecolor{lightgreen}{RGB}{230, 248, 235}
+\definecolor{boxgray}{RGB}{245,245,245}
+
+\mdfdefinestyle{problembox}{
+  backgroundcolor=lightblue,
+  linecolor=problemblue,
+  linewidth=1.5pt,
+  roundcorner=5pt,
+  innertopmargin=10pt,
+  innerbottommargin=10pt,
+  innerleftmargin=12pt,
+  innerrightmargin=12pt,
+}
+
+\mdfdefinestyle{solutionbox}{
+  backgroundcolor=lightgreen,
+  linecolor=solutiongreen,
+  linewidth=1.5pt,
+  roundcorner=5pt,
+  innertopmargin=10pt,
+  innerbottommargin=10pt,
+  innerleftmargin=12pt,
+  innerrightmargin=12pt,
+}
+
+\mdfdefinestyle{keyresult}{
+  backgroundcolor=boxgray,
+  linecolor=black,
+  linewidth=1pt,
+  roundcorner=4pt,
+  innertopmargin=8pt,
+  innerbottommargin=8pt,
+  innerleftmargin=10pt,
+  innerrightmargin=10pt,
+}
+
+\newcommand{\SE}{[SE]}
+\newcommand{\Sg}{[S\gamma]}
+\newcommand{\ddt}[1]{\frac{d[#1]}{dt}}
+\newcommand{\KME}{K_{M,E}}
+\newcommand{\KMg}{K_{M,\gamma}}
+\newcommand{\Vmax}{V_{\max}}
+
+\title{
+  \textbf{\large CaSB 150 --- Michaelis-Menten Kinetics}\\[6pt]
+  \large Problem 4: COVID-19 Spike Protein Reaction System\\[4pt]
+  \normalsize Problem Statement + Full Worked Solution
+}
+\author{}
+\date{}
+
+\begin{document}
+
+\maketitle
+\vspace{-1em}
+\hrule
+\vspace{1.5em}
+
+% ============================================================
+%  TOPIC OUTLINE
+% ============================================================
+
+\section*{Topic Outline: Michaelis-Menten Kinetics}
+
+\subsection*{1. The Reaction Scheme}
+
+The core diagram you must know:
+\[
+  S + E \;\underset{k_{-1}}{\overset{k_1}{\rightleftharpoons}}\; [SE] \;\overset{k_2}{\longrightarrow}\; P + E
+\]
+\begin{itemize}[noitemsep]
+  \item $S$ = substrate concentration, $E$ = enzyme concentration
+  \item $[SE]$ = enzyme-substrate complex (the ``bound state'')
+  \item $P$ = product concentration
+  \item Three rate constants: $k_1$ (binding), $k_{-1}$ (unbinding), $k_2$ (catalysis / $k_{\text{cat}}$)
+  \item \textbf{Key biological fact:} The enzyme is \emph{not consumed} --- it is recycled after each catalytic event.
+\end{itemize}
+
+\subsection*{2. Writing the Full System of ODEs}
+
+Four ODEs, one per species:
+\begin{align*}
+  \frac{d[S]}{dt}  &= -k_1[S][E] + k_{-1}[SE] \\
+  \frac{d[E]}{dt}  &= -k_1[S][E] + k_{-1}[SE] + k_2[SE] \\
+  \frac{d[SE]}{dt} &= k_1[S][E] - k_{-1}[SE] - k_2[SE] \\
+  \frac{d[P]}{dt}  &= k_2[SE]
+\end{align*}
+Note that $\frac{d[S]}{dt} + \frac{d[SE]}{dt} + \frac{d[P]}{dt} = 0$ (total ``substrate mass'' is conserved).
+
+\subsection*{3. Conservation Laws $\rightarrow$ Reducing the System}
+
+The enzyme is conserved:
+\[
+  E_0 = [E] + [SE] \quad \Longrightarrow \quad [E] = E_0 - [SE].
+\]
+Similarly, total substrate mass is conserved: $[S] + [SE] + [P] = \text{const}$.
+The product ODE is decoupled (only depends on $[SE]$), so the system reduces to
+\textbf{2 independent ODEs} in $[S]$ and $[SE]$.
+
+\subsection*{4. The Quasi-Steady-State Approximation (QSSA)}
+
+\textbf{Key assumption:} $[SE]$ forms and breaks down much faster than $S$ is depleted, so:
+\[
+  \frac{d[SE]}{dt} \approx 0.
+\]
+Solving algebraically:
+\[
+  k_1[S](E_0 - [SE]) - (k_{-1}+k_2)[SE] = 0
+  \quad \Longrightarrow \quad
+  [SE]^* = \frac{E_0\,[S]}{[S] + K_M},
+\]
+where the \textbf{Michaelis constant} is:
+\[
+  K_M = \frac{k_{-1}+k_2}{k_1}.
+\]
+
+\subsection*{5. The Michaelis-Menten Rate Law}
+
+The rate of product formation under the QSSA:
+\[
+  \frac{d[P]}{dt} = k_2[SE]^* = \frac{k_2 E_0\,[S]}{[S]+K_M} = \frac{V_{\max}[S]}{[S]+K_M},
+\]
+where $V_{\max} = k_2 E_0$ is the maximum production rate (achieved when all enzyme is bound).
+
+\medskip
+\textbf{Key limiting behaviors:}
+\begin{itemize}[noitemsep]
+  \item When $[S] \ll K_M$: rate $\approx \dfrac{V_{\max}}{K_M}[S]$ \quad (linear in $[S]$, first-order kinetics)
+  \item When $[S] \gg K_M$: rate $\approx V_{\max}$ \quad (saturated, zero-order kinetics)
+  \item When $[S] = K_M$: rate $= V_{\max}/2$ \quad (defines $K_M$ operationally)
+\end{itemize}
+
+\subsection*{6. The Hill Function (Generalization)}
+
+When there is \textbf{cooperative binding} (multiple binding sites), the MM rate generalizes to:
+\[
+  \frac{d[P]}{dt} = \frac{V_{\max}[S]^n}{[S]^n + K_M^n},
+\]
+where $n$ is the \textbf{Hill coefficient}.
+\begin{itemize}[noitemsep]
+  \item $n = 1$: recovers standard Michaelis-Menten
+  \item $n > 1$: sigmoidal (switch-like) response --- more cooperative binding
+  \item $n < 1$: sub-linear saturation
+\end{itemize}
+
+\subsection*{7. Extensions to Know for the Exam}
+
+\begin{itemize}
+  \item \textbf{Multiple substrates / enzymes / products:} Write one $[SE]$-type ODE per binding pair.
+        Apply QSSA to each complex separately. Count independent equations carefully using all
+        available conservation laws.
+  \item \textbf{Adding degradation/production:} Append $+\lambda$ (production) and $-\delta[\cdot]$
+        (first-order degradation) terms to the relevant ODEs. Note that adding production of
+        enzyme \emph{breaks} the enzyme conservation law, increasing the number of independent
+        equations by one.
+\end{itemize}
+
+\subsection*{Exam Skill Checklist (per the 2026 Study Guide)}
+
+\begin{itemize}[noitemsep, label=$\square$]
+  \item Write the complete ODE system from a word description or reaction diagram
+  \item Identify and apply all conservation laws to reduce the system
+  \item Apply the QSSA to solve for $[SE]^*$ and the production rate
+  \item Count the number of \textbf{independent} equations (before and after adding degradation/production)
+  \item Describe the limiting behaviors and shape of the MM rate curve
+  \item Describe the properties of the Hill function and how $n$ changes behavior
+\end{itemize}
+
+\vspace{1.5em}
+\hrule
+\vspace{1.5em}
+\newpage
+
+% ============================================================
+%  PROBLEM STATEMENT
+% ============================================================
+
+\begin{mdframed}[style=problembox]
+\textbf{\color{problemblue}\large Problem Statement (20 points)}
+
+\medskip
+The COVID-19 RNA vaccine and boosters rely on the spike protein of COVID-19 that is injected
+into the body to produce an immune response. Consider the case that spike protein interacts
+with a naturally and normally occurring substrate $S$ to produce a product $P_{\text{new}}$
+that is not naturally or normally occurring in the human body.
+The Michaelis-Menten kinetics for this system can be expressed as:
+
+\medskip
+\begin{center}
+\renewcommand{\arraystretch}{1.4}
+\begin{tabular}{rcccl}
+$S + E$        & $\rightleftharpoons$ & $[SE]$      & $\rightarrow$ & $P + E$ \\
+$S + \gamma$   & $\rightleftharpoons$ & $[S\gamma]$ & $\rightarrow$ & $P_{\text{new}} + \gamma$
+\end{tabular}
+\end{center}
+
+\medskip
+\noindent where $\gamma$ is the concentration of the spike protein, $P_{\text{new}}$ is the
+concentration of the new product, $S$ is the concentration of the substrate, $E$ is the
+concentration of the enzyme, $[SE]$ is the concentration of the bound state of the substrate
+and enzyme, and $[S\gamma]$ is the concentration of the bound state of the substrate and
+spike protein.
+
+\medskip
+\begin{enumerate}[label=\textbf{(\alph*)}]
+  \item Write down the \textbf{complete} set of equations needed to describe this system in
+        terms of Michaelis-Menten kinetics.
+  \item How many \textbf{independent} differential equations are needed to describe this
+        system?
+  \item Solve for the \textbf{Quasi-Steady-State Approximation (QSSA)} for this system.
+  \item Over long-time scales, the products will degrade and new substrates and enzymes will
+        be created. How would you modify your equations to account for this? How many
+        independent equations are now needed?
+  \item With the inclusion of degradation of product and production of substrate and enzyme,
+        what would you expect the impact of the vaccine to be over short and long times?
+        Would it become more or less problematic with time? Which additional biological
+        processes might make it more problematic?
+\end{enumerate}
+\end{mdframed}
+
+\vspace{1.5em}
+\hrule
+\vspace{1.5em}
+
+% ============================================================
+%  BACKGROUND
+% ============================================================
+
+\section*{Background: Standard Michaelis-Menten Review}
+
+Before solving the two-pathway problem, recall the single-pathway scheme:
+\[
+  S + E \;\underset{k_{-1}}{\overset{k_1}{\rightleftharpoons}}\; [SE] \;\overset{k_2}{\longrightarrow}\; P + E.
+\]
+Here $k_1$ is the binding rate, $k_{-1}$ is the unbinding rate, and $k_2$ (often called
+$k_{\text{cat}}$) is the catalytic rate. The Michaelis constant is defined as
+\[
+  K_M = \frac{k_{-1} + k_2}{k_1},
+\]
+and the maximum production rate is $V_{\max} = k_2 E_0$, where $E_0$ is the total enzyme
+concentration.  In this problem we have \emph{two} such pathways sharing the same substrate
+$S$, so we must track both simultaneously.
+
+\vspace{1em}
+
+% ============================================================
+%  SOLUTIONS
+% ============================================================
+
+\section*{Solutions}
+
+% ---- PART (a) -----------------------------------------------
+\subsection*{Part (a): Complete Set of ODEs}
+
+\begin{mdframed}[style=solutionbox]
+\textbf{\color{solutiongreen}Strategy.}
+Each species appears on the right-hand side of the reaction diagram as either a reactant or
+product. We assign rate constants as follows:
+
+\medskip
+\begin{center}
+\renewcommand{\arraystretch}{1.4}
+\begin{tabular}{@{}lll@{}}
+\toprule
+\textbf{Pathway} & \textbf{Forward (binding)} & \textbf{Reverse / Catalytic} \\
+\midrule
+Enzyme pathway   & $k_1$ (binding $S+E \to [SE]$)   & $k_{-1}$ (unbinding), $k_2$ (catalysis) \\
+Spike pathway    & $k_3$ (binding $S+\gamma \to [S\gamma]$) & $k_{-3}$ (unbinding), $k_4$ (catalysis) \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\medskip
+Now write one ODE for every species, tracking all fluxes in and out.
+\end{mdframed}
+
+\medskip
+The complete system of ODEs is:
+
+\begin{align}
+  \ddt{S} &= -k_1 [S][E] + k_{-1}[SE] - k_3 [S][\gamma] + k_{-3}[S\gamma]
+  \label{eq:dS}\\[6pt]
+  \ddt{E} &= -k_1 [S][E] + k_{-1}[SE] + k_2[SE]
+  \label{eq:dE}\\[6pt]
+  \ddt{SE} &= k_1 [S][E] - k_{-1}[SE] - k_2[SE]
+  \label{eq:dSE}\\[6pt]
+  \ddt{P} &= k_2[SE]
+  \label{eq:dP}\\[6pt]
+  \ddt{\gamma} &= -k_3 [S][\gamma] + k_{-3}[S\gamma] + k_4[S\gamma]
+  \label{eq:dgamma}\\[6pt]
+  \ddt{S\gamma} &= k_3[S][\gamma] - k_{-3}[S\gamma] - k_4[S\gamma]
+  \label{eq:dSgamma}\\[6pt]
+  \frac{d[P_{\text{new}}]}{dt} &= k_4[S\gamma]
+  \label{eq:dPnew}
+\end{align}
+
+\noindent This is \textbf{7 ODEs} in total describing the dynamics of all 7 species:
+$[S],\,[E],\,[SE],\,[P],\,[\gamma],\,[S\gamma],\,[P_{\text{new}}]$.
+
+\medskip
+
+% ---- PART (b) -----------------------------------------------
+\subsection*{Part (b): Number of Independent Equations}
+
+\begin{mdframed}[style=solutionbox]
+\textbf{\color{solutiongreen}Strategy.}
+Count the conservation (constraint) equations that link species together.  Each conservation
+law reduces the number of equations by one.
+\end{mdframed}
+
+\medskip
+There are \textbf{two} conservation laws in this system:
+
+\paragraph{Conservation of total enzyme $E_0$:}
+The enzyme $E$ is neither created nor destroyed---it is either free or bound:
+\[
+  E_0 = [E] + [SE] \quad \Longrightarrow \quad [E] = E_0 - [SE].
+\]
+This eliminates the ODE for $[E]$.
+
+\paragraph{Conservation of total spike protein $\gamma_0$:}
+Similarly, the spike protein is conserved:
+\[
+  \gamma_0 = [\gamma] + [S\gamma] \quad \Longrightarrow \quad [\gamma] = \gamma_0 - [S\gamma].
+\]
+This eliminates the ODE for $[\gamma]$.
+
+\paragraph{Elimination of product equations:}
+The ODEs for $[P]$ and $[P_{\text{new}}]$ (Eqs.\ \ref{eq:dP} and \ref{eq:dPnew}) are
+\emph{decoupled} from the rest of the system---they only appear on the left-hand side. Once
+$[SE]$ and $[S\gamma]$ are known, $[P]$ and $[P_{\text{new}}]$ can be obtained by direct
+integration. They do not need to be carried as independent dynamical variables.
+
+\paragraph{Summary:}
+Starting from 7 ODEs, we eliminate 2 via conservation laws and 2 via decoupling of products,
+leaving:
+
+\begin{mdframed}[style=keyresult]
+\[
+  \boxed{\textbf{3 independent ODEs:} \quad [S],\; [SE],\; [S\gamma].}
+\]
+\end{mdframed}
+
+These three equations, after substituting the conservation relations, become:
+\begin{align}
+  \ddt{S} &= -k_1[S](E_0 - [SE]) + k_{-1}[SE] - k_3[S](\gamma_0 - [S\gamma]) + k_{-3}[S\gamma] \\
+  \ddt{SE} &= k_1[S](E_0 - [SE]) - (k_{-1} + k_2)[SE] \\
+  \ddt{S\gamma} &= k_3[S](\gamma_0 - [S\gamma]) - (k_{-3} + k_4)[S\gamma]
+\end{align}
+
+\medskip
+
+% ---- PART (c) -----------------------------------------------
+\subsection*{Part (c): Quasi-Steady-State Approximation (QSSA)}
+
+\begin{mdframed}[style=solutionbox]
+\textbf{\color{solutiongreen}Strategy.}
+The QSSA assumes that the intermediate complexes $[SE]$ and $[S\gamma]$ reach a fast
+equilibrium relative to the slow depletion of substrate $S$. We therefore set:
+\[
+  \frac{d[SE]}{dt} \approx 0 \qquad \text{and} \qquad \frac{d[S\gamma]}{dt} \approx 0,
+\]
+and solve algebraically for $[SE]^*$ and $[S\gamma]^*$ in terms of $[S]$.
+\end{mdframed}
+
+\subsubsection*{Step 1: Solve for $[SE]^*$}
+
+Setting $d[SE]/dt = 0$:
+\[
+  k_1[S](E_0 - [SE]) - (k_{-1} + k_2)[SE] = 0.
+\]
+Expand and collect terms in $[SE]$:
+\[
+  k_1 E_0 [S] = k_1[S][SE] + (k_{-1} + k_2)[SE] = [SE]\bigl(k_1[S] + k_{-1} + k_2\bigr).
+\]
+Solve:
+\[
+  [SE]^* = \frac{k_1 E_0 [S]}{k_1[S] + k_{-1} + k_2}.
+\]
+Dividing numerator and denominator by $k_1$:
+
+\begin{mdframed}[style=keyresult]
+\[
+  \boxed{[SE]^* = \frac{E_0\,[S]}{[S] + K_{M,E}}}, \qquad K_{M,E} = \frac{k_{-1}+k_2}{k_1}.
+\]
+\end{mdframed}
+
+\subsubsection*{Step 2: Solve for $[S\gamma]^*$}
+
+By identical algebra, setting $d[S\gamma]/dt = 0$:
+\[
+  k_3[S](\gamma_0 - [S\gamma]) - (k_{-3} + k_4)[S\gamma] = 0.
+\]
+\[
+  k_3\gamma_0[S] = [S\gamma]\bigl(k_3[S] + k_{-3} + k_4\bigr).
+\]
+
+\begin{mdframed}[style=keyresult]
+\[
+  \boxed{[S\gamma]^* = \frac{\gamma_0\,[S]}{[S] + K_{M,\gamma}}}, \qquad K_{M,\gamma} = \frac{k_{-3}+k_4}{k_3}.
+\]
+\end{mdframed}
+
+\subsubsection*{Step 3: Production Rates}
+
+The rate of normal product formation and new product formation are:
+
+\begin{align}
+  \frac{d[P]}{dt} &= k_2[SE]^* = \frac{k_2 E_0\,[S]}{[S] + \KME} = \frac{V_{\max,E}\,[S]}{[S]+\KME}
+  \label{eq:rateP}\\[8pt]
+  \frac{d[P_{\text{new}}]}{dt} &= k_4[S\gamma]^* = \frac{k_4\gamma_0\,[S]}{[S]+\KMg} = \frac{V_{\max,\gamma}\,[S]}{[S]+\KMg}
+  \label{eq:ratePnew}
+\end{align}
+
+where $V_{\max,E} = k_2 E_0$ and $V_{\max,\gamma} = k_4\gamma_0$.
+
+\subsubsection*{Step 4: Effective ODE for $[S]$ under QSSA}
+
+After the QSSA, the substrate $[S]$ is the only remaining dynamical variable:
+\begin{equation}
+  \ddt{S} = -\frac{V_{\max,E}\,[S]}{[S]+\KME} - \frac{V_{\max,\gamma}\,[S]}{[S]+\KMg}.
+  \label{eq:dS_QSSA}
+\end{equation}
+Both pathways compete to consume $S$, so the total consumption rate is the sum of both MM
+terms.
+
+\medskip
+
+% ---- PART (d) -----------------------------------------------
+\subsection*{Part (d): Including Degradation and Production}
+
+\begin{mdframed}[style=solutionbox]
+\textbf{\color{solutiongreen}Strategy.}
+Add first-order degradation terms $(-\delta[\cdot])$ for each product that degrades, and
+constant production terms $(+\lambda)$ for substrates and enzymes that are replenished.
+\end{mdframed}
+
+Let:
+\begin{itemize}[noitemsep]
+  \item $\lambda_S$ = production rate of substrate $S$ (units: concentration/time),
+  \item $\lambda_E$ = production rate of enzyme $E$,
+  \item $\delta_P$ = first-order degradation rate of $P$,
+  \item $\delta_{P_{\text{new}}}$ = first-order degradation rate of $P_{\text{new}}$.
+\end{itemize}
+
+The modified equations are:
+\begin{align}
+  \ddt{S}         &= -k_1[S][E] + k_{-1}[SE] - k_3[S][\gamma] + k_{-3}[S\gamma] + \lambda_S \\
+  \ddt{E}         &= -k_1[S][E] + k_{-1}[SE] + k_2[SE] + \lambda_E \\
+  \ddt{SE}        &= k_1[S][E] - k_{-1}[SE] - k_2[SE] \\
+  \ddt{P}         &= k_2[SE] - \delta_P [P] \\
+  \ddt{S\gamma}   &= k_3[S][\gamma] - k_{-3}[S\gamma] - k_4[S\gamma] \\
+  \frac{d[P_{\text{new}}]}{dt} &= k_4[S\gamma] - \delta_{P_{\text{new}}}[P_{\text{new}}]
+\end{align}
+
+\paragraph{Impact on conservation laws.}
+Adding $\lambda_E$ to the enzyme ODE \emph{breaks} the conservation law $E_0 = [E]+[SE]$
+because $E_0$ is no longer constant---the total enzyme increases over time. Similarly,
+$\gamma_0$ remains constant as long as there is no production or degradation of spike protein
+itself (the vaccine input is a one-time injection in the simplest model). Therefore:
+
+\begin{mdframed}[style=keyresult]
+\[
+  \boxed{\textbf{Number of independent equations with degradation/production: 4}}
+\]
+\[
+[S],\;[E] \;\text{(enzyme conservation broken by }\lambda_E),\;[SE],\;[S\gamma].
+\]
+$[P]$ and $[P_{\text{new}}]$ now couple back in through degradation but can still be tracked
+as additional equations if needed (bringing the count to 6 total if products are tracked
+explicitly).
+\end{mdframed}
+
+\medskip
+
+% ---- PART (e) -----------------------------------------------
+\subsection*{Part (e): Biological Interpretation --- Short vs.\ Long Times}
+
+\subsubsection*{Short-time behavior}
+
+At short times after vaccination:
+\begin{itemize}
+  \item $[\gamma]$ (spike protein) is at its peak concentration---it was just injected.
+  \item $[S]$ (natural substrate) is at normal physiological levels.
+  \item $[P_{\text{new}}]$ is initially zero but rises rapidly because $[\gamma]$ and $[S]$ are both high.
+  \item The production rate of $P_{\text{new}}$ is approximately $\approx V_{\max,\gamma}$ (saturated
+        regime) if $[S] \gg \KMg$.
+\end{itemize}
+\textbf{Conclusion:} The problematic effect ($P_{\text{new}}$ accumulation) is \emph{maximal at short
+times}.
+
+\subsubsection*{Long-time behavior}
+
+At long times:
+\begin{itemize}
+  \item The spike protein $[\gamma]$ is degraded by the immune system, so $[\gamma] \to 0$.
+        This drives $[S\gamma] \to 0$ and thus $d[P_{\text{new}}]/dt \to 0$.
+  \item Even if $[P_{\text{new}}]$ was produced, it degrades at rate $\delta_{P_{\text{new}}}[P_{\text{new}}]$,
+        so $[P_{\text{new}}] \to 0$ as $t \to \infty$.
+  \item The substrate $S$ recovers to its steady-state level $\lambda_S / \delta_S$ (if
+        degradation of $S$ is also included).
+  \item Enzyme $E$ production $\lambda_E$ replenishes any enzyme consumed.
+\end{itemize}
+\textbf{Conclusion:} The system \emph{becomes less problematic over time} because both the spike
+protein and the new product decay.
+
+\subsubsection*{Factors that could make it \emph{more} problematic}
+
+\begin{enumerate}[label=\arabic*.]
+  \item \textbf{Slow degradation of $P_{\text{new}}$}: If $\delta_{P_{\text{new}}} \approx 0$, then
+        $P_{\text{new}}$ accumulates persistently.
+  \item \textbf{High affinity of spike protein for $S$}: A very small $\KMg$ means even tiny
+        residual concentrations of $\gamma$ efficiently convert $S$ into $P_{\text{new}}$.
+  \item \textbf{Catalytic amplification}: If $P_{\text{new}}$ itself acts as a catalyst for
+        additional harmful reactions (a cascade), the damage could grow nonlinearly.
+  \item \textbf{Integration of spike-protein genetic material}: If the mRNA were reverse-transcribed
+        and integrated into the genome (not expected but sometimes discussed), the body
+        could produce spike protein indefinitely, breaking the short-time assumption.
+  \item \textbf{Immune suppression of $E$}: If the immune response also degrades or suppresses
+        the natural enzyme $E$, the system loses its ability to maintain normal substrate
+        homeostasis, potentially causing off-target physiological effects.
+\end{enumerate}
+
+\vspace{2em}
+\hrule
+\vspace{1em}
+
+% ============================================================
+%  SUMMARY TABLE
+% ============================================================
+
+\section*{Summary of Key Results}
+
+\renewcommand{\arraystretch}{1.5}
+\begin{center}
+\begin{tabular}{@{}p{3.5cm} p{10cm}@{}}
+\toprule
+\textbf{Part} & \textbf{Key Result} \\
+\midrule
+(a) Full ODEs & 7 ODEs for $[S],[E],[SE],[P],[\gamma],[S\gamma],[P_{\text{new}}]$ \\
+(b) Independent & \textbf{3 independent ODEs}: $[S],[SE],[S\gamma]$ after applying 2 conservation laws and decoupling products \\
+(c) QSSA & $[SE]^* = \dfrac{E_0[S]}{[S]+\KME}$, \quad $[S\gamma]^* = \dfrac{\gamma_0[S]}{[S]+\KMg}$ \\
+& Production rates follow standard MM form for each pathway \\
+(d) With degradation & \textbf{4 independent ODEs}; enzyme conservation broken by $\lambda_E$ \\
+(e) Interpretation & Problematic at short times (high $[\gamma]$); self-resolves at long times as $[\gamma]\to 0$ and $[P_{\text{new}}]$ degrades \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\end{document}

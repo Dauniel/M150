@@ -1,6 +1,7 @@
 \documentclass[10pt]{article}
 \usepackage[margin=0.75in]{geometry}
 \usepackage{amsmath, amssymb, amsthm, mathtools}
+\usepackage{booktabs}
 \usepackage{enumitem}
 \usepackage{xcolor}
 \usepackage{titlesec}
@@ -727,6 +728,256 @@ N = \frac{A}{1 + A/K} = \frac{A K}{K + A}
 \end{itemize}
 
 The inflection point at $N = K/2$ is where $\dot N$ is maximized (max growth rate).
+\end{solution}
+
+\subsection{Problem 1.6: Inverse-Time Growth (2021 Q1)}
+
+\begin{problem}
+Consider $\dfrac{dN(t)}{dt} = \dfrac{r}{t}$.
+
+\begin{enumerate}[label=(\alph*)]
+\item Solve for $N(t)$.
+\item What are the units of $r$? Is $r$ a per-capita growth rate?
+\item When $r > 0$, does the population ever reach a stable finite size?
+\item For $r = 10$, compute the 4th-order Taylor term about $t_0 = 1$.
+\item Find the linear space (perfect Euler).
+\item Compare to power-of-time growth $\dot N = rN/t$: what is the key difference?
+\end{enumerate}
+\end{problem}
+
+\begin{solution}
+\textbf{(a) Solve:}
+
+\textbf{Step 1.} The equation is already separated ($\dot N$ depends only on $t$, not $N$):
+\[
+dN = \frac{r}{t}\,dt
+\]
+
+\textbf{Step 2.} Integrate both sides directly:
+\[
+\int dN = r\int\frac{dt}{t} \thus N = r\ln t + C
+\]
+
+\textbf{Step 3.} Apply IC at $t = 1$: $N(1) = r\ln 1 + C = 0 + C = C$, so $C = N(1)$:
+\[
+\boxed{N(t) = N(1) + r\ln t}
+\]
+
+\medskip\textbf{(b) Units of $r$:}
+
+\textbf{Step 1.} Check dimensions. LHS $dN/dt$ has units $[\text{population}]/[\text{time}]$. RHS $r/t$ has units $[r]/[\text{time}]$.
+
+\textbf{Step 2.} Matching: $[r]/[\text{time}] = [\text{population}]/[\text{time}]$, so $[r] = \text{population}$.
+
+\textbf{Step 3.} $r$ has \textbf{units of population, not time$^{-1}$}. It is \textbf{not} a per-capita growth rate (per-capita rates have units of 1/time).
+
+\medskip\textbf{(c) Stable finite size?}
+
+\textbf{Step 1.} Set $\dot N = 0$: $r/t = 0$ requires $t \to \infty$ (for $r \neq 0$).
+
+\textbf{Step 2.} For $r > 0$: $N(t) = N(1) + r\ln t \to \infty$ as $t \to \infty$. \textbf{Growth never stops.}
+
+\textbf{Step 3.} However, growth is very slow (logarithmic). Compare: exponential $N \sim e^{rt}$; power $N \sim t^r$; inverse-time $N \sim r\ln t$. Inverse-time is the slowest growing of all.
+
+\medskip\textbf{(d) 4th-order Taylor term for $r = 10$:}
+
+\textbf{Step 1.} $N(t) = N(1) + 10\ln t$. Compute derivatives (using $\frac{d}{dt}[\ln t] = t^{-1}$, $\frac{d}{dt}[t^{-1}] = -t^{-2}$, etc.):
+\[
+N'(t) = \frac{10}{t} = 10t^{-1}
+\]
+\[
+N''(t) = -10t^{-2}
+\]
+\[
+N'''(t) = 20t^{-3}
+\]
+\[
+N^{(4)}(t) = -60t^{-4}
+\]
+
+\textbf{Step 2.} Evaluate at $t_0 = 1$: $N^{(4)}(1) = -60$.
+
+\textbf{Step 3.} 4th-order term:
+\[
+\frac{N^{(4)}(1)}{4!}(\Delta t)^4 = \frac{-60}{24}(\Delta t)^4 = -\frac{5}{2}(\Delta t)^4
+\]
+
+All four derivatives exist, so RK4 improves over Euler.
+
+\medskip\textbf{(e) Linear space:}
+
+\textbf{Step 1.} Try $u = N$, $s = \ln t$. Compute $du/ds$:
+\[
+\frac{du}{ds} = \frac{dN}{d\ln t} = \frac{dN/dt}{d\ln t/dt} = \frac{r/t}{1/t} = r
+\]
+\stepwhy{$d\ln t/dt = 1/t$; dividing $r/t$ by $1/t$ gives $r$}
+
+\textbf{Step 2.} Constant! So $N$ vs $\ln t$ is the linear space (\textbf{$N$ vs semi-log $t$}).
+
+\medskip\textbf{(f) Comparison with power-of-time:}
+
+\begin{tabular}{lll}
+\toprule
+Property & Power-of-time $\dot N = rN/t$ & Inverse-time $\dot N = r/t$\\
+\midrule
+Solution & $N(t) = N(1)t^r$ & $N(t) = N(1) + r\ln t$\\
+Units of $r$ & Dimensionless & Population\\
+Linear space & $\ln N$ vs $\ln t$ & $N$ vs $\ln t$\\
+Depends on $N$? & Yes ($\dot N \propto N$) & No ($\dot N$ independent of $N$)\\
+Growth for $r>0$ & Power law (faster) & Logarithmic (slower)\\
+\bottomrule
+\end{tabular}
+
+\textbf{Key difference:} Power-of-time is a per-capita equation (growth proportional to $N$); inverse-time is an absolute rate (same increase regardless of how many organisms exist).
+\end{solution}
+
+\subsection{Problem 1.7: Piecewise Growth Rates (2017 Q1)}
+
+\begin{problem}
+A population grows at rate $r_1$ for time $t_1$, then immediately shifts to rate $r_2$ for time $t_2$. The initial population is $N(0)$.
+
+\begin{enumerate}[label=(\alph*)]
+\item Write $N(t_1 + t_2)$ as a single exponential.
+\item If $r_1 = 0.1/\text{month}$, $r_2 = 0.2/\text{month}$, $t_1 = 10$ months, $t_2 = 26$ months, $N(0) = 2$, what is $N(t_1+t_2)$?
+\item Define and compute the effective growth rate $r_{\text{eff}}$.
+\item A discrete population has $r_d = 6$ offspring per parent, with generation time 1 year. Find the equivalent continuous $r_c$.
+\end{enumerate}
+\end{problem}
+
+\begin{solution}
+\textbf{(a) Single exponential expression:}
+
+\textbf{Step 1.} During phase 1, standard exponential growth:
+\[
+N(t_1) = N(0)\,e^{r_1 t_1}
+\]
+
+\textbf{Step 2.} This $N(t_1)$ is the initial condition for phase 2:
+\[
+N(t_1 + t_2) = N(t_1)\,e^{r_2 t_2} = N(0)\,e^{r_1 t_1}\cdot e^{r_2 t_2}
+\]
+
+\textbf{Step 3.} Combine using $e^a\cdot e^b = e^{a+b}$:
+\[
+\boxed{N(t_1+t_2) = N(0)\,e^{r_1 t_1 + r_2 t_2}}
+\]
+
+\medskip\textbf{(b) Numerical evaluation:}
+
+\textbf{Step 1.} Compute exponent: $r_1 t_1 + r_2 t_2 = 0.1(10) + 0.2(26) = 1 + 5.2 = 6.2$.
+
+\textbf{Step 2.}
+\[
+N(36\text{ months}) = 2\,e^{6.2}
+\]
+
+\textbf{Step 3.} Compute $e^{6.2} \approx 492.7$:
+\[
+N \approx 2 \times 492.7 \approx 985 \text{ individuals}
+\]
+
+\medskip\textbf{(c) Effective growth rate:}
+
+\textbf{Step 1.} The effective rate satisfies $N(0)e^{r_{\text{eff}}(t_1+t_2)} = N(0)e^{r_1 t_1 + r_2 t_2}$.
+
+\textbf{Step 2.} Equate exponents:
+\[
+r_{\text{eff}}(t_1+t_2) = r_1 t_1 + r_2 t_2
+\]
+
+\textbf{Step 3.} Divide both sides by $(t_1+t_2)$:
+\[
+\boxed{r_{\text{eff}} = \frac{r_1 t_1 + r_2 t_2}{t_1+t_2}}
+\]
+This is a \textbf{time-weighted average} of the two rates.
+
+\textbf{Step 4.} Numerically: $r_{\text{eff}} = 6.2/36 \approx 0.172$/month.
+
+\medskip\textbf{(d) Discrete-to-continuous conversion:}
+
+\textbf{Step 1.} Discrete: $N(t+1) = \lambda N(t)$ with $\lambda = 1 + r_d = 1 + 6 = 7$.
+
+\textbf{Step 2.} Continuous equivalent over one generation ($\tau_g = 1$ year): $e^{r_c \cdot 1} = \lambda = 7$.
+
+\textbf{Step 3.} Take natural log of both sides:
+\[
+r_c = \ln 7 \approx 1.946\text{ yr}^{-1}
+\]
+
+\textbf{Step 4.} Note $r_c = \ln 7 \neq r_d = 6$. They differ significantly for large $r_d$ (only approximately equal when $r_d \ll 1$).
+\end{solution}
+
+\subsection{Problem 1.8: Gompertz Growth}
+
+\begin{problem}
+Consider Gompertz growth: $\dfrac{dN}{dt} = rN\ln(K/N)$.
+\begin{enumerate}[label=(\alph*)]
+\item Find fixed points and check stability.
+\item Verify $N=K$ is a fixed point.
+\item Compare saturation to logistic: does Gompertz approach $K$ faster or slower near the carrying capacity?
+\item For early times $N \ll K$, what does the equation simplify to?
+\end{enumerate}
+\end{problem}
+
+\begin{solution}
+\textbf{(a) Fixed points:}
+
+\textbf{Step 1.} Set $\dot N = 0$:
+\[
+rN\ln(K/N) = 0
+\]
+
+\textbf{Step 2.} Apply zero-product: $N = 0$ or $\ln(K/N) = 0$.
+
+\textbf{Step 3.} Solve $\ln(K/N) = 0$:
+\[
+K/N = e^0 = 1 \thus N = K
+\]
+
+Fixed points: $N^* = 0$ (trivial) and $N^* = K$ (carrying capacity).
+
+\textbf{Step 4.} Stability via $f'(N)$ where $f = rN\ln(K/N)$.
+
+Expand: $f = rN(\ln K - \ln N)$. Differentiate using product rule:
+\[
+f'(N) = r(\ln K - \ln N) + rN\cdot\frac{-1}{N} = r\ln(K/N) - r
+\]
+
+\textbf{Step 5.} At $N^* = K$: $f'(K) = r\ln(K/K) - r = r\cdot 0 - r = -r < 0$ $\Rightarrow$ \textbf{stable}.
+
+\textbf{Step 6.} At $N^* = 0$: $\ln(K/N) \to \infty$ as $N\to 0^+$, so $f'(0^+) \to +\infty$ $\Rightarrow$ \textbf{unstable}.
+
+\medskip\textbf{(b) Verify $N=K$:}
+
+\textbf{Step 1.} Substitute $N = K$:
+\[
+\dot N = rK\ln(K/K) = rK\ln(1) = rK\cdot 0 = 0 \checkmark
+\]
+
+\medskip\textbf{(c) Speed of approach to $K$ vs logistic:}
+
+\textbf{Step 1.} Near $K$, write $N = K - \delta$ for small $\delta > 0$ (below $K$):
+
+For \textbf{Gompertz}: $\dot N = r(K-\delta)\ln(K/(K-\delta)) = r(K-\delta)\ln(1/(1-\delta/K))$.
+For small $\delta/K$: $\ln(1/(1-x)) \approx x$ for $x \ll 1$:
+\[
+\dot N \approx r(K-\delta)\cdot\frac{\delta}{K} \approx r\delta \quad(\text{for }\delta \ll K)
+\]
+
+For \textbf{Logistic}: $\dot N = r(K-\delta)(1-(K-\delta)/K) = r(K-\delta)\cdot\delta/K \approx r\delta$.
+
+\textbf{Step 2.} Both give $\dot N \approx r\delta$ near $K$. Same rate of approach to leading order. However the sub-leading terms differ: Gompertz has an additional factor making it \textbf{slightly slower} to approach $K$ far from it but similar very close.
+
+\medskip\textbf{(d) Early times $N \ll K$:}
+
+\textbf{Step 1.} When $N \ll K$: $K/N \gg 1$, so $\ln(K/N) = \ln K - \ln N$. For very small $N$, $\ln K$ dominates:
+\[
+\dot N \approx rN\ln K
+\]
+
+\textbf{Step 2.} This is exponential growth with effective rate $r_{\text{eff}} = r\ln K$.
+
+\textbf{Step 3.} Compare to logistic: $\dot N \approx rN$ for logistic at small $N$. Gompertz grows faster early ($r\ln K > r$ when $K > e$), but both are exponential.
 \end{solution}
 
 \newpage
@@ -1485,6 +1736,258 @@ J^* = \begin{pmatrix} -rH^*/K & \alpha_D H^* & 0 \\ \omega\alpha_D D^* & -rD^*/K
 \textbf{Step 14.} Both Tr $< 0$ and Det $< 0$ have correct sign for stability. Combined with sufficient logistic damping (large $r/K$), the third Routh-Hurwitz condition is satisfied. \textbf{Likely stable.}
 \end{solution}
 
+\subsection{Problem 2.6: LV with Logistic Prey (2017 Q2)}
+
+\begin{problem}
+Modify standard LV by adding logistic self-regulation to the prey:
+\[
+\frac{dN}{dt} = rN - \frac{r}{K}N^2 - \bar\beta NP, \qquad \frac{dP}{dt} = \varepsilon\bar\beta NP - ZP
+\]
+\begin{enumerate}[label=(\alph*)]
+\item Write the interaction matrix $A$ and explain how it differs from standard LV.
+\item Find the non-trivial fixed point $(N^*, P^*)$.
+\item Compute $\text{Tr}(A)$ and $\text{Det}(A)$. Are eigenvalues real or complex?
+\item Classify stability. Is this more or less stable than standard LV?
+\end{enumerate}
+\end{problem}
+
+\begin{solution}
+\textbf{(a) Interaction matrix:}
+
+\textbf{Step 1.} Divide $\dot N$ by $N$:
+\[
+\frac{\dot N}{N} = r - \frac{r}{K}N - \bar\beta P
+\]
+\stepwhy{cancel one $N$ from $rN^2/K$ to get $rN/K$}
+
+\textbf{Step 2.} Divide $\dot P$ by $P$:
+\[
+\frac{\dot P}{P} = \varepsilon\bar\beta N - Z
+\]
+
+\textbf{Step 3.} Read off coefficients of $N$ and $P$:
+\begin{itemize}
+\item $\dot N/N$: coeff of $N$ is $-r/K$ (self-interaction), coeff of $P$ is $-\bar\beta$.
+\item $\dot P/P$: coeff of $N$ is $\varepsilon\bar\beta$, coeff of $P$ is 0.
+\end{itemize}
+
+\textbf{Step 4.}
+\[
+A = \begin{pmatrix} -r/K & -\bar\beta \\ \varepsilon\bar\beta & 0 \end{pmatrix}
+\]
+
+\textbf{Difference from standard LV:} The (1,1) entry is $-r/K < 0$ instead of 0. This is the self-regulation (intraspecific competition) from the logistic term.
+
+\medskip\textbf{(b) Fixed points:}
+
+\textbf{Step 1.} Set per-capita rates to zero:
+\[
+r - \frac{r}{K}N - \bar\beta P = 0 \quad\text{(prey eq)}
+\]
+\[
+\varepsilon\bar\beta N - Z = 0 \thus N^* = \frac{Z}{\varepsilon\bar\beta}
+\]
+
+\textbf{Step 2.} Substitute $N^*$ into prey equation:
+\[
+r - \frac{r}{K}\cdot\frac{Z}{\varepsilon\bar\beta} - \bar\beta P^* = 0
+\]
+
+\textbf{Step 3.} Solve for $P^*$:
+\[
+\bar\beta P^* = r - \frac{rZ}{K\varepsilon\bar\beta} = r\left(1 - \frac{Z}{K\varepsilon\bar\beta}\right)
+\]
+\[
+P^* = \frac{r}{\bar\beta}\left(1 - \frac{Z}{K\varepsilon\bar\beta}\right) = \frac{r}{\bar\beta} - \frac{rZ}{K\varepsilon\bar\beta^2}
+\]
+\stepwhy{divide by $\bar\beta$}
+
+\textbf{Step 4.} Biological constraint: $P^* > 0$ requires $1 > Z/(K\varepsilon\bar\beta)$, i.e., prey carrying capacity large enough to sustain predators.
+
+\medskip\textbf{(c) Tr, Det, discriminant:}
+
+\textbf{Step 1.} Trace:
+\[
+\text{Tr}(A) = -r/K + 0 = -r/K < 0
+\]
+
+\textbf{Step 2.} Determinant:
+\[
+\text{Det}(A) = (-r/K)(0) - (-\bar\beta)(\varepsilon\bar\beta) = 0 + \varepsilon\bar\beta^2 = \varepsilon\bar\beta^2 > 0
+\]
+
+\textbf{Step 3.} Discriminant $\Delta = \text{Tr}^2 - 4\text{Det}$:
+\[
+\Delta = \frac{r^2}{K^2} - 4\varepsilon\bar\beta^2
+\]
+
+If $\Delta < 0$ (i.e., $4\varepsilon\bar\beta^2 > r^2/K^2$, or $K > r/(2\bar\beta\sqrt\varepsilon)$): \textbf{complex eigenvalues (spiral)}.\\
+If $\Delta > 0$: \textbf{real eigenvalues (node)}.
+
+\medskip\textbf{(d) Stability classification:}
+
+\textbf{Step 1.} Tr $< 0$ and Det $> 0$ $\Rightarrow$ \textbf{stable} in all cases.
+
+\textbf{Step 2.} If $\Delta < 0$ (common when coupling is strong): \textbf{stable spiral} — oscillations that dampen into the equilibrium.
+
+\textbf{Step 3.} If $\Delta > 0$: \textbf{stable node} — smooth exponential decay to equilibrium, no oscillations.
+
+\textbf{Step 4.} Comparison with standard LV (Tr $= 0$, neutral oscillations):
+\begin{itemize}
+\item Adding logistic self-regulation shifts Tr from 0 to $-r/K < 0$.
+\item This converts neutral (undamped) oscillations into \textbf{damped} oscillations.
+\item The system is \textbf{more stable}: perturbations decay rather than persist forever.
+\end{itemize}
+\end{solution}
+
+\subsection{Problem 2.7: Prion Disease as LV (2018 Q2)}
+
+\begin{problem}
+Prion disease: normal protein $Y_1$ converts to misfolded $Y_2$ upon contact. Treat analogously to predator-prey:
+\[
+\frac{dY_1}{dt} = rY_1 - \bar\beta Y_1 Y_2, \qquad \frac{dY_2}{dt} = \varepsilon\bar\beta Y_1 Y_2 - Z Y_2
+\]
+\begin{enumerate}[label=(\alph*)]
+\item Interpret each parameter in the prion context.
+\item Which parameters might have different values than in a biological predator-prey system? Why?
+\item Find fixed points and compute eigenvalues at the coexistence FP.
+\item What would happen if $r = 0$ (no natural production of $Y_1$)? Interpret biologically.
+\end{enumerate}
+\end{problem}
+
+\begin{solution}
+\textbf{(a) Parameter interpretation:}
+
+\begin{itemize}
+\item $r$: production rate of normal protein $Y_1$ (e.g., by ribosomes). Unlike prey, $Y_1$ doesn't self-replicate by interaction — it's produced continuously.
+\item $\bar\beta$: conversion rate when $Y_1$ contacts $Y_2$ (misfolding induction rate). Dimensionless-ish: rate per $Y_1$ per $Y_2$ per time.
+\item $\varepsilon$: conversion efficiency. Each $Y_1$ consumed creates $\varepsilon$ units of $Y_2$. In prion context $\varepsilon = 1$ exactly (every normal protein that misfolds becomes one prion), unlike biological predation where $\varepsilon < 1$.
+\item $Z$: degradation rate of misfolded protein $Y_2$ (by proteasome, chaperones, etc.).
+\end{itemize}
+
+\medskip\textbf{(b) Parameters with different values:}
+
+\textbf{Step 1.} $\varepsilon$: Likely $\varepsilon = 1$ for prions (exact 1-to-1 conversion of $Y_1$ into $Y_2$). In predator-prey, $\varepsilon \ll 1$ (inefficient energy conversion).
+
+\textbf{Step 2.} $r$: In predator-prey, prey reproduce by breeding (proportional to $N$). Here $Y_1$ is produced at a constant rate from cellular machinery — so really $r$ is not a per-capita rate but an absolute production rate. The equation should perhaps be $\dot Y_1 = r_0 - \bar\beta Y_1 Y_2$ with constant $r_0$. Using $rY_1$ approximates this when $Y_1$ stays near a baseline.
+
+\textbf{Step 3.} $Z$: Degradation of $Y_2$ is very slow in prion diseases (that's why they're lethal) — $Z$ is much smaller than in typical predator-prey.
+
+\medskip\textbf{(c) Fixed points and eigenvalues:}
+
+\textbf{Step 1.} Same algebra as standard LV. Non-trivial FP:
+\[
+N^* = Y_1^* = Z/(\varepsilon\bar\beta), \quad P^* = Y_2^* = r/\bar\beta
+\]
+
+\textbf{Step 2.} Interaction matrix:
+\[
+A = \begin{pmatrix} 0 & -\bar\beta \\ \varepsilon\bar\beta & 0 \end{pmatrix}
+\]
+
+\textbf{Step 3.} Tr $= 0$, Det $= \varepsilon\bar\beta^2$. Eigenvalues:
+\[
+\lambda_\pm = \pm i\bar\beta\sqrt\varepsilon
+\]
+\textbf{Neutral oscillations.} In the prion context: normal and misfolded protein oscillate indefinitely.
+
+\medskip\textbf{(d) What if $r = 0$?}
+
+\textbf{Step 1.} With $r = 0$: $\dot Y_1 = -\bar\beta Y_1 Y_2$. The fixed point $Y_2^* = r/\bar\beta = 0$ collapses.
+
+\textbf{Step 2.} Equations become:
+\[
+\dot Y_1 = -\bar\beta Y_1 Y_2, \quad \dot Y_2 = \varepsilon\bar\beta Y_1 Y_2 - Z Y_2
+\]
+
+\textbf{Step 3.} Without $Y_1$ production, the only steady state is $Y_1 = 0$ or $Y_2 = 0$.
+
+\textbf{Step 4.} Biological interpretation: if the cell stops producing normal protein $Y_1$ (e.g., gene silenced, disease state) then $Y_1$ will be gradually consumed until it is depleted. Then $Y_2$ will degrade at rate $Z$ (no more substrate). Long-term: both go to zero. \textbf{The disease could self-limit!} This is actually the basis of some prion therapy approaches: reduce $Y_1$ production to starve $Y_2$.
+\end{solution}
+
+\subsection{Problem 2.8: Competing Species}
+
+\begin{problem}
+Two species $N_1$ and $N_2$ compete for the same resource. Each grows logistically and is harmed by the other:
+\[
+\frac{dN_1}{dt} = r_1 N_1\left(1 - \frac{N_1}{K_1} - \frac{\alpha_{12}}{K_1}N_2\right)
+\]
+\[
+\frac{dN_2}{dt} = r_2 N_2\left(1 - \frac{N_2}{K_2} - \frac{\alpha_{21}}{K_2}N_1\right)
+\]
+\begin{enumerate}[label=(\alph*)]
+\item Write the interaction matrix $A$.
+\item Find all four fixed points.
+\item Under what conditions does $N_1$ win? $N_2$ win? Coexistence? Bistability?
+\end{enumerate}
+\end{problem}
+
+\begin{solution}
+\textbf{(a) Interaction matrix:}
+
+\textbf{Step 1.} Divide $\dot N_1$ by $N_1$:
+\[
+\frac{\dot N_1}{N_1} = r_1\left(1 - \frac{N_1}{K_1} - \frac{\alpha_{12}N_2}{K_1}\right) = r_1 - \frac{r_1}{K_1}N_1 - \frac{r_1\alpha_{12}}{K_1}N_2
+\]
+
+\textbf{Step 2.} Divide $\dot N_2$ by $N_2$ similarly.
+
+\textbf{Step 3.}
+\[
+A = \begin{pmatrix} -r_1/K_1 & -r_1\alpha_{12}/K_1 \\ -r_2\alpha_{21}/K_2 & -r_2/K_2 \end{pmatrix}
+\]
+
+\medskip\textbf{(b) Four fixed points:}
+
+\textbf{FP 1:} Extinction of both: $(N_1^*, N_2^*) = (0, 0)$.
+
+\textbf{FP 2:} Only $N_1$ survives ($N_2 = 0$): set $\dot N_1/N_1 = 0$ with $N_2 = 0$: $r_1(1 - N_1/K_1) = 0 \Rightarrow N_1^* = K_1$.
+\[
+(K_1, 0)
+\]
+
+\textbf{FP 3:} Only $N_2$ survives ($N_1 = 0$): similarly $(0, K_2)$.
+
+\textbf{FP 4:} Coexistence. Solve simultaneously:
+\[
+1 - N_1/K_1 - \alpha_{12}N_2/K_1 = 0
+\]
+\[
+1 - N_2/K_2 - \alpha_{21}N_1/K_2 = 0
+\]
+From eq 1: $N_1 = K_1 - \alpha_{12}N_2$.
+Substitute into eq 2:
+\[
+1 - \frac{N_2}{K_2} - \frac{\alpha_{21}(K_1 - \alpha_{12}N_2)}{K_2} = 0
+\]
+\[
+K_2 - N_2 - \alpha_{21}K_1 + \alpha_{21}\alpha_{12}N_2 = 0
+\]
+\[
+N_2(1 - \alpha_{21}\alpha_{12}) = K_2 - \alpha_{21}K_1
+\]
+\[
+N_2^* = \frac{K_2 - \alpha_{21}K_1}{1 - \alpha_{12}\alpha_{21}}, \qquad N_1^* = \frac{K_1 - \alpha_{12}K_2}{1 - \alpha_{12}\alpha_{21}}
+\]
+
+\medskip\textbf{(c) Competition outcomes:}
+
+The key quantity is the product $\alpha_{12}\alpha_{21}$ (mutual inhibition strength).
+
+\textbf{$N_1$ wins (competitive exclusion):} $K_1 > \alpha_{12}K_2$ and $K_2 < \alpha_{21}K_1$.
+\stepwhy{$N_1$ can grow when $N_2$ is at its carrying capacity, but not vice versa}
+
+\textbf{$N_2$ wins (competitive exclusion):} $K_2 > \alpha_{21}K_1$ and $K_1 < \alpha_{12}K_2$.
+
+\textbf{Stable coexistence:} $\alpha_{12}\alpha_{21} < 1$ and $N_1^* > 0$, $N_2^* > 0$.
+\stepwhy{Intraspecific competition stronger than interspecific; species limit themselves more than each other}
+
+\textbf{Bistability (unstable coexistence):} $\alpha_{12}\alpha_{21} > 1$.
+\stepwhy{Interspecific competition stronger; whichever species is more abundant tends to exclude the other; outcome depends on initial conditions}
+
+\textbf{Biological intuition:} Competitive exclusion (the principle that two species competing for the same resource cannot stably coexist) is recovered when $\alpha_{12}\alpha_{21} \geq 1$. Coexistence is possible only when each species inhibits itself more than it inhibits the competitor.
+\end{solution}
+
 \newpage
 %==================================================================
 \section{Disease (SIR / SIRS) Models}
@@ -1996,6 +2499,200 @@ $\iff (1-p_1)^2 R_{0,2} > 1 + p_2$\\
 $\iff R_{0,2}^{\text{vacc}} = \frac{(1-p_1)^2 R_{0,2}}{1+p_2} > 1$.
 
 Larger $p_1$ (better immunity) and larger $p_2$ (faster recovery) reduce variant spread. Vaccines help.
+\end{solution}
+
+\subsection{Problem 3.6: SEIR Model (Exposed Compartment)}
+
+\begin{problem}
+Add an \textbf{exposed} (latent) compartment $E$ to SIR. Infected individuals first pass through an exposed/incubating phase before becoming infectious:
+\[
+\frac{dS}{dt} = -\beta SI, \quad \frac{dE}{dt} = \beta SI - \sigma E, \quad \frac{dI}{dt} = \sigma E - \gamma I, \quad \frac{dR}{dt} = \gamma I
+\]
+where $\sigma$ is the rate of progressing from exposed to infectious (incubation rate).
+
+\begin{enumerate}[label=(\alph*)]
+\item Verify conservation and reduce.
+\item Find the disease-free FP.
+\item Compute $J^*$ at the disease-free FP.
+\item Find eigenvalues and $R_0$.
+\end{enumerate}
+\end{problem}
+
+\begin{solution}
+\textbf{(a) Conservation:}
+
+\textbf{Step 1.} Sum all four equations:
+\[
+\dot S + \dot E + \dot I + \dot R = (-\beta SI) + (\beta SI - \sigma E) + (\sigma E - \gamma I) + \gamma I
+\]
+
+\textbf{Step 2.} Cancel pairs: $-\beta SI + \beta SI = 0$, $-\sigma E + \sigma E = 0$, $-\gamma I + \gamma I = 0$:
+\[
+= 0 \checkmark
+\]
+
+$N = S + E + I + R$ is conserved. Eliminate $R$; work with $(S, E, I)$.
+
+\medskip\textbf{(b) Disease-free FP:}
+
+\textbf{Step 1.} $E^* = I^* = 0$, $S^* = N$, $R^* = 0$.
+
+\medskip\textbf{(c) Jacobian at $(N, 0, 0)$:}
+
+\textbf{Step 1.} Define $f = -\beta SI$, $g = \beta SI - \sigma E$, $h = \sigma E - \gamma I$. Compute partials.
+
+\textbf{Step 2.} Partials of $f$:
+\[
+\partial f/\partial S = -\beta I, \quad \partial f/\partial E = 0, \quad \partial f/\partial I = -\beta S
+\]
+
+\textbf{Step 3.} Partials of $g$:
+\[
+\partial g/\partial S = \beta I, \quad \partial g/\partial E = -\sigma, \quad \partial g/\partial I = \beta S
+\]
+
+\textbf{Step 4.} Partials of $h$:
+\[
+\partial h/\partial S = 0, \quad \partial h/\partial E = \sigma, \quad \partial h/\partial I = -\gamma
+\]
+
+\textbf{Step 5.} Evaluate at $(S,E,I) = (N,0,0)$:
+\[
+J^* = \begin{pmatrix} 0 & 0 & -\beta N \\ 0 & -\sigma & \beta N \\ 0 & \sigma & -\gamma \end{pmatrix}
+\]
+\stepwhy{Setting $I=0$ zeros out all terms involving $\beta I$; substituting $S=N$}
+
+\medskip\textbf{(d) Eigenvalues:}
+
+\textbf{Step 1.} First column is all zeros: $\lambda_1 = 0$.
+
+\textbf{Step 2.} Remaining 2$\times$2 sub-matrix (from $E, I$ rows):
+\[
+M = \begin{pmatrix} -\sigma & \beta N \\ \sigma & -\gamma \end{pmatrix}
+\]
+
+\textbf{Step 3.} Trace:
+\[
+\text{Tr}(M) = -\sigma - \gamma < 0
+\]
+
+\textbf{Step 4.} Determinant:
+\[
+\text{Det}(M) = (-\sigma)(-\gamma) - (\beta N)(\sigma) = \sigma\gamma - \beta N\sigma = \sigma(\gamma - \beta N)
+\]
+
+\textbf{Step 5.} For disease-free FP to be stable, need Det $> 0$:
+\[
+\sigma(\gamma - \beta N) > 0 \thus \gamma > \beta N \thus \frac{\beta N}{\gamma} < 1 \thus R_0 < 1
+\]
+\stepwhy{$\sigma > 0$ always, so sign of Det is determined by $\gamma - \beta N$}
+
+\textbf{Step 6.} Define:
+\[
+\boxed{R_0 = \frac{\beta N}{\gamma}}
+\]
+Same formula as standard SIR! The exposed compartment adds a delay but does not change $R_0$.
+
+\textbf{Step 7.} Eigenvalues via quadratic formula:
+\[
+\lambda_\pm = \frac{-(\sigma+\gamma) \pm \sqrt{(\sigma+\gamma)^2 - 4\sigma(\gamma - \beta N)}}{2}
+\]
+
+\textbf{Step 8.} Disease spreads iff Det $< 0$, i.e.\ $R_0 > 1$. When $R_0 > 1$: Det $< 0$, discriminant $> (\sigma+\gamma)^2$, so $\sqrt{} > \sigma+\gamma$, making $\lambda_+ > 0$. Disease invades.
+\end{solution}
+
+\subsection{Problem 3.7: SIR with Births and Deaths}
+
+\begin{problem}
+Add equal birth and death rates $\mu$ to the standard SIR:
+\[
+\frac{dS}{dt} = \mu N - \beta SI - \mu S
+\]
+\[
+\frac{dI}{dt} = \beta SI - \gamma I - \mu I
+\]
+\[
+\frac{dR}{dt} = \gamma I - \mu R
+\]
+where the $\mu N$ term is births (all born susceptible) and $-\mu X$ terms are deaths in each compartment.
+
+\begin{enumerate}[label=(\alph*)]
+\item Verify conservation (or lack thereof). Does $N$ change?
+\item Find the disease-free FP.
+\item Compute $J^*$, find eigenvalues, define $R_0$.
+\item How does births/deaths change $R_0$ compared to standard SIR?
+\end{enumerate}
+\end{problem}
+
+\begin{solution}
+\textbf{(a) Conservation check:}
+
+\textbf{Step 1.} Sum all three:
+\[
+\dot S + \dot I + \dot R = (\mu N - \beta SI - \mu S) + (\beta SI - \gamma I - \mu I) + (\gamma I - \mu R)
+\]
+
+\textbf{Step 2.} Collect:
+\[
+= \mu N - \mu(S + I + R) - \beta SI + \beta SI - \gamma I + \gamma I
+\]
+
+\textbf{Step 3.} Cancel pairs and use $S+I+R = N$:
+\[
+= \mu N - \mu N = 0 \checkmark
+\]
+
+\textbf{Step 4.} Total population $N$ is \textbf{still conserved} (births balance deaths). Eliminate $R$.
+
+\medskip\textbf{(b) Disease-free FP:}
+
+At $I^* = 0$: $\dot S = \mu N - \mu S^* = 0 \Rightarrow S^* = N$. So $(S^*, I^*) = (N, 0)$.
+
+\medskip\textbf{(c) Jacobian:}
+
+\textbf{Step 1.} Partials of $f = \mu N - \beta SI - \mu S$:
+\[
+\partial f/\partial S = -\beta I - \mu, \quad \partial f/\partial I = -\beta S
+\]
+
+\textbf{Step 2.} Partials of $g = \beta SI - \gamma I - \mu I = \beta SI - (\gamma+\mu)I$:
+\[
+\partial g/\partial S = \beta I, \quad \partial g/\partial I = \beta S - (\gamma+\mu)
+\]
+
+\textbf{Step 3.} Build and evaluate at $(N, 0)$:
+\[
+J^* = \begin{pmatrix} -\mu & -\beta N \\ 0 & \beta N - (\gamma+\mu) \end{pmatrix}
+\]
+\stepwhy{Setting $I=0$: $\partial f/\partial S = -\mu$; $\partial g/\partial S = 0$}
+
+\textbf{Step 4.} Upper triangular $\Rightarrow$ eigenvalues are diagonal:
+\[
+\lambda_1 = -\mu < 0, \qquad \lambda_2 = \beta N - (\gamma+\mu)
+\]
+
+\textbf{Step 5.} Factor $\lambda_2$:
+\[
+\lambda_2 = (\gamma+\mu)\left(\frac{\beta N}{\gamma+\mu} - 1\right) = (\gamma+\mu)(R_0 - 1)
+\]
+where
+\[
+\boxed{R_0 = \frac{\beta N}{\gamma + \mu}}
+\]
+
+\medskip\textbf{(d) Effect of births/deaths:}
+
+\textbf{Standard SIR:} $R_0 = \beta N/\gamma$.
+
+\textbf{SIR with births/deaths:} $R_0 = \beta N/(\gamma + \mu)$.
+
+\textbf{Step 1.} Since $\gamma + \mu > \gamma$, the new $R_0 < $ standard $R_0$.
+
+\textbf{Step 2.} \textbf{Births/deaths make disease \emph{harder} to spread (smaller $R_0$)}. Why?
+
+\textbf{Step 3.} The additional $\mu$ in the denominator reflects that infected individuals also die at rate $\mu$ before recovering. They are removed from the infectious pool both by recovery ($\gamma$) and by death ($\mu$). Effectively, the \textbf{average infectious period} is $1/(\gamma+\mu)$ rather than $1/\gamma$.
+
+\textbf{Step 4.} Herd immunity threshold: $f^* = 1 - 1/R_0 = 1 - (\gamma+\mu)/(\beta N)$. Slightly lower than without deaths, meaning fewer people need to be vaccinated.
 \end{solution}
 
 \newpage
@@ -2661,11 +3358,29 @@ For each system, determine whether $N = \sum X_i$ is conserved:
 \end{problem}
 
 \begin{solution}
-\textbf{(a)} Sum: $\dot S + \dot I + \dot R = -\mu I \neq 0$. \textbf{Not conserved}; total population decreases due to disease deaths. Cannot eliminate any equation.
+\textbf{(a)} 
 
-\textbf{(b)} Sum: $\dot S + \dot I + \dot R = 0$ \checkmark. \textbf{Conserved}. Eliminate one equation.
+\textbf{Step 1.} Sum all three: $\dot S + \dot I + \dot R = (-\beta SI) + (\beta SI - \gamma I - \mu I) + (\gamma I)$.
 
-\textbf{(c)} $\dot N + \dot P$ has terms like $rN(1 - N/K) - \bar\beta NP + \varepsilon\bar\beta NP - ZP$. Doesn't simplify to zero. \textbf{Not conserved} (no conservation law for biomass here since predator gains $\varepsilon$ fraction of prey biomass).
+\textbf{Step 2.} Cancel: $-\beta SI + \beta SI = 0$, $\gamma I - \gamma I = 0$. Remaining: $-\mu I$.
+
+\textbf{Step 3.} So $\frac{d(S+I+R)}{dt} = -\mu I \leq 0$. \textbf{Not conserved}; total population decreases due to disease deaths. Cannot eliminate any equation.
+
+\textbf{(b)}
+
+\textbf{Step 1.} Sum: $(-\beta SI + \nu R) + (\beta SI - \gamma I) + (\gamma I - \nu R)$.
+
+\textbf{Step 2.} Cancel: $-\beta SI + \beta SI = 0$, $-\gamma I + \gamma I = 0$, $\nu R - \nu R = 0$. Result: 0.
+
+\textbf{Step 3.} \textbf{Conserved}. $N = S+I+R = $ const. Eliminate one equation (e.g., $R = N - S - I$).
+
+\textbf{(c)}
+
+\textbf{Step 1.} Sum: $(rN(1-N/K) - \bar\beta NP) + (\varepsilon\bar\beta NP - ZP)$.
+
+\textbf{Step 2.} Collect: $rN - rN^2/K - \bar\beta NP + \varepsilon\bar\beta NP - ZP = rN - rN^2/K + (\varepsilon-1)\bar\beta NP - ZP$.
+
+\textbf{Step 3.} This is not zero (has leftover terms). \textbf{Not conserved}. Predator-prey has no biomass conservation because $\varepsilon < 1$ means prey biomass is lost as heat, and $-ZP$ represents death.
 \end{solution}
 
 \subsection{Problem 7.2: Reducing a 5-Variable System}
@@ -2675,9 +3390,110 @@ For the two-variant disease in Problem 3.4, show that conservation reduces 5 var
 \end{problem}
 
 \begin{solution}
-Sum all 5 equations: total $= 0$ (one conservation law), reduces to 4 variables.
+\textbf{Step 1.} The system has $S, I, S_2, I_2, R$ — five variables.
 
-In some specific systems with no births/deaths, additional fictitious conservation laws (like total infections ever) can apply, but they don't help reduce the dynamical system. The structural conservation $S + I + S_2 + I_2 + R = N$ is the only \emph{instantaneous} conservation. Other quantities (e.g., total ever infected) are not constants of motion.
+\textbf{Step 2.} Sum all five equations. Every term appears with both a positive and negative sign across the five equations (e.g., $\beta SI$ appears $-$ in $\dot S$ and $+$ in $\dot I$). Net sum: 0.
+
+\textbf{Step 3.} Therefore $S + I + S_2 + I_2 + R = N$ is conserved. This lets us eliminate one variable: $R = N - S - I - S_2 - I_2$. Now 4 independent equations.
+
+\textbf{Step 4.} Can we reduce further? Only if there is a \textbf{second independent conservation law}. Check: is there any other linear combination $c_1 S + c_2 I + c_3 S_2 + c_4 I_2 = $ const?
+
+\textbf{Step 5.} For $c_1 \dot S + c_2 \dot I + c_3 \dot{S_2} + c_4 \dot{I_2} = 0$ to hold identically, we need the coefficients of each product ($SI$, $SI_2$, $S_2 I_2$) to cancel. This only works for $c_1 = c_2 = c_3 = c_4 = 1$ (total conservation). No other independent combination gives zero.
+
+\textbf{Conclusion:} The system has exactly one conservation law and reduces from 5 to 4 independent equations. Cannot reduce further.
+\end{solution}
+
+\subsection{Problem 7.3: Enzyme Conservation with Inhibitor (2018 Q4 style)}
+
+\begin{problem}
+Consider competitive inhibition:
+\[
+S + E \rightleftharpoons [SE] \to P + E, \qquad I + E \rightleftharpoons [EI]
+\]
+\begin{enumerate}[label=(\alph*)]
+\item Identify all conservation laws.
+\item Apply QSSA to both complexes.
+\item Derive the modified production rate. How does inhibitor affect $V_{\max}$ and $K_M$?
+\end{enumerate}
+\end{problem}
+
+\begin{solution}
+\textbf{(a) Conservation laws:}
+
+\textbf{Step 1.} Sum $\dot E + \dot{[SE]} + \dot{[EI]}$. Using the full equations:
+\[
+\dot E = -k_1 SE + (k_{-1}+k_2)[SE] - k_3 IE + k_{-3}[EI]
+\]
+\[
+\dot{[SE]} = k_1 SE - (k_{-1}+k_2)[SE]
+\]
+\[
+\dot{[EI]} = k_3 IE - k_{-3}[EI]
+\]
+Sum: all terms cancel. So $E + [SE] + [EI] = E_0$ conserved.
+
+\textbf{Step 2.} No conservation on $S$ or $I$ (they are consumed/released without matching terms).
+
+\textbf{Step 3.} One conservation law: $E_0 = E + [SE] + [EI]$.
+
+\medskip\textbf{(b) QSSA on both complexes:}
+
+\textbf{Step 1.} Set $\dot{[SE]} = 0$:
+\[
+k_1 SE = (k_{-1}+k_2)[SE]
+\]
+\stepwhy{same as standard MM derivation}
+
+\textbf{Step 2.} Set $\dot{[EI]} = 0$:
+\[
+k_3 IE = k_{-3}[EI] \thus [EI] = \frac{k_3 IE}{k_{-3}} = \frac{IE}{K_I}
+\]
+where $K_I = k_{-3}/k_3$ is the inhibitor dissociation constant.
+
+\textbf{Step 3.} From Step 1: $[SE] = k_1 SE/(k_{-1}+k_2) = SE/K_M$ where $K_M = (k_{-1}+k_2)/k_1$.
+
+\textbf{Step 4.} Substitute both into conservation $E + [SE] + [EI] = E_0$:
+\[
+E + \frac{SE}{K_M} + \frac{IE}{K_I} = E_0
+\]
+
+\textbf{Step 5.} Factor $E$:
+\[
+E\left(1 + \frac{S}{K_M} + \frac{I}{K_I}\right) = E_0 \thus E = \frac{E_0}{1 + S/K_M + I/K_I}
+\]
+
+\textbf{Step 6.} Find $[SE]$:
+\[
+[SE] = \frac{SE}{K_M} = \frac{S}{K_M}\cdot\frac{E_0}{1 + S/K_M + I/K_I}
+\]
+
+\textbf{Step 7.} Multiply top and bottom by $K_M$:
+\[
+[SE] = \frac{SE_0}{K_M + S + SK_M/K_I\cdot\frac{1}{S}\cdot S} = \frac{SE_0}{K_M(1+I/K_I) + S}
+\]
+Let me redo this cleanly:
+\[
+[SE] = \frac{S E_0 / K_M}{1 + S/K_M + I/K_I}
+\]
+Multiply numerator and denominator by $K_M$:
+\[
+[SE] = \frac{S E_0}{K_M + S + K_M I/K_I} = \frac{SE_0}{K_M(1 + I/K_I) + S}
+\]
+
+\medskip\textbf{(c) Modified production rate:}
+
+\textbf{Step 1.}
+\[
+\dot P = k_2[SE] = \frac{k_2 E_0 S}{K_M(1+I/K_I) + S}
+\]
+
+\textbf{Step 2.} Compare to standard MM $\dot P = V_{\max}S/(K_M + S)$:
+\begin{itemize}
+\item $V_{\max}$ is \textbf{unchanged}: $V_{\max} = k_2 E_0$.
+\item $K_M$ is \textbf{increased}: effective $K_M^{\text{eff}} = K_M(1 + I/K_I)$.
+\end{itemize}
+
+\textbf{Step 3.} Biological meaning: the inhibitor competes with substrate $S$ for the enzyme. At saturation ($S \gg K_M$), the reaction still reaches $V_{\max}$ (enough substrate displaces inhibitor). But at low $S$, the inhibitor effectively reduces affinity (larger apparent $K_M$ means enzyme needs more $S$ to reach half-max).
 \end{solution}
 
 \newpage
@@ -3063,6 +3879,138 @@ For the chronic-carrier branch, since carriers never recover, the relevant ``$R_
 \textbf{Step 6.} Conclusion: \textbf{the disease-free FP is always unstable} as long as $\alpha N > 0$ (any positive transmission rate). Once a chronic carrier exists, the system cannot return to disease-free.
 
 \textbf{Why one $R_0$ is enough:} If $\alpha > 0$, $\lambda_3 > 0$ and instability is guaranteed regardless of $R_0^{(I)}$. So for stability we'd need BOTH $\alpha = 0$ (no chronic carrier transmission) AND $R_0^{(I)} < 1$. In practice, only $R_0^{(C)}$ matters for whether the system can be stable at all.
+\end{solution}
+
+\subsection{Problem 9.4: Multiple-Pack Hunting Variant (2024 Q1f)}
+
+\begin{problem}
+Now flip the pack-hunting scenario: 5 predators hunt and kill 100 prey at a time (like a dolphin pod consuming a school of fish).
+\begin{enumerate}[label=(\alph*)]
+\item What are the natural compartments?
+\item Write the differential equations.
+\item Interpret parameters vs standard LV.
+\item Write $A$, find Tr, Det, eigenvalues, and comment on stability.
+\end{enumerate}
+\end{problem}
+
+\begin{solution}
+\textbf{(a) Compartments:}
+
+When 5 predators kill 100 prey at once, it's natural to track \textbf{schools of prey} $N_s$ (each school contains 100 prey) and \textbf{pods of predators} $P_p$ (each pod contains 5 predators). One predation event: 1 pod $\times$ 1 school $\to$ school eliminated, pod gets energy.
+
+\medskip\textbf{(b) Equations:}
+
+\[
+\frac{dN_s}{dt} = r_s N_s - \bar\beta_s N_s P_p
+\]
+\[
+\frac{dP_p}{dt} = \varepsilon\bar\beta_s N_s P_p - Z_p P_p
+\]
+Identical structure to standard LV, just in units of schools and pods.
+
+\medskip\textbf{(c) Parameter interpretation:}
+
+\begin{itemize}
+\item $r_s$: school growth rate (new fish schools form). Same units as $r$ (time$^{-1}$).
+\item $\bar\beta_s$: consumption rate per pod on schools. One pod kills one school at rate $\bar\beta_s$. In absolute fish numbers, $\bar\beta_s$ corresponds to eliminating 100 fish/encounter — much larger per-individual impact than standard LV.
+\item $\varepsilon$: energy conversion efficiency (same as LV, dimensionless).
+\item $Z_p$: pod mortality rate (same units as $Z$).
+\end{itemize}
+
+\textbf{Key differences in magnitudes:} Since each predation event now kills 100 prey (instead of 1), the effective consumption rate per individual predator is $\bar\beta_s/5$ (divided by pod size). However, in terms of the school-level model, $\bar\beta_s$ is comparable to standard $\bar\beta$.
+
+\medskip\textbf{(d) Stability:}
+
+\textbf{Step 1.} Same structure as standard LV:
+\[
+A = \begin{pmatrix} 0 & -\bar\beta_s \\ \varepsilon\bar\beta_s & 0 \end{pmatrix}
+\]
+
+\textbf{Step 2.} Tr $= 0$, Det $= \varepsilon\bar\beta_s^2 > 0$.
+
+\textbf{Step 3.} Eigenvalues: $\lambda_\pm = \pm i\bar\beta_s\sqrt\varepsilon$. Pure imaginary $\Rightarrow$ neutral oscillations.
+
+\textbf{Step 4.} \textbf{Same qualitative stability as standard LV}. However, because each predation event wipes out 100 prey, the oscillation amplitude in absolute prey numbers is much larger. The system reaches close to extinction of schools during the troughs. In practice, \textbf{more extinction risk} than standard LV.
+
+\textbf{Compare 4-hunt-1 vs 5-hunt-100:}
+\begin{itemize}
+\item Both give Tr $= 0$, Det $> 0$, neutral oscillations.
+\item Different magnitudes of $|\lambda|$ and oscillation amplitude.
+\item Mathematical stability class: same. Practical biological stability: different.
+\end{itemize}
+\end{solution}
+
+\subsection{Problem 9.5: Diagonalized Matrix and Eigenvalues (2019 Q2)}
+
+\begin{problem}
+For a 2$\times$2 matrix $A$ with eigenvalues $\lambda_1$, $\lambda_2$, the diagonalized version is:
+\[
+A' = \begin{pmatrix} \lambda_1 & 0 \\ 0 & \lambda_2 \end{pmatrix}
+\]
+\begin{enumerate}[label=(\alph*)]
+\item Calculate $\text{Tr}(A')$ and $\text{Det}(A')$. Show these equal $\text{Tr}(A)$ and $\text{Det}(A)$.
+\item Using these two equations, solve for $\lambda_1$ and $\lambda_2$ in terms of Tr and Det.
+\item For a $3\times3$ matrix, how many independent equations do you need? What are they?
+\end{enumerate}
+\end{problem}
+
+\begin{solution}
+\textbf{(a) Tr and Det of $A'$:}
+
+\textbf{Step 1.} Trace is the sum of diagonal entries:
+\[
+\text{Tr}(A') = \lambda_1 + \lambda_2
+\]
+
+\textbf{Step 2.} Determinant (diagonal matrix): product of diagonal entries:
+\[
+\text{Det}(A') = \lambda_1 \cdot \lambda_2 - 0\cdot 0 = \lambda_1\lambda_2
+\]
+
+\textbf{Step 3.} The trace and determinant are invariants under similarity transformations (diagonalization is a similarity transform $A' = P^{-1}AP$). Therefore:
+\[
+\text{Tr}(A) = \text{Tr}(A') = \lambda_1 + \lambda_2
+\]
+\[
+\text{Det}(A) = \text{Det}(A') = \lambda_1\lambda_2
+\]
+
+\medskip\textbf{(b) Solve for $\lambda_1$, $\lambda_2$:}
+
+\textbf{Step 1.} We have two equations:
+\[
+\lambda_1 + \lambda_2 = T \quad (T = \text{Tr})
+\]
+\[
+\lambda_1\lambda_2 = D \quad (D = \text{Det})
+\]
+
+\textbf{Step 2.} These are Vieta's formulas for the roots of $\lambda^2 - T\lambda + D = 0$.
+
+\textbf{Step 3.} Apply quadratic formula:
+\[
+\lambda = \frac{T \pm \sqrt{T^2 - 4D}}{2}
+\]
+
+This recovers the standard eigenvalue formula from two algebraic invariants.
+
+\medskip\textbf{(c) 3$\times$3 matrix:}
+
+\textbf{Step 1.} For 3$\times$3 with eigenvalues $\lambda_1, \lambda_2, \lambda_3$, the characteristic polynomial is degree 3:
+\[
+\lambda^3 - (\lambda_1+\lambda_2+\lambda_3)\lambda^2 + (\lambda_1\lambda_2+\lambda_1\lambda_3+\lambda_2\lambda_3)\lambda - \lambda_1\lambda_2\lambda_3 = 0
+\]
+
+\textbf{Step 2.} Three invariants needed:
+\begin{itemize}
+\item $I_1 = \lambda_1+\lambda_2+\lambda_3 = \text{Tr}(A)$
+\item $I_2 = \lambda_1\lambda_2+\lambda_1\lambda_3+\lambda_2\lambda_3 = $ sum of 2$\times$2 principal minors
+\item $I_3 = \lambda_1\lambda_2\lambda_3 = \text{Det}(A)$
+\end{itemize}
+
+\textbf{Step 3.} Trace and Det give $I_1$ and $I_3$; $I_2$ is a new quantity (not just Tr and Det).
+
+\textbf{Step 4.} For $n\times n$: need $n$ invariants ($n$ coefficients of characteristic polynomial). Tr and Det always appear but for $n \geq 3$ you need $n-2$ additional ones.
 \end{solution}
 
 \newpage
